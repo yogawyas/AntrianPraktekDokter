@@ -5,6 +5,90 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".JanjiTemuActivity">
+    tools:context=".JanjiTemuActivity"
+    android:padding="16dp">
+
+    <!-- Nama -->
+    <EditText
+        android:id="@+id/etNama"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Nama Lengkap"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Usia -->
+    <EditText
+        android:id="@+id/etUsia"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Usia"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/etNama"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"/>
+
+    <!-- Hari -->
+    <EditText
+        android:id="@+id/etTanggal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Pilih Hari"
+        android:focusable="false"
+        android:clickable="true"
+        app:layout_constraintTop_toBottomOf="@id/etUsia"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"/>
+
+    <!-- Jam -->
+    <EditText
+        android:id="@+id/etJam"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Pilih Jam"
+        android:focusable="false"
+        android:clickable="true"
+        app:layout_constraintTop_toBottomOf="@id/etTanggal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"/>
+
+    <!-- Pilihan Keluhan -->
+    <Spinner
+        android:id="@+id/spKeluhan"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:prompt="@string/pilih_keluhan"
+        app:layout_constraintTop_toBottomOf="@id/etJam"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"/>
+
+    <!-- Pilih Dokter -->
+    <Spinner
+        android:id="@+id/spDokter"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:prompt="@string/pilih_dokter"
+        app:layout_constraintTop_toBottomOf="@id/spKeluhan"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"/>
+
+
+
+    <!-- Tombol Submit -->
+    <Button
+        android:id="@+id/btnDaftar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Daftar Janji Temu"
+        app:layout_constraintTop_toBottomOf="@id/spDokter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

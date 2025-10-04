@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AntrianPraktekDokter</string>
+    <string name="pilih_dokter" />
+    <string name="pilih_keluhan" />
 </resources>

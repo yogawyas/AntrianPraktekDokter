@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="etUsia" type="id" />
+    <item name="etTanggal" type="id" />
+    <item name="etJam" type="id" />
+    <item name="spDokter" type="id" />
+    <item name="etKeluhan" type="id" />
+    <item name="btnDaftar" type="id" />
+</resources>
