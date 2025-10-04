@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- permission -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.INTERNET" />
 
     <!-- application block -->
     <application
@@ -14,7 +15,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AntrianPraktekDokter">
+        android:theme="@style/Theme.AntrianPraktekDokter"
+        android:usesCleartextTraffic="true">
+
 
         <activity android:name=".HomeActivity" />
         <activity android:name=".LoginActivity" />
