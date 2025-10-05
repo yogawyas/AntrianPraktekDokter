@@ -2,6 +2,7 @@ package com.example.antrianpraktekdokter
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
@@ -11,6 +12,10 @@ import androidx.core.view.WindowInsetsCompat
 import java.util.*
 
 class JanjiTemuActivity : AppCompatActivity() {
+
+    companion object {
+        val listAntrian = mutableListOf<Map<String, String>>()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,32 +32,38 @@ class JanjiTemuActivity : AppCompatActivity() {
         val etUsia = findViewById<EditText>(R.id.etUsia)
         val etTanggal = findViewById<EditText>(R.id.etTanggal)
         val etJam = findViewById<EditText>(R.id.etJam)
-        val spDokter = findViewById<Spinner>(R.id.spDokter)
         val spKeluhan = findViewById<Spinner>(R.id.spKeluhan)
+        val spDokter = findViewById<Spinner>(R.id.spDokter)
         val btnDaftar = findViewById<Button>(R.id.btnDaftar)
 
-        // --- Data Keluhan dan Dokter ---
+        // List keluhan
         val keluhanList = listOf("Demam", "Sakit Gigi", "Mata Perih", "Batuk", "Sakit Perut")
 
         val dokterMap = mapOf(
             "Demam" to listOf("Dr. Andi (Umum)", "Dr. Budi (Umum)"),
-            "Sakit Gigi" to listOf("Drg. Citra (Dokter Gigi)", "Drg. Danu (Dokter Gigi)"),
-            "Mata Perih" to listOf("Dr. Eka (Spesialis Mata)", "Dr. Fajar (Spesialis Mata)"),
+            "Sakit Gigi" to listOf("Drg. Citra (Gigi)", "Drg. Danu (Gigi)"),
+            "Mata Perih" to listOf("Dr. Eka (Mata)", "Dr. Fajar (Mata)"),
             "Batuk" to listOf("Dr. Gita (Umum)", "Dr. Hadi (Umum)"),
-            "Sakit Perut" to listOf("Dr. Indah (Spesialis Penyakit Dalam)", "Dr. Joko (Spesialis Penyakit Dalam)")
+            "Sakit Perut" to listOf("Dr. Indah (Penyakit Dalam)", "Dr. Joko (Penyakit Dalam)")
         )
 
-        // --- Spinner Keluhan ---
+        // Spinner Keluhan
         val keluhanAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, keluhanList)
         keluhanAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spKeluhan.adapter = keluhanAdapter
 
-        // --- Spinner Dokter dinamis sesuai keluhan ---
+        // Spinner Dokter dinamis
         spKeluhan.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: android.view.View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: android.view.View?,
+                position: Int,
+                id: Long
+            ) {
                 val selectedKeluhan = keluhanList[position]
                 val dokterList = dokterMap[selectedKeluhan] ?: listOf("Tidak ada dokter")
-                val dokterAdapter = ArrayAdapter(this@JanjiTemuActivity, android.R.layout.simple_spinner_item, dokterList)
+                val dokterAdapter =
+                    ArrayAdapter(this@JanjiTemuActivity, android.R.layout.simple_spinner_item, dokterList)
                 dokterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spDokter.adapter = dokterAdapter
             }
@@ -60,16 +71,18 @@ class JanjiTemuActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        // --- Date Picker ---
+        // Date Picker
         etTanggal.setOnClickListener {
             val c = Calendar.getInstance()
-            val dpd = DatePickerDialog(this, { _, y, m, d ->
-                etTanggal.setText("$d/${m + 1}/$y")
-            }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
+            val dpd = DatePickerDialog(
+                this,
+                { _, y, m, d -> etTanggal.setText("$d/${m + 1}/$y") },
+                c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)
+            )
             dpd.show()
         }
 
-        // --- Time Picker dengan validasi jam 08:00 – 20:00 ---
+        // Time Picker
         etJam.setOnClickListener {
             val c = Calendar.getInstance()
             val hour = c.get(Calendar.HOUR_OF_DAY)
@@ -85,39 +98,38 @@ class JanjiTemuActivity : AppCompatActivity() {
             tpd.show()
         }
 
-        // --- Tombol Daftar ---
+        // Tombol Daftar
         btnDaftar.setOnClickListener {
             val nama = etNama.text.toString().trim()
             val usiaStr = etUsia.text.toString().trim()
             val tanggal = etTanggal.text.toString().trim()
             val jam = etJam.text.toString().trim()
-            val keluhan = spKeluhan.selectedItem.toString()
             val dokter = spDokter.selectedItem.toString()
 
-            // Validasi input
             if (nama.isEmpty() || usiaStr.isEmpty() || tanggal.isEmpty() || jam.isEmpty()) {
                 Toast.makeText(this, "Harap isi semua data!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Validasi usia harus angka > 0
             val usia = usiaStr.toIntOrNull()
             if (usia == null || usia <= 0) {
                 Toast.makeText(this, "Usia tidak valid!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Menampilkan hasil (sementara pakai Toast)
-            val hasil = """
-                Nama: $nama
-                Usia: $usia tahun
-                Tanggal: $tanggal
-                Jam: $jam
-                Keluhan: $keluhan
-                Dokter: $dokter
-            """.trimIndent()
+            // Simpan ke listAntrian
+            listAntrian.add(
+                mapOf(
+                    "nama" to "Nama: $nama",
+                    "jam" to "Jam: $jam",
+                    "dokter" to dokter
+                )
+            )
 
-            Toast.makeText(this, hasil, Toast.LENGTH_LONG).show()
+            // Pindah ke ListAntrianActivity sambil bawa dokter
+            val intent = Intent(this, ListAntrianActivity::class.java)
+            intent.putExtra("dokter", dokter)
+            startActivity(intent)
         }
     }
 }

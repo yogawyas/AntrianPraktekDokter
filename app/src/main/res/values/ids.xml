@@ -6,4 +6,6 @@
     <item name="spDokter" type="id" />
     <item name="etKeluhan" type="id" />
     <item name="btnDaftar" type="id" />
+    <item name="tvNomor" type="id" />
+    <item name="tvNama" type="id" />
 </resources>

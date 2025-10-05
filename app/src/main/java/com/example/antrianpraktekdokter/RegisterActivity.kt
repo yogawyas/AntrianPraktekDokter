@@ -28,7 +28,7 @@ class RegisterActivity : AppCompatActivity() {
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
 
-            val url = "http://192.168.1.8/api_antrian/register.php"
+            val url = " http://10.0.2.2/api_antrian/register.php"
 
             val request = object : StringRequest(
                 Request.Method.POST, url,
