@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: application/json');
 include "db.php";
 
 $email = $_POST['email'] ?? '';
@@ -13,7 +14,8 @@ if ($result->num_rows > 0) {
         echo json_encode([
             "success" => true,
             "message" => "Login berhasil",
-            "nama" => $row['nama']
+            "nama" => $row['nama'],
+            "email" => $row['email']
         ]);
     } else {
         echo json_encode(["success" => false, "message" => "Password salah"]);

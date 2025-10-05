@@ -29,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
 
-            val url = " http://192.168.1.8/api_antrian/login.php "
+            val url = " http://10.0.2.2/api_antrian/login.php "
 
 
             val request = object : StringRequest(
@@ -38,8 +38,17 @@ class LoginActivity : AppCompatActivity() {
                     try {
                         val obj = JSONObject(response)
                         if (obj.getBoolean("success")) {
+                            val nama = obj.getString("nama")
+                            val email = obj.getString("email")
+
+                            val prefs = getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
+                            prefs.edit().apply {
+                                putString("email", email)
+                                putString("nama", nama)
+                                apply()
+                            }
+
                             val intent = Intent(this, HomeActivity::class.java)
-                            intent.putExtra("nama", obj.getString("nama"))
                             startActivity(intent)
                         } else {
                             Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
