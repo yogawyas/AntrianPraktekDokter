@@ -10,10 +10,23 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.antrianpraktekdokter.R
 import android.widget.Button
 
+import com.google.firebase.auth.FirebaseAuth
 class HomeActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        auth = FirebaseAuth.getInstance()
+
+        // Check jika user belum login, redirect ke Login
+        if (auth.currentUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_home)
 
         val tvWelcome: TextView = findViewById(R.id.tvWelcome)
