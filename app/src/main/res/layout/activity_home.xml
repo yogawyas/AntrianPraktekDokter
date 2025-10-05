@@ -2,87 +2,91 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
-    <!-- Top background rectangle -->
-
-    <!-- Welcome Text -->
     <View
         android:id="@+id/topBackground"
         android:layout_width="0dp"
         android:layout_height="200dp"
-        android:background="@color/purple_500"
+        android:background="#2E9E9C"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Janji Temu Dokter Button -->
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:contentDescription="Antrian logo"
+        android:src="@drawable/antrian_logo2"
+        android:paddingTop="12dp"
+        app:layout_constraintBottom_toBottomOf="@id/topBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/topBackground"
+        app:layout_constraintVertical_bias="0.566" />
 
     <TextView
-        android:id="@+id/tvWelcome"
-        android:layout_width="238dp"
-        android:layout_height="81dp"
-        android:layout_marginTop="16dp"
-        android:fontFamily="serif"
-        android:text="Welcome"
+        android:id="@+id/tvAntrian"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="ANTRIAN"
         android:textColor="@android:color/white"
         android:textSize="35sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/topBackground"
+        android:fontFamily="sans-serif-condensed"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.092"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/topBackground"
-        app:layout_constraintVertical_bias="0.339" />
+        app:layout_constraintTop_toBottomOf="@id/ivLogo" />
 
     <TextView
-        android:id="@+id/tvIntro"
-        android:layout_width="343dp"
-        android:layout_height="72dp"
-        android:layout_marginTop="16dp"
-        android:fontFamily="serif"
-        android:text="How's your day been? Lets start your check up"
+        android:id="@+id/tvWelcome"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/tropical_teal"
+        android:paddingStart="16dp"
+        android:paddingTop="1dp"
+        android:paddingBottom="1dp"
+        android:text="WELCOME BACK"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/topBackground"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.235"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/topBackground"
-        app:layout_constraintVertical_bias="0.696" />
-
-
-    <!-- Bottom Navigation View -->
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnJanjiTemu"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:backgroundTint="@color/teal_500"
-        android:drawableTop="@drawable/ic_add_doctor"
-        android:drawablePadding="8dp"
-        android:text="Janji Temu Dokter"
-        android:textColor="@android:color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topBackground" />
+
+    <Button
+        android:id="@+id/btnJanjiTemu"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:backgroundTint="@color/tropical_teal"
+        android:text="Make appointment"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvWelcome" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:menu="@navigation/bottom_nav_menu"
+        android:background="@color/tropical_teal"
+        android:layout_marginBottom="-15dp"
+        app:itemIconTint="@android:color/white"
+        app:itemTextColor="@android:color/white"
         app:labelVisibilityMode="labeled"
-        app:itemIconTint="@color/black"
-        app:itemTextColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-
+        app:menu="@navigation/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

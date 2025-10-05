@@ -8,6 +8,7 @@ import android.content.Intent
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.antrianpraktekdokter.R
+import android.widget.Button
 
 class HomeActivity : AppCompatActivity() {
 
@@ -18,7 +19,7 @@ class HomeActivity : AppCompatActivity() {
         val tvWelcome: TextView = findViewById(R.id.tvWelcome)
         val nama = intent.getStringExtra("nama")
         tvWelcome.text = "Selamat datang, $nama!"
-        val btnJanjiTemu: MaterialButton = findViewById(R.id.btnJanjiTemu)
+        val btnJanjiTemu: Button = findViewById(R.id.btnJanjiTemu)
 
         val bottomNav: BottomNavigationView = findViewById(R.id.bottomNavigation)
 
