@@ -1,8 +1,10 @@
 package com.example.antrianpraktekdokter
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -24,11 +26,14 @@ class ListAntrianActivity : AppCompatActivity() {
             insets
         }
 
-        renderAntrian()
-    }
+        val btnKembali = findViewById<Button>(R.id.btnKembaliHome)
+        btnKembali.setOnClickListener {
+            val intent = Intent(this, HomeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            startActivity(intent)
+            finish()
+        }
 
-    override fun onResume() {
-        super.onResume()
         renderAntrian()
     }
 
@@ -37,13 +42,19 @@ class ListAntrianActivity : AppCompatActivity() {
         container.removeAllViews()
 
         val dokterDipilih = intent.getStringExtra("dokter")
-        val list = JanjiTemuActivity.listAntrian
+        val prefs = JanjiTemuActivity.PrefsHelper(this)
+        val list = prefs.loadList()
 
-        val filtered = list.filter { it["dokter"] == dokterDipilih }
+        // 🔹 Kalau dokter null → tampilkan semua antrian
+        val filtered = if (dokterDipilih.isNullOrEmpty()) list else list.filter { it["dokter"] == dokterDipilih }
 
         if (filtered.isEmpty()) {
             val tvEmpty = TextView(this).apply {
-                text = "Belum ada antrian untuk $dokterDipilih"
+                text = if (dokterDipilih.isNullOrEmpty()) {
+                    "Belum ada antrian"
+                } else {
+                    "Belum ada antrian untuk $dokterDipilih"
+                }
                 textSize = 16f
                 setTextColor(Color.DKGRAY)
                 setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12))
@@ -72,7 +83,7 @@ class ListAntrianActivity : AppCompatActivity() {
             }
 
             val tvNomor = TextView(this).apply {
-                text = "No: ${index + 1}" // Nomor antrian per dokter
+                text = "No: ${index + 1}"
                 textSize = 18f
                 setTextColor(Color.parseColor("#2196F3"))
             }
@@ -92,7 +103,7 @@ class ListAntrianActivity : AppCompatActivity() {
             }
 
             val tvDokter = TextView(this).apply {
-                text = "Dokter: $dokterDipilih"
+                text = "Dokter: ${item["dokter"] ?: "-"}"
                 textSize = 14f
                 setTextColor(Color.BLACK)
                 setPadding(0, dpToPx(4), 0, 0)
