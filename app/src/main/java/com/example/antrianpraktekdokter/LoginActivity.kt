@@ -1,6 +1,5 @@
 package com.example.antrianpraktekdokter
 
-
 import android.widget.EditText
 import android.widget.Button
 import android.widget.TextView
@@ -11,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.example.antrianpraktekdokter.R
 import org.json.JSONObject
 
 class LoginActivity : AppCompatActivity() {
@@ -29,23 +27,27 @@ class LoginActivity : AppCompatActivity() {
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
 
-            val url = " http://192.168.1.8/api_antrian/login.php "
-
+            val url = "http://10.0.2.2/api_antrian/login.php" // FIX: hapus spasi
 
             val request = object : StringRequest(
                 Request.Method.POST, url,
                 { response ->
                     try {
                         val obj = JSONObject(response)
-                        if (obj.getBoolean("success")) {
+
+                        // Gunakan optBoolean dan optString agar tidak crash
+                        if (obj.optBoolean("success", false)) {
+                            val nama = obj.optString("nama", "Pengguna")
                             val intent = Intent(this, HomeActivity::class.java)
-                            intent.putExtra("nama", obj.getString("nama"))
+                            intent.putExtra("nama", nama)
                             startActivity(intent)
+                            finish() // supaya tidak bisa kembali ke login
                         } else {
-                            Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, obj.optString("message", "Login gagal"), Toast.LENGTH_SHORT).show()
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
+                        Toast.makeText(this, "Response tidak valid", Toast.LENGTH_SHORT).show()
                     }
                 },
                 { error ->

@@ -8,4 +8,10 @@
     <item name="btnDaftar" type="id" />
     <item name="tvNomor" type="id" />
     <item name="tvNama" type="id" />
+    <item name="topBackground" type="id" />
+    <item name="bottomNavigation" type="id" />
+    <item name="btnJanjiTemu" type="id" />
+    <item name="ivNews" type="id" />
+    <item name="tvTitle" type="id" />
+    <item name="tvDescription" type="id" />
 </resources>
