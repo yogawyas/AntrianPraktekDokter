@@ -2,21 +2,83 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:paddingTop="70dp"
+    android:paddingBottom="40dp">
 
+    <!-- Image at the top -->
 
-    <Button
-        android:id="@+id/btnGoLogin"
+    <!-- Everything below the image -->
+    <ImageView
+        android:layout_width="390dp"
+        android:layout_height="300dp"
+        android:paddingRight="40dp"
+        android:contentDescription="Welcome message image"
+        android:gravity="center"
+        android:scaleType="centerCrop"
+        android:src="@drawable/antrian_logo" />
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Goto  Login" />
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_marginTop="24dp">
 
-    <Button
-        android:id="@+id/btnGoRegister"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Go to Register"
-        android:layout_marginTop="16dp"/>
+        <TextView
+            android:id="@+id/tvWelcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif"
+            android:text="Welcome to Antrian"
+            android:textColor="@android:color/black"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="40dp"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="This app is used to manage your appointment with your doctor and much more"
+            android:textColor="#777777"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnGoLogin"
+            android:layout_width="350dp"
+            android:layout_height="70dp"
+            android:backgroundTint="@color/tropical_teal"
+            android:fontFamily="sans-serif"
+            android:text="Login"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="20dp"/>
+
+        <TextView
+            android:id="@+id/tvInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="0dp"
+            android:text="If you don't have an account, you could register first!"
+            android:textColor="#777777"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/btnGoRegister"
+            android:layout_width="270dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/tropical_teal"
+            android:fontFamily="sans-serif"
+            android:text="Register"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+    </LinearLayout>
+
 </LinearLayout>
