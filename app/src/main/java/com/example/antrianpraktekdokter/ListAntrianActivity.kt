@@ -67,6 +67,7 @@ class ListAntrianActivity : AppCompatActivity() {
                 for (i in 0 until jsonArray.length()) {
                     val obj = jsonArray.getJSONObject(i)
                     val nama = obj.getString("nama_pasien")
+                    val tanggal = obj.getString("tanggal")
                     val jam = obj.getString("jam")
                     val dokter = obj.getString("dokter")
 
@@ -97,6 +98,12 @@ class ListAntrianActivity : AppCompatActivity() {
                         setTextColor(Color.BLACK)
                         setPadding(0, dpToPx(6), 0, 0)
                     }
+                    val tvTanggal = TextView(this).apply {
+                        text = "Tanggal: $tanggal"
+                        textSize = 14f
+                        setTextColor(Color.parseColor("#4CAF50"))
+                        setPadding(0, dpToPx(4), 0, 0)
+                    }
                     val tvJam = TextView(this).apply {
                         text = "Jam: $jam"
                         textSize = 14f
@@ -112,6 +119,7 @@ class ListAntrianActivity : AppCompatActivity() {
 
                     inner.addView(tvNomor)
                     inner.addView(tvNama)
+                    inner.addView(tvTanggal)
                     inner.addView(tvJam)
                     inner.addView(tvDokter)
                     card.addView(inner)

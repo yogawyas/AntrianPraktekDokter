@@ -16,41 +16,6 @@ import com.android.volley.toolbox.Volley
 import com.android.volley.toolbox.StringRequest
 
 class JanjiTemuActivity : AppCompatActivity() {
-
-    // 🔹 Helper SharedPreferences
-    class PrefsHelper(context: android.content.Context) {
-        private val prefs = context.getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
-
-        fun saveList(list: List<Map<String, String>>) {
-            val jsonArray = JSONArray()
-            for (item in list) {
-                val obj = JSONObject()
-                obj.put("nama", item["nama"])
-                obj.put("jam", item["jam"])
-                obj.put("dokter", item["dokter"])
-                jsonArray.put(obj)
-            }
-            prefs.edit().putString("listAntrian", jsonArray.toString()).apply()
-        }
-
-        fun loadList(): MutableList<Map<String, String>> {
-            val jsonStr = prefs.getString("listAntrian", null) ?: return mutableListOf()
-            val jsonArray = JSONArray(jsonStr)
-            val result = mutableListOf<Map<String, String>>()
-            for (i in 0 until jsonArray.length()) {
-                val obj = jsonArray.getJSONObject(i)
-                result.add(
-                    mapOf(
-                        "nama" to obj.getString("nama"),
-                        "jam" to obj.getString("jam"),
-                        "dokter" to obj.getString("dokter")
-                    )
-                )
-            }
-            return result
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
