@@ -65,6 +65,32 @@ class LoginActivity : AppCompatActivity() {
                             }
                     } else {
                         Toast.makeText(this, "Login gagal: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+            val url = " http://10.0.2.2/api_antrian/login.php "
+
+
+            val request = object : StringRequest(
+                Request.Method.POST, url,
+                { response ->
+                    try {
+                        val obj = JSONObject(response)
+                        if (obj.getBoolean("success")) {
+                            val nama = obj.getString("nama")
+                            val email = obj.getString("email")
+
+                            val prefs = getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
+                            prefs.edit().apply {
+                                putString("email", email)
+                                putString("nama", nama)
+                                apply()
+                            }
+
+                            val intent = Intent(this, HomeActivity::class.java)
+                            startActivity(intent)
+                        } else {
+                            Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
                 }
 
