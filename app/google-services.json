@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "412117468423",
+    "project_id": "antrian-praktek-dokter-2",
+    "storage_bucket": "antrian-praktek-dokter-2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:412117468423:android:2696f2c6a601cb1a0bf1a2",
+        "android_client_info": {
+          "package_name": "com.example.antrianpraktekdokter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzP1j7FDOiC0xOtrS2aoPi8fVlGr_AFn8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -8,17 +8,17 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.antrianpraktekdokter.R
-// import com.android.volley.Request  // sementara
+// import com.android.volley.Request  // Comment out Volley imports
 // import com.android.volley.toolbox.StringRequest
 // import com.android.volley.toolbox.Volley
 // import org.json.JSONObject
-import com.google.firebase.auth.FirebaseAuth  //  import Firebase Auth
-import com.google.firebase.firestore.FirebaseFirestore  //  import Firestore
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth  //  instance Auth
-    private lateinit var db: FirebaseFirestore  //  instance Firestore
+    private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +42,6 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Code baru: Login dengan Firebase Auth
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
@@ -65,32 +64,6 @@ class LoginActivity : AppCompatActivity() {
                             }
                     } else {
                         Toast.makeText(this, "Login gagal: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-            val url = " http://10.0.2.2/api_antrian/login.php "
-
-
-            val request = object : StringRequest(
-                Request.Method.POST, url,
-                { response ->
-                    try {
-                        val obj = JSONObject(response)
-                        if (obj.getBoolean("success")) {
-                            val nama = obj.getString("nama")
-                            val email = obj.getString("email")
-
-                            val prefs = getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
-                            prefs.edit().apply {
-                                putString("email", email)
-                                putString("nama", nama)
-                                apply()
-                            }
-
-                            val intent = Intent(this, HomeActivity::class.java)
-                            startActivity(intent)
-                        } else {
-                            Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
                     }
                 }
 

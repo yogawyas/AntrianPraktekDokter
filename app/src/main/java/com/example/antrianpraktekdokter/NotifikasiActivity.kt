@@ -33,7 +33,7 @@ class NotifikasiActivity : AppCompatActivity() {
     private lateinit var adapter: NewsAdapter
 
     private val TAG = "NotifikasiActivity"
-    private val API_KEY = "b29df8fc2ca3f2bccb2e02b83b11983b"  // Ganti dengan key dari gnews.io
+    private val API_KEY = "b29df8fc2ca3f2bccb2e02b83b11983b"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +63,7 @@ class NotifikasiActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
         tvEmpty.visibility = View.GONE
 
-        // Endpoint GNews: Kategori health, max 10 item, negara Indonesia
+
         val url = "https://gnews.io/api/v4/top-headlines?category=health&lang=en&country=id&max=10&apikey=$API_KEY"
 
         val request = JsonObjectRequest(
