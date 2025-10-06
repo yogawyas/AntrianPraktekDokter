@@ -8,6 +8,9 @@ import android.content.Intent
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.antrianpraktekdokter.R
+import com.example.antrianpraktekdokter.JanjiTemuActivity
+
+
 
 class HomeActivity : AppCompatActivity() {
 
