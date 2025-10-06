@@ -12,43 +12,10 @@ import androidx.core.view.WindowInsetsCompat
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
+import com.android.volley.toolbox.Volley
+import com.android.volley.toolbox.StringRequest
 
 class JanjiTemuActivity : AppCompatActivity() {
-
-    // 🔹 Helper SharedPreferences
-    class PrefsHelper(context: android.content.Context) {
-        private val prefs = context.getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
-
-        fun saveList(list: List<Map<String, String>>) {
-            val jsonArray = JSONArray()
-            for (item in list) {
-                val obj = JSONObject()
-                obj.put("nama", item["nama"])
-                obj.put("jam", item["jam"])
-                obj.put("dokter", item["dokter"])
-                jsonArray.put(obj)
-            }
-            prefs.edit().putString("listAntrian", jsonArray.toString()).apply()
-        }
-
-        fun loadList(): MutableList<Map<String, String>> {
-            val jsonStr = prefs.getString("listAntrian", null) ?: return mutableListOf()
-            val jsonArray = JSONArray(jsonStr)
-            val result = mutableListOf<Map<String, String>>()
-            for (i in 0 until jsonArray.length()) {
-                val obj = jsonArray.getJSONObject(i)
-                result.add(
-                    mapOf(
-                        "nama" to obj.getString("nama"),
-                        "jam" to obj.getString("jam"),
-                        "dokter" to obj.getString("dokter")
-                    )
-                )
-            }
-            return result
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -116,28 +83,50 @@ class JanjiTemuActivity : AppCompatActivity() {
             val tanggal = etTanggal.text.toString().trim()
             val jam = etJam.text.toString().trim()
             val dokter = spDokter.selectedItem.toString()
+            val keluhan = spKeluhan.selectedItem.toString()
 
             if (nama.isEmpty() || usia.isEmpty() || tanggal.isEmpty() || jam.isEmpty()) {
                 Toast.makeText(this, "Harap isi semua data!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            val prefs = getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
+            val email = prefs.getString("email", "") ?: ""
 
-            val prefs = PrefsHelper(this)
-            val list = prefs.loadList()
+            val queue = Volley.newRequestQueue(this)
+            val url = "http://10.0.2.2/api_antrian/insert_antrian.php"
 
-            list.add(
-                mapOf(
-                    "nama" to "Nama: $nama",
-                    "jam" to "Jam: $jam",
-                    "dokter" to dokter
-                )
-            )
+            val request = object : StringRequest(Method.POST, url,
+                { response ->
+                    Toast.makeText(this, "Antrian berhasil disimpan!", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, ListAntrianActivity::class.java)
+                    intent.putExtra("email", email)
+                    startActivity(intent)
+                },
+                { error ->
+                    Toast.makeText(this, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                }) {
+                override fun getParams(): Map<String, String> {
+                    val params = HashMap<String, String>()
+                    params["email"] = email ?: ""
+                    params["nama"] = nama
+                    params["usia"] = usia
 
-            prefs.saveList(list) // simpan permanen
+                    val tanggalFormatted = try {
+                        val parts = tanggal.split("/")
+                        "${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}"
+                    } catch (e: Exception) {
+                        tanggal // fallback kalau gagal parsing
+                    }
+                    params["tanggal"] = tanggalFormatted
 
-            val intent = Intent(this, ListAntrianActivity::class.java)
-            intent.putExtra("dokter", dokter)
-            startActivity(intent)
+                    params["jam"] = jam
+                    params["dokter"] = dokter
+                    params["keluhan"] = keluhan
+                    return params
+                }
+            }
+
+            queue.add(request)
         }
     }
 }

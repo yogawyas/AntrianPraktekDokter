@@ -11,6 +11,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import com.android.volley.Request
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import android.graphics.Bitmap
+import android.util.Base64
+import java.io.ByteArrayOutputStream
+import org.json.JSONObject
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -21,6 +28,8 @@ class ProfileActivity : AppCompatActivity() {
 
     private val PICK_IMAGE_REQUEST = 100
     private var imageUri: Uri? = null
+    private var email: String? = null   // from login
+    private var encodedImage: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +39,8 @@ class ProfileActivity : AppCompatActivity() {
         edtName = findViewById(R.id.edtName)
         btnChangePhoto = findViewById(R.id.btnChangePhoto)
         btnSaveProfile = findViewById(R.id.btnSaveProfile)
+
+        email = intent.getStringExtra("email")
 
         btnChangePhoto.setOnClickListener {
             openImagePicker()
@@ -42,8 +53,7 @@ class ProfileActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            Toast.makeText(this, "Profile Saved!\nName: $name", Toast.LENGTH_SHORT).show()
-            // You can save the name and image URI in SharedPreferences or database
+            saveProfile(name, encodedImage)
         }
     }
 
@@ -58,5 +68,46 @@ class ProfileActivity : AppCompatActivity() {
             imageUri = data.data
             imgProfile.setImageURI(imageUri)
         }
+    }
+
+    private fun encodeImage(bitmap: Bitmap): String {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos) // compress for smaller size
+        val imageBytes = baos.toByteArray()
+        return Base64.encodeToString(imageBytes, Base64.DEFAULT)
+    }
+
+    private fun saveProfile(name: String, photoBase64: String?) {
+        val url = "http://10.0.2.2/api_antrian/update_profile.php"
+
+        val request = object : StringRequest(
+            Request.Method.POST, url,
+            { response ->
+                try {
+                    val obj = JSONObject(response)
+                    if (obj.getBoolean("success")) {
+                        Toast.makeText(this, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            },
+            { error ->
+                Toast.makeText(this, "Error: $error", Toast.LENGTH_SHORT).show()
+            }
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["email"] = email ?: ""
+                params["nama"] = name
+                if (photoBase64 != null) {
+                    params["photo"] = photoBase64
+                }
+                return params
+            }
+        }
+        Volley.newRequestQueue(this).add(request)
     }
 }

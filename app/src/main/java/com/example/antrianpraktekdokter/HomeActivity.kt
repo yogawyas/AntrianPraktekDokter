@@ -16,7 +16,8 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_home)
 
         val tvWelcome: TextView = findViewById(R.id.tvWelcome)
-        val nama = intent.getStringExtra("nama")
+        val prefs = getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
+        val nama = prefs.getString("nama", "") ?: ""
         tvWelcome.text = "Selamat datang, $nama!"
         val btnJanjiTemu: MaterialButton = findViewById(R.id.btnJanjiTemu)
 
