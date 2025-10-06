@@ -40,6 +40,7 @@ class RegisterActivity : AppCompatActivity() {
                 Toast.makeText(this, "Harap isi semua data!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            val url = " http://10.0.2.2/api_antrian/register.php"
 
             // Code baru: Register dengan Firebase Auth
             auth.createUserWithEmailAndPassword(email, password)

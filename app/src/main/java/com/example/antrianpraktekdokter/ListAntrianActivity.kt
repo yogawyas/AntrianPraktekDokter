@@ -7,11 +7,16 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import org.json.JSONArray
+import com.android.volley.toolbox.Volley
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.Request
 
 class ListAntrianActivity : AppCompatActivity() {
 
@@ -41,81 +46,92 @@ class ListAntrianActivity : AppCompatActivity() {
         val container = findViewById<LinearLayout>(R.id.containerAntrian)
         container.removeAllViews()
 
-        val dokterDipilih = intent.getStringExtra("dokter")
-        val prefs = JanjiTemuActivity.PrefsHelper(this)
-        val list = prefs.loadList()
+        val prefs = getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
+        val email = prefs.getString("email", "") ?: ""
+        val url = "http://10.0.2.2/api_antrian/get_antrian.php?email=$email"
 
-        // 🔹 Kalau dokter null → tampilkan semua antrian
-        val filtered = if (dokterDipilih.isNullOrEmpty()) list else list.filter { it["dokter"] == dokterDipilih }
-
-        if (filtered.isEmpty()) {
-            val tvEmpty = TextView(this).apply {
-                text = if (dokterDipilih.isNullOrEmpty()) {
-                    "Belum ada antrian"
-                } else {
-                    "Belum ada antrian untuk $dokterDipilih"
+        val queue = Volley.newRequestQueue(this)
+        val request = StringRequest(Request.Method.GET, url,
+            { response ->
+                val jsonArray = JSONArray(response)
+                if (jsonArray.length() == 0) {
+                    val tvEmpty = TextView(this).apply {
+                        text = "Belum ada antrian"
+                        textSize = 16f
+                        setTextColor(Color.DKGRAY)
+                    }
+                    container.addView(tvEmpty)
+                    return@StringRequest
                 }
-                textSize = 16f
-                setTextColor(Color.DKGRAY)
-                setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12))
-            }
-            container.addView(tvEmpty)
-            return
-        }
 
-        for ((index, item) in filtered.withIndex()) {
-            val card = CardView(this).apply {
-                val lp = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                lp.setMargins(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8))
-                layoutParams = lp
-                radius = dpToPx(10).toFloat()
-                cardElevation = dpToPx(6).toFloat()
-                setCardBackgroundColor(Color.WHITE)
-                useCompatPadding = true
-            }
+                for (i in 0 until jsonArray.length()) {
+                    val obj = jsonArray.getJSONObject(i)
+                    val nama = obj.getString("nama_pasien")
+                    val tanggal = obj.getString("tanggal")
+                    val jam = obj.getString("jam")
+                    val dokter = obj.getString("dokter")
 
-            val inner = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12))
-            }
+                    val card = CardView(this).apply {
+                        val lp = LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT )
+                        lp.setMargins(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8))
+                        layoutParams = lp
+                        radius = dpToPx(10).toFloat()
+                        cardElevation = dpToPx(6).toFloat()
+                        setCardBackgroundColor(Color.WHITE)
+                        useCompatPadding = true
+                    }
+                    val inner = LinearLayout(this).apply {
+                        orientation = LinearLayout.VERTICAL
+                        setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12))
+                    }
 
-            val tvNomor = TextView(this).apply {
-                text = "No: ${index + 1}"
-                textSize = 18f
-                setTextColor(Color.parseColor("#2196F3"))
-            }
+                    val tvNomor = TextView(this).apply {
+                        text = "No: ${i + 1}"
+                        textSize = 18f
+                        setTextColor(Color.parseColor("#2196F3"))
+                    }
+                    val tvNama = TextView(this).apply {
+                        text = "Nama: $nama"
+                        textSize = 16f
+                        setTextColor(Color.BLACK)
+                        setPadding(0, dpToPx(6), 0, 0)
+                    }
+                    val tvTanggal = TextView(this).apply {
+                        text = "Tanggal: $tanggal"
+                        textSize = 14f
+                        setTextColor(Color.parseColor("#4CAF50"))
+                        setPadding(0, dpToPx(4), 0, 0)
+                    }
+                    val tvJam = TextView(this).apply {
+                        text = "Jam: $jam"
+                        textSize = 14f
+                        setTextColor(Color.parseColor("#4CAF50"))
+                        setPadding(0, dpToPx(4), 0, 0)
+                    }
+                    val tvDokter = TextView(this).apply {
+                        text = "Dokter: $dokter"
+                        textSize = 14f
+                        setTextColor(Color.BLACK)
+                        setPadding(0, dpToPx(4), 0, 0)
+                    }
 
-            val tvNama = TextView(this).apply {
-                text = item["nama"] ?: "Nama: -"
-                textSize = 16f
-                setTextColor(Color.BLACK)
-                setPadding(0, dpToPx(6), 0, 0)
-            }
+                    inner.addView(tvNomor)
+                    inner.addView(tvNama)
+                    inner.addView(tvTanggal)
+                    inner.addView(tvJam)
+                    inner.addView(tvDokter)
+                    card.addView(inner)
 
-            val tvJam = TextView(this).apply {
-                text = item["jam"] ?: "Jam: -"
-                textSize = 14f
-                setTextColor(Color.parseColor("#4CAF50"))
-                setPadding(0, dpToPx(4), 0, 0)
-            }
+                    container.addView(card)
+                }
+            },
+            { error ->
+                Toast.makeText(this, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+            })
 
-            val tvDokter = TextView(this).apply {
-                text = "Dokter: ${item["dokter"] ?: "-"}"
-                textSize = 14f
-                setTextColor(Color.BLACK)
-                setPadding(0, dpToPx(4), 0, 0)
-            }
-
-            inner.addView(tvNomor)
-            inner.addView(tvNama)
-            inner.addView(tvJam)
-            inner.addView(tvDokter)
-            card.addView(inner)
-            container.addView(card)
-        }
+        queue.add(request)
     }
 
     private fun dpToPx(dp: Int): Int =
