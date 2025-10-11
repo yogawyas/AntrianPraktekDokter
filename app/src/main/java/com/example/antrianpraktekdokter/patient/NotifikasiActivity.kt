@@ -1,4 +1,4 @@
-package com.example.antrianpraktekdokter
+package com.example.antrianpraktekdokter.patient
 
 import android.content.Intent
 import android.net.Uri
@@ -22,6 +22,7 @@ import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
+import com.example.antrianpraktekdokter.R
 import org.json.JSONObject
 
 class NotifikasiActivity : AppCompatActivity() {
@@ -117,7 +118,7 @@ class NotifikasiActivity : AppCompatActivity() {
     }
 
     inner class NewsAdapter(private val list: List<HealthNews>) :
-        RecyclerView.Adapter<NotifikasiActivity.NewsAdapter.ViewHolder>() {
+        RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_health_news, parent, false)

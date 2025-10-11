@@ -1,4 +1,4 @@
-package com.example.antrianpraktekdokter
+package com.example.antrianpraktekdokter.auth
 
 
 import android.content.Intent

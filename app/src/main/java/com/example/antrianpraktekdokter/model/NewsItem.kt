@@ -1,4 +1,4 @@
-package com.example.antrianpraktekdokter
+package com.example.antrianpraktekdokter.model
 
 data class NewsItem(
     val title: String,

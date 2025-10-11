@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#E3F2FD"
     android:padding="16dp"
-    tools:context=".JanjiTemuActivity">
+    tools:context=".patient.JanjiTemuActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

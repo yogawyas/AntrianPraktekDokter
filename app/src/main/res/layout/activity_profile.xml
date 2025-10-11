@@ -8,7 +8,7 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="24dp"
-    tools:context=".ProfileActivity">
+    tools:context=".patient.ProfileActivity">
 
     <!-- Profile Picture -->
     <ImageView
