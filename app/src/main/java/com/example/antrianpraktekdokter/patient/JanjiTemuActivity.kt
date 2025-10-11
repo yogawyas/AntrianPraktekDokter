@@ -1,14 +1,16 @@
-package com.example.antrianpraktekdokter
+package com.example.antrianpraktekdokter.patient
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.antrianpraktekdokter.R
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
@@ -49,7 +51,7 @@ class JanjiTemuActivity : AppCompatActivity() {
         spKeluhan.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>,
-                view: android.view.View?,
+                view: View?,
                 pos: Int,
                 id: Long
             ) {

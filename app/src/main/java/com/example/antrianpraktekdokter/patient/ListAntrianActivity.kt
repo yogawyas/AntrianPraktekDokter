@@ -1,4 +1,4 @@
-package com.example.antrianpraktekdokter
+package com.example.antrianpraktekdokter.patient
 
 import android.content.Intent
 import android.graphics.Color
@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.antrianpraktekdokter.R
 import org.json.JSONArray
 
 class ListAntrianActivity : AppCompatActivity() {

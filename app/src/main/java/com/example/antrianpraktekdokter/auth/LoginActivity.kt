@@ -1,4 +1,4 @@
-package com.example.antrianpraktekdokter
+package com.example.antrianpraktekdokter.auth
 
 import android.widget.EditText
 import android.widget.Button
@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.antrianpraktekdokter.patient.HomeActivity
 import com.example.antrianpraktekdokter.R
 // import com.android.volley.Request  // Comment out Volley imports
 // import com.android.volley.toolbox.StringRequest

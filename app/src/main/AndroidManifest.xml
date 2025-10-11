@@ -15,25 +15,25 @@
         android:theme="@style/Theme.AntrianPraktekDokter"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".NotifikasiActivity"
+            android:name=".patient.NotifikasiActivity"
             android:exported="false" />
         <activity
-            android:name=".ListAntrianActivity"
+            android:name=".patient.ListAntrianActivity"
             android:exported="false" />
         <activity
-            android:name=".ProfileActivity"
+            android:name=".patient.ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".HistoryMedisActivity"
+            android:name=".patient.HistoryMedisActivity"
             android:exported="false" />
         <activity
-            android:name=".JanjiTemuActivity"
+            android:name=".patient.JanjiTemuActivity"
             android:exported="false" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".RegisterActivity" />
+        <activity android:name=".patient.HomeActivity" />
+        <activity android:name=".auth.LoginActivity" />
+        <activity android:name=".auth.RegisterActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".auth.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,15 +1,14 @@
-package com.example.antrianpraktekdokter
+package com.example.antrianpraktekdokter.patient
 
 
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
+import com.example.antrianpraktekdokter.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.example.antrianpraktekdokter.R
-import com.example.antrianpraktekdokter.JanjiTemuActivity
-
+import com.example.antrianpraktekdokter.auth.LoginActivity
 
 
 import com.google.firebase.auth.FirebaseAuth

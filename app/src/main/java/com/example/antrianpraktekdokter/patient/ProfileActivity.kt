@@ -1,8 +1,6 @@
-package com.example.antrianpraktekdokter
+package com.example.antrianpraktekdokter.patient
 
-import android.app.Activity
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -11,11 +9,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
-import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import android.graphics.Bitmap
 import android.util.Base64
+import com.example.antrianpraktekdokter.R
 import java.io.ByteArrayOutputStream
 import org.json.JSONObject
 
@@ -64,7 +62,7 @@ class ProfileActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             imageUri = data.data
             imgProfile.setImageURI(imageUri)
         }
@@ -81,7 +79,7 @@ class ProfileActivity : AppCompatActivity() {
         val url = "http://10.0.2.2/api_antrian/update_profile.php"
 
         val request = object : StringRequest(
-            Request.Method.POST, url,
+            Method.POST, url,
             { response ->
                 try {
                     val obj = JSONObject(response)

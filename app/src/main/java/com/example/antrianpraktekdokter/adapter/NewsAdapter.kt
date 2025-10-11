@@ -1,4 +1,4 @@
-package com.example.antrianpraktekdokter
+package com.example.antrianpraktekdokter.adapter
 
 import android.content.Intent
 import android.net.Uri
@@ -10,7 +10,8 @@ import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-
+import com.example.antrianpraktekdokter.model.NewsItem
+import com.example.antrianpraktekdokter.R
 
 
 class NewsAdapter(private val newsList: List<NewsItem>) :
