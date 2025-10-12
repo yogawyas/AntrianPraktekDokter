@@ -1,6 +1,6 @@
 package com.example.antrianpraktekdokter.patient
 
-import android.content.Intent
+import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.view.ViewGroup
@@ -12,6 +12,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.antrianpraktekdokter.R
 import org.json.JSONArray
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ListAntrianActivity : AppCompatActivity() {
 
@@ -26,14 +28,6 @@ class ListAntrianActivity : AppCompatActivity() {
             insets
         }
 
-        val btnKembali = findViewById<Button>(R.id.btnKembaliHome)
-        btnKembali.setOnClickListener {
-            val intent = Intent(this, HomeActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            startActivity(intent)
-            finish()
-        }
-
         renderAntrian()
     }
 
@@ -45,23 +39,50 @@ class ListAntrianActivity : AppCompatActivity() {
         val dataString = prefs.getString("dataAntrian", "[]")
         val jsonArray = JSONArray(dataString)
 
-        if (jsonArray.length() == 0) {
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val today = sdf.format(Date())
+
+        val filteredArray = JSONArray()
+        for (i in 0 until jsonArray.length()) {
+            val obj = jsonArray.getJSONObject(i)
+            val tanggalSimpan = obj.optString("tanggal_simpan", today)
+            if (tanggalSimpan == today) filteredArray.put(obj)
+        }
+
+        // 🔔 popup notifikasi kalau dokter hapus pasien
+        for (i in 0 until filteredArray.length()) {
+            val obj = filteredArray.getJSONObject(i)
+            val dihapus = obj.optBoolean("dihapus", false)
+            if (dihapus) {
+                AlertDialog.Builder(this)
+                    .setTitle("Pemberitahuan Dokter")
+                    .setMessage("Dokter menghapus antrianmu karena kamu tidak hadir/terlambat.")
+                    .setPositiveButton("OK", null)
+                    .show()
+                break
+            }
+        }
+
+        if (filteredArray.length() == 0) {
             val tvEmpty = TextView(this).apply {
-                text = "Belum ada antrian"
+                text = "Belum ada antrian hari ini"
                 textSize = 16f
                 setTextColor(Color.DKGRAY)
+                setPadding(dpToPx(8), dpToPx(16), dpToPx(8), 0)
             }
             container.addView(tvEmpty)
             return
         }
 
-        for (i in 0 until jsonArray.length()) {
-            val obj = jsonArray.getJSONObject(i)
+        for (i in 0 until filteredArray.length()) {
+            val obj = filteredArray.getJSONObject(i)
             val nama = obj.getString("nama_pasien")
-            val tanggal = obj.getString("tanggal")
             val jam = obj.getString("jam")
-            val dokter = obj.getString("dokter")
             val keluhan = obj.getString("keluhan")
+            val selesai = obj.optBoolean("selesai", false)
+            val dipanggil = obj.optInt("dipanggil", 0)
+            val dihapus = obj.optBoolean("dihapus", false)
+            if (dihapus) continue
 
             val card = CardView(this).apply {
                 val lp = LinearLayout.LayoutParams(
@@ -72,7 +93,13 @@ class ListAntrianActivity : AppCompatActivity() {
                 layoutParams = lp
                 radius = dpToPx(10).toFloat()
                 cardElevation = dpToPx(6).toFloat()
-                setCardBackgroundColor(Color.WHITE)
+                setCardBackgroundColor(
+                    when {
+                        selesai -> Color.parseColor("#C8E6C9")
+                        dipanggil > 0 -> Color.parseColor("#FFF9C4")
+                        else -> Color.WHITE
+                    }
+                )
                 useCompatPadding = true
             }
 
@@ -81,48 +108,44 @@ class ListAntrianActivity : AppCompatActivity() {
                 setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12))
             }
 
-            val tvNomor = TextView(this).apply {
-                text = "No: ${i + 1}"
-                textSize = 18f
-                setTextColor(Color.parseColor("#2196F3"))
-            }
             val tvNama = TextView(this).apply {
                 text = "Nama: $nama"
                 textSize = 16f
                 setTextColor(Color.BLACK)
-                setPadding(0, dpToPx(6), 0, 0)
             }
-            val tvTanggal = TextView(this).apply {
-                text = "Tanggal: $tanggal"
-                textSize = 14f
-                setTextColor(Color.parseColor("#4CAF50"))
-                setPadding(0, dpToPx(4), 0, 0)
-            }
+
             val tvJam = TextView(this).apply {
                 text = "Jam: $jam"
                 textSize = 14f
-                setTextColor(Color.parseColor("#4CAF50"))
-                setPadding(0, dpToPx(4), 0, 0)
+                setTextColor(Color.parseColor("#2196F3"))
             }
-            val tvDokter = TextView(this).apply {
-                text = "Dokter: $dokter"
-                textSize = 14f
-                setTextColor(Color.BLACK)
-                setPadding(0, dpToPx(4), 0, 0)
-            }
+
             val tvKeluhan = TextView(this).apply {
                 text = "Keluhan: $keluhan"
                 textSize = 14f
-                setTextColor(Color.GRAY)
-                setPadding(0, dpToPx(4), 0, 0)
+                setTextColor(Color.DKGRAY)
             }
 
-            inner.addView(tvNomor)
+            val tvStatus = TextView(this).apply {
+                text = when {
+                    selesai -> "✅ Pemeriksaan selesai"
+                    dipanggil > 0 -> "📣 Dipanggil (${dipanggil}x)"
+                    else -> "⏳ Menunggu giliran"
+                }
+                textSize = 14f
+                setTextColor(
+                    when {
+                        selesai -> Color.parseColor("#388E3C")
+                        dipanggil > 0 -> Color.parseColor("#F57C00")
+                        else -> Color.DKGRAY
+                    }
+                )
+            }
+
             inner.addView(tvNama)
-            inner.addView(tvTanggal)
             inner.addView(tvJam)
-            inner.addView(tvDokter)
             inner.addView(tvKeluhan)
+            inner.addView(tvStatus)
             card.addView(inner)
             container.addView(card)
         }
