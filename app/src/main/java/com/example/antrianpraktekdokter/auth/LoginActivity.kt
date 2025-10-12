@@ -8,11 +8,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.antrianpraktekdokter.patient.HomeActivity
+import com.example.antrianpraktekdokter.DoctorPage.DokterActivity
 import com.example.antrianpraktekdokter.R
-// import com.android.volley.Request  // Comment out Volley imports
-// import com.android.volley.toolbox.StringRequest
-// import com.android.volley.toolbox.Volley
-// import org.json.JSONObject
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -43,10 +40,19 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // 🩺 Cek dulu: apakah login dokter Alexander?
+            if (email.equals("alexander@dokter.com", true) && password == "12345") {
+                Toast.makeText(this, "Login sebagai Dokter Alexander", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, DokterActivity::class.java)
+                startActivity(intent)
+                finish()
+                return@setOnClickListener
+            }
+
+            // 🔑 Jika bukan dokter → lanjut login Firebase (pasien)
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        // Login sukses, fetch nama dari Firestore
                         val user = auth.currentUser
                         db.collection("users").document(user!!.uid).get()
                             .addOnSuccessListener { document ->
@@ -67,39 +73,6 @@ class LoginActivity : AppCompatActivity() {
                         Toast.makeText(this, "Login gagal: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
-
-            // Code lama: Comment out Volley request
-            // val url = " http://192.168.1.8/api_antrian/login.php "
-            //
-            // val request = object : StringRequest(
-            //     Request.Method.POST, url,
-            //     { response ->
-            //         try {
-            //             val obj = JSONObject(response)
-            //             if (obj.getBoolean("success")) {
-            //                 val intent = Intent(this, HomeActivity::class.java)
-            //                 intent.putExtra("nama", obj.getString("nama"))
-            //                 startActivity(intent)
-            //             } else {
-            //                 Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
-            //             }
-            //         } catch (e: Exception) {
-            //             e.printStackTrace()
-            //         }
-            //     },
-            //     { error ->
-            //         Toast.makeText(this, "Error: $error", Toast.LENGTH_SHORT).show()
-            //     }
-            // ) {
-            //     override fun getParams(): MutableMap<String, String> {
-            //         return hashMapOf(
-            //             "email" to email,
-            //             "password" to password
-            //         )
-            //     }
-            // }
-            //
-            // Volley.newRequestQueue(this).add(request)
         }
 
         tvRegisterLink.setOnClickListener {
