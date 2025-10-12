@@ -12,12 +12,12 @@ Pasien
 11. Batasi pasien yang mendaftar. 
 
 Dokter
-1. Dokter dapat login ke aplikasi menggunakan akun yang disediakan.
-2. Dokter dapat melihat daftar antrian pasien hari ini secara berurutan.
-3. Dokter dapat memanggil pasien berikutnya dengan menekan tombol “Panggil”.
-4. Dokter dapat menandai pasien telah selesai diperiksa.
-5. Dokter dapat mengatur status praktik (buka/tutup antrian).
-6. Dokter dapat melihat total pasien yang dilayani per hari.
+1. Dokter dapat login ke aplikasi menggunakan akun yang disediakan.  (udh)
+2. Dokter dapat melihat daftar antrian pasien hari ini secara berurutan.  (udh)
+3. Dokter dapat memanggil pasien berikutnya dengan menekan tombol “Panggil”.  (udh)
+4. Dokter dapat menandai pasien telah selesai diperiksa.  (udh)
+5. Dokter dapat mengatur status praktik (buka/tutup antrian).  (di pindahkan fiturnya ke admin)
+6. Dokter dapat melihat total pasien yang dilayani per hari.  (udh)
 
 Admin / Asisten Dokter 
 1. Admin dapat melihat daftar pasien dan antrian secara keseluruhan.
@@ -25,3 +25,4 @@ Admin / Asisten Dokter
 3. Admin dapat melihat laporan pasien per hari/minggu/bulan.
 4. Admin dapat mengatur jadwal praktek dokter.
 5. Admin dapat memanggil pasien berikutnya dengan menekan tombol “Panggil”.
+6. Admin dapat mangatur status praktik (buka/tutup antrian dan praktek).
