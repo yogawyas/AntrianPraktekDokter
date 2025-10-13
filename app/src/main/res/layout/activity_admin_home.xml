@@ -1,109 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:fitsSystemWindows="true">
 
-    <TextView
-        android:id="@+id/tvHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Dashboard Admin"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Switch
-        android:id="@+id/switchStatusPraktik"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Status Praktik: Buka/Tutup"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/tvHeader"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp" />
-
+    <!-- Main content dengan Toolbar dan NavHostFragment -->
     <LinearLayout
-        android:id="@+id/buttonLayout"
+        android:id="@+id/main_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/switchStatusPraktik"
-        android:layout_marginTop="16dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <!-- Toolbar with hamburger -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#2196F3"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        <!-- NavHostFragment container -->
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_graph" />
+
+        <!-- Logout button (di luar fragment, di bottom) -->
         <Button
-            android:id="@+id/btnTambahAntrian"
+            android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tambah Antrian"
-            android:backgroundTint="#4CAF50"
-            android:layout_marginEnd="8dp" />
+            android:layout_gravity="end"
+            android:layout_margin="16dp"
+            android:text="Logout"
+            android:backgroundTint="#F44336" />
 
-        <Button
-            android:id="@+id/btnLihatLaporan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Lihat Laporan"
-            android:backgroundTint="#2196F3"
-            android:layout_marginEnd="8dp" />
-
-        <Button
-            android:id="@+id/btnAturJadwal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Atur Jadwal"
-            android:backgroundTint="#FFC107" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvSelesai"
+    <!-- Navigation Drawer -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pasien selesai: 0"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/buttonLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp" />
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:menu="@menu/drawer_menu" />
 
-    <TextView
-        android:id="@+id/tvSisa"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sisa pasien: 0"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/tvSelesai"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="8dp" />
-
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/tvSisa"
-        app:layout_constraintBottom_toTopOf="@id/btnLogout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp">
-
-        <LinearLayout
-            android:id="@+id/containerPasien"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
-
-    <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Logout"
-        android:backgroundTint="#F44336"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

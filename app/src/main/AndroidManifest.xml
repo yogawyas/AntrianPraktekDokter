@@ -25,7 +25,7 @@
             android:name=".doctor.DoctorHomeActivity"
             android:exported="false" />
         <activity
-            android:name=".patient.NotifikasiActivity"
+            android:name=".patient.BeritaActivity"
             android:exported="false" />
         <activity
             android:name=".patient.ListAntrianActivity"

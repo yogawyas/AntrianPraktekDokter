@@ -9,5 +9,9 @@
     <color name="gray_light">#ababab</color>
 <!--    Primary color-->
     <color name="tropical_teal">#1cabb0</color>
+    <color name="green_light">#C8E6C9</color>
+    <color name="yellow_light">#FFF9C4</color>
+    <color name="yellow">#FFE34F</color>
+    <color name="red">#FF5B50</color>
 
 </resources>

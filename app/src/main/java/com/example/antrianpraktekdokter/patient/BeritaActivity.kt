@@ -25,7 +25,7 @@ import com.bumptech.glide.Glide
 import com.example.antrianpraktekdokter.R
 import org.json.JSONObject
 
-class NotifikasiActivity : AppCompatActivity() {
+class BeritaActivity : AppCompatActivity() {
 
     private lateinit var rvHealthNews: RecyclerView
     private lateinit var progressBar: ProgressBar
@@ -39,7 +39,7 @@ class NotifikasiActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_notifikasi)
+        setContentView(R.layout.activity_berita)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -132,7 +132,7 @@ class NotifikasiActivity : AppCompatActivity() {
 
             if (news.urlToImage != null && news.urlToImage.isNotEmpty()) {
                 holder.ivThumbnail.visibility = View.VISIBLE
-                Glide.with(this@NotifikasiActivity).load(news.urlToImage).into(holder.ivThumbnail)
+                Glide.with(this@BeritaActivity).load(news.urlToImage).into(holder.ivThumbnail)
             } else {
                 holder.ivThumbnail.visibility = View.GONE
             }
@@ -142,7 +142,7 @@ class NotifikasiActivity : AppCompatActivity() {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(news.url))
                     startActivity(intent)
                 } else {
-                    Toast.makeText(this@NotifikasiActivity, "Link tidak ada", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@BeritaActivity, "Link tidak ada", Toast.LENGTH_SHORT).show()
                 }
             }
         }
