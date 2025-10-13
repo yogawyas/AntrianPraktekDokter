@@ -50,7 +50,8 @@ class RegisterActivity : AppCompatActivity() {
                         val user = auth.currentUser
                         val userData = hashMapOf(
                             "nama" to nama,
-                            "email" to email
+                            "email" to email,
+                            "role" to "patient"
                         )
                         db.collection("users").document(user!!.uid)
                             .set(userData)
