@@ -60,7 +60,7 @@ class HomeActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_notifikasi -> {
-                    startActivity(Intent(this, NotifikasiActivity::class.java))
+                    startActivity(Intent(this, BeritaActivity::class.java))
                     true
                 }
                 else -> false

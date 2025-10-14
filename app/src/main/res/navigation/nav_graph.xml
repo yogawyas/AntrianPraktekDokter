@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/listAntrianFragment">
+
+    <fragment
+        android:id="@+id/listAntrianFragment"
+        android:name="com.example.antrianpraktekdokter.admin.ListAntrianFragment"
+        android:label="List Antrian"
+        tools:layout="@layout/fragment_list_antrian" />
+
+    <fragment
+        android:id="@+id/tambahAntrianFragment"
+        android:name="com.example.antrianpraktekdokter.admin.TambahAntrianFragment"
+        android:label="Tambah Antrian"
+        tools:layout="@layout/fragment_tambah_antrian" />
+
+    <fragment
+        android:id="@+id/lihatLaporanFragment"
+        android:name="com.example.antrianpraktekdokter.admin.LihatLaporanFragment"
+        android:label="Lihat Laporan"
+        tools:layout="@layout/fragment_lihat_laporan" />
+
+    <fragment
+        android:id="@+id/aturJadwalFragment"
+        android:name="com.example.antrianpraktekdokter.admin.AturJadwalFragment"
+        android:label="Atur Jadwal"
+        tools:layout="@layout/fragment_atur_jadwal" />
+</navigation>

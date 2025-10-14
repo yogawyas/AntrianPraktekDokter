@@ -2,4 +2,22 @@
     <string name="app_name">AntrianPraktekDokter</string>
     <string name="pilih_dokter" />
     <string name="pilih_keluhan" />
+    <!-- TODO: Remove or change this placeholder text -->
+    <!-- Navigation drawer -->
+    <string name="open_drawer">Buka Menu</string>
+    <string name="close_drawer">Tutup Menu</string>
+
+    <!-- Drawer menu items -->
+    <string name="nav_list_antrian">List Antrian</string>
+    <string name="nav_tambah_antrian">Tambah Antrian</string>
+    <string name="nav_lihat_laporan">Lihat Laporan</string>
+    <string name="nav_atur_jadwal">Atur Jadwal</string>
+
+    <!-- Laporan periode -->
+    <string-array name="periode_laporan">
+        <item>Per Hari</item>
+        <item>Per Minggu</item>
+        <item>Per Bulan</item>
+    </string-array>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

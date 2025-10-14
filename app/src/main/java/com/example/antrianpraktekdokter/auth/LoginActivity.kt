@@ -40,6 +40,14 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            if (email.equals("admin@praktek.com", true) && password == "12345") {
+                Toast.makeText(this, "Login sebagai Admin", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, com.example.antrianpraktekdokter.admin.AdminHomeActivity::class.java)
+                startActivity(intent)
+                finish()
+                return@setOnClickListener
+            }
+
             // 🩺 Cek dulu: apakah login dokter Alexander?
             if (email.equals("alexander@dokter.com", true) && password == "12345") {
                 Toast.makeText(this, "Login sebagai Dokter Alexander", Toast.LENGTH_SHORT).show()
@@ -58,8 +66,16 @@ class LoginActivity : AppCompatActivity() {
                             .addOnSuccessListener { document ->
                                 if (document != null) {
                                     val nama = document.getString("nama") ?: "User"
-                                    val intent = Intent(this, HomeActivity::class.java)
+                                    val role = document.getString("role") ?: "patient"
+
+                                    val intent = when (role) {
+                                        "patient" -> Intent(this, com.example.antrianpraktekdokter.patient.HomeActivity::class.java)
+                                        "doctor" -> Intent(this, com.example.antrianpraktekdokter.doctor.DoctorHomeActivity::class.java)
+                                        "admin" -> Intent(this, com.example.antrianpraktekdokter.admin.AdminHomeActivity::class.java)
+                                        else -> Intent(this, com.example.antrianpraktekdokter.patient.HomeActivity::class.java)
+                                    }
                                     intent.putExtra("nama", nama)
+                                    intent.putExtra("role", role)
                                     startActivity(intent)
                                     finish()
                                 } else {
