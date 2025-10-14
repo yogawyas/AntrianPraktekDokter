@@ -1,128 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E3F2FD"
-    android:padding="16dp"
-    tools:context=".patient.JanjiTemuActivity">
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingTop="70dp"
+    android:paddingBottom="40dp"
+    android:background="@drawable/appointment"
+    android:backgroundTintMode="src_over">
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:paddingBottom="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="80dp"
+        tools:context=".patient.JanjiTemuActivity">
 
-        <androidx.cardview.widget.CardView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="6dp"
-            app:cardBackgroundColor="@android:color/white">
+            android:orientation="vertical">
 
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp">
 
-                <EditText
-                    android:id="@+id/etNama"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Nama Lengkap"
-                    android:backgroundTint="#2196F3"
-                    android:layout_marginBottom="12dp"/>
-
-                <EditText
-                    android:id="@+id/etUsia"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Usia"
-                    android:inputType="number"
-                    android:backgroundTint="#2196F3"
-                    android:layout_marginBottom="12dp"/>
-
-                <EditText
-                    android:id="@+id/etTanggal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Pilih Hari"
-                    android:focusable="false"
-                    android:clickable="true"
-                    android:backgroundTint="#2196F3"
-                    android:layout_marginBottom="12dp"/>
-
-                <EditText
-                    android:id="@+id/etJam"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Pilih Jam"
-                    android:focusable="false"
-                    android:clickable="true"
-                    android:backgroundTint="#2196F3"
-                    android:layout_marginBottom="12dp"/>
-
-                <EditText
-                    android:id="@+id/etKeluhan"
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:gravity="top"
-                    android:hint="Tuliskan keluhan Anda..."
-                    android:backgroundTint="#2196F3"
-                    android:inputType="textMultiLine"
-                    android:layout_marginBottom="12dp"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Dokter:"
-                    android:textColor="#000000"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="4dp"/>
-
-                <TextView
-                    android:id="@+id/tvDokter"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Dr. Alexander (Umum)"
-                    android:textColor="#2196F3"
-                    android:textSize="16sp"
-                    android:layout_marginBottom="16dp"/>
-
-                <CheckBox
-                    android:id="@+id/cbAlergi"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Memiliki alergi obat"
-                    android:layout_marginBottom="8dp"/>
-
-                <CheckBox
-                    android:id="@+id/cbPenyakitBawaan"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Memiliki penyakit bawaan"
-                    android:layout_marginBottom="8dp"/>
-
-                <!-- Container untuk field dinamis -->
                 <LinearLayout
-                    android:id="@+id/containerExtraFields"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginBottom="16dp"/>
+                    android:padding="16dp"
+                    android:backgroundTint="@color/tropical_teal">
 
-                <Button
-                    android:id="@+id/btnDaftar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Daftar Janji Temu"
-                    android:backgroundTint="#4CAF50"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
-</ScrollView>
+                    <EditText
+                        android:id="@+id/etNama"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:hint="Nama Lengkap" />
+
+                    <EditText
+                        android:id="@+id/etUsia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:backgroundTint="#2196F3"
+                        android:hint="Usia"
+                        android:inputType="number" />
+
+                    <EditText
+                        android:id="@+id/etTanggal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:backgroundTint="#2196F3"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:hint="Pilih Hari" />
+
+                    <EditText
+                        android:id="@+id/etJam"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:backgroundTint="#2196F3"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:hint="Pilih Jam" />
+
+                    <EditText
+                        android:id="@+id/etKeluhan"
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:layout_marginBottom="12dp"
+                        android:backgroundTint="#2196F3"
+                        android:gravity="top"
+                        android:hint="Tuliskan keluhan Anda..."
+                        android:inputType="textMultiLine" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:text="Dokter:"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvDokter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:text="Dr. Alexander (Umum)"
+                        android:textColor="#2196F3"
+                        android:textSize="16sp" />
+
+                    <CheckBox
+                        android:id="@+id/cbAlergi"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Memiliki alergi obat" />
+
+                    <CheckBox
+                        android:id="@+id/cbPenyakitBawaan"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Memiliki penyakit bawaan" />
+
+                    <LinearLayout
+                        android:id="@+id/containerExtraFields"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:orientation="vertical" />
+
+                    <Button
+                        android:id="@+id/btnDaftar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="#4CAF50"
+                        android:text="Daftar Janji Temu"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
