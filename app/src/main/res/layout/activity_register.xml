@@ -57,7 +57,7 @@
 
         <TextView
             android:id="@+id/tvLoginLink"
-            android:text="Sudah punya akun? Login"
+            android:text="Already has an account? Login"
             android:textColor="@android:color/holo_blue_dark"
             android:layout_width="wrap_content"
             android:paddingTop="50dp"

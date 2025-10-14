@@ -9,6 +9,7 @@ import com.example.antrianpraktekdokter.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.antrianpraktekdokter.auth.LoginActivity
+import android.widget.ImageButton
 
 
 import com.google.firebase.auth.FirebaseAuth
@@ -34,7 +35,7 @@ class HomeActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
         val nama = prefs.getString("nama", "") ?: ""
         tvWelcome.text = "Selamat datang, $nama!"
-        val btnJanjiTemu: MaterialButton = findViewById(R.id.btnJanjiTemu)
+        val btnJanjiTemu: ImageButton = findViewById(R.id.btnJanjiTemu)
 
         val bottomNav: BottomNavigationView = findViewById(R.id.bottomNavigation)
 
