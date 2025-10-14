@@ -1,12 +1,20 @@
 package com.example.antrianpraktekdokter
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+import android.Manifest
+import android.app.*
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import org.json.JSONArray
@@ -15,10 +23,8 @@ import java.util.*
 
 class JanjiTemuActivity : AppCompatActivity() {
 
-    // 🔹 Helper SharedPreferences
     class PrefsHelper(context: android.content.Context) {
         private val prefs = context.getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
-
         fun saveList(list: List<Map<String, String>>) {
             val jsonArray = JSONArray()
             for (item in list) {
@@ -49,6 +55,16 @@ class JanjiTemuActivity : AppCompatActivity() {
         }
     }
 
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (!isGranted) {
+            Toast.makeText(this, "Notification permission denied.", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private val CHANNEL_ID = "APPOINTMENT_CHANNEL_ID"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -59,6 +75,9 @@ class JanjiTemuActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        askNotificationPermission()
+        createNotificationChannel()
 
         val etNama = findViewById<EditText>(R.id.etNama)
         val etUsia = findViewById<EditText>(R.id.etUsia)
@@ -82,20 +101,32 @@ class JanjiTemuActivity : AppCompatActivity() {
         spKeluhan.adapter = keluhanAdapter
 
         spKeluhan.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: android.view.View?, pos: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>, view: android.view.View?, pos: Int, id: Long
+            ) {
                 val selectedKeluhan = keluhanList[pos]
                 val dokterList = dokterMap[selectedKeluhan] ?: listOf("Tidak ada dokter")
-                val dokterAdapter = ArrayAdapter(this@JanjiTemuActivity, android.R.layout.simple_spinner_item, dokterList)
+                val dokterAdapter = ArrayAdapter(
+                    this@JanjiTemuActivity,
+                    android.R.layout.simple_spinner_item,
+                    dokterList
+                )
                 dokterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spDokter.adapter = dokterAdapter
             }
+
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
         etTanggal.setOnClickListener {
             val c = Calendar.getInstance()
-            DatePickerDialog(this, { _, y, m, d -> etTanggal.setText("$d/${m + 1}/$y") },
-                c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show()
+            DatePickerDialog(
+                this,
+                { _, y, m, d -> etTanggal.setText("$d/${m + 1}/$y") },
+                c.get(Calendar.YEAR),
+                c.get(Calendar.MONTH),
+                c.get(Calendar.DAY_OF_MONTH)
+            ).show()
         }
 
         etJam.setOnClickListener {
@@ -115,6 +146,7 @@ class JanjiTemuActivity : AppCompatActivity() {
             val usia = etUsia.text.toString().trim()
             val tanggal = etTanggal.text.toString().trim()
             val jam = etJam.text.toString().trim()
+            val keluhan = spKeluhan.selectedItem.toString()
             val dokter = spDokter.selectedItem.toString()
 
             if (nama.isEmpty() || usia.isEmpty() || tanggal.isEmpty() || jam.isEmpty()) {
@@ -124,7 +156,6 @@ class JanjiTemuActivity : AppCompatActivity() {
 
             val prefs = PrefsHelper(this)
             val list = prefs.loadList()
-
             list.add(
                 mapOf(
                     "nama" to "Nama: $nama",
@@ -132,12 +163,98 @@ class JanjiTemuActivity : AppCompatActivity() {
                     "dokter" to dokter
                 )
             )
+            prefs.saveList(list)
 
-            prefs.saveList(list) // simpan permanen
+            // Send system notification
+            sendAppointmentNotification(keluhan, dokter, tanggal, jam)
+
+            // Save notification for NotifikasiActivity
+            saveLocalNotification(keluhan, dokter, tanggal, jam)
 
             val intent = Intent(this, ListAntrianActivity::class.java)
             intent.putExtra("dokter", dokter)
             startActivity(intent)
         }
+    }
+
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Appointment Channel"
+            val descriptionText = "Channel for appointment confirmation notifications"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun sendAppointmentNotification(
+        keluhan: String,
+        dokter: String,
+        tanggal: String,
+        jam: String
+    ) {
+        val notificationText =
+            "Your appointment for $keluhan with $dokter is submitted for $tanggal at $jam"
+        val notificationId = System.currentTimeMillis().toInt()
+
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notifications)
+            .setContentTitle("Appointment Submitted Successfully!")
+            .setContentText(notificationText)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(notificationText))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+
+        with(NotificationManagerCompat.from(this)) {
+            if (ActivityCompat.checkSelfPermission(
+                    this@JanjiTemuActivity,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) return
+            notify(notificationId, builder.build())
+        }
+    }
+
+    // 🔹 Save notification locally for NotifikasiActivity
+    private fun saveLocalNotification(
+        keluhan: String,
+        dokter: String,
+        tanggal: String,
+        jam: String
+    ) {
+        val notifPrefs = getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
+        val notifJsonStr = notifPrefs.getString("notifList", null)
+        val notifList = mutableListOf<String>()
+
+        if (notifJsonStr != null) {
+            val jsonArray = JSONArray(notifJsonStr)
+            for (i in 0 until jsonArray.length()) {
+                notifList.add(jsonArray.getString(i))
+            }
+        }
+
+        val newNotif =
+            "Janji temu untuk $keluhan dengan $dokter pada $tanggal pukul $jam berhasil didaftarkan."
+        notifList.add(newNotif)
+
+        val notifArray = JSONArray()
+        for (n in notifList) notifArray.put(n)
+        notifPrefs.edit().putString("notifList", notifArray.toString()).apply()
     }
 }
