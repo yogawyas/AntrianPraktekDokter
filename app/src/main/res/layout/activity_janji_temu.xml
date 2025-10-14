@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#E3F2FD"
     android:padding="16dp"
-    tools:context=".JanjiTemuActivity">
+    tools:context=".patient.JanjiTemuActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -65,17 +65,54 @@
                     android:backgroundTint="#2196F3"
                     android:layout_marginBottom="12dp"/>
 
-                <Spinner
-                    android:id="@+id/spKeluhan"
+                <EditText
+                    android:id="@+id/etKeluhan"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="120dp"
+                    android:gravity="top"
+                    android:hint="Tuliskan keluhan Anda..."
+                    android:backgroundTint="#2196F3"
+                    android:inputType="textMultiLine"
                     android:layout_marginBottom="12dp"/>
 
-                <Spinner
-                    android:id="@+id/spDokter"
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"/>
+                    android:text="Dokter:"
+                    android:textColor="#000000"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:id="@+id/tvDokter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Dr. Alexander (Umum)"
+                    android:textColor="#2196F3"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="16dp"/>
+
+                <CheckBox
+                    android:id="@+id/cbAlergi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Memiliki alergi obat"
+                    android:layout_marginBottom="8dp"/>
+
+                <CheckBox
+                    android:id="@+id/cbPenyakitBawaan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Memiliki penyakit bawaan"
+                    android:layout_marginBottom="8dp"/>
+
+                <!-- Container untuk field dinamis -->
+                <LinearLayout
+                    android:id="@+id/containerExtraFields"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp"/>
 
                 <Button
                     android:id="@+id/btnDaftar"

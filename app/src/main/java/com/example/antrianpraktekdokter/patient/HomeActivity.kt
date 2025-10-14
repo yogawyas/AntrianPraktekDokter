@@ -1,25 +1,40 @@
-package com.example.antrianpraktekdokter
+package com.example.antrianpraktekdokter.patient
 
 
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
+import com.example.antrianpraktekdokter.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.example.antrianpraktekdokter.R
-import android.widget.Button
+import com.example.antrianpraktekdokter.auth.LoginActivity
 
+
+import com.google.firebase.auth.FirebaseAuth
 class HomeActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        auth = FirebaseAuth.getInstance()
+
+        // Check jika user belum login, redirect ke Login
+        if (auth.currentUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_home)
 
         val tvWelcome: TextView = findViewById(R.id.tvWelcome)
-        val nama = intent.getStringExtra("nama")
+        val prefs = getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
+        val nama = prefs.getString("nama", "") ?: ""
         tvWelcome.text = "Selamat datang, $nama!"
-        val btnJanjiTemu: Button = findViewById(R.id.btnJanjiTemu)
+        val btnJanjiTemu: MaterialButton = findViewById(R.id.btnJanjiTemu)
 
         val bottomNav: BottomNavigationView = findViewById(R.id.bottomNavigation)
 
