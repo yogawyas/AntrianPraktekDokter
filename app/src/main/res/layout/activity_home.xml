@@ -5,82 +5,59 @@
     android:layout_height="match_parent"
     tools:context=".auth.MainActivity">
 
-    <View
-        android:id="@+id/topBackground"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:background="#2E9E9C"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/ivLogo"
-        android:layout_width="350dp"
-        android:layout_height="350dp"
-        android:contentDescription="Antrian logo"
-        android:src="@drawable/antrian_logo2"
-        android:paddingTop="12dp"
-        app:layout_constraintBottom_toBottomOf="@id/topBackground"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/topBackground"
-        app:layout_constraintVertical_bias="0.566" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/mainmenu"
+        android:backgroundTintMode="src_over"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingTop="70dp"
+        android:paddingBottom="40dp"
+        tools:layout_editor_absoluteX="-16dp"
+        tools:layout_editor_absoluteY="-16dp" />
 
-    <TextView
-        android:id="@+id/tvAntrian"
-        android:layout_width="wrap_content"
+    <ImageButton
+        android:id="@+id/btnJanjiTemu"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="ANTRIAN"
-        android:textColor="@android:color/white"
-        android:textSize="35sp"
-        android:textStyle="bold"
-        android:fontFamily="sans-serif-condensed"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/tombol_selector"
+        android:background="@null"
+        android:layout_marginTop="250dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivLogo" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4" />
+
+
 
     <TextView
         android:id="@+id/tvWelcome"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@color/tropical_teal"
+        android:background="@null"
         android:paddingStart="16dp"
         android:paddingTop="1dp"
         android:paddingBottom="1dp"
-        android:text="WELCOME BACK"
+        android:text=""
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBackground" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnJanjiTemu"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:backgroundTint="@color/tropical_teal"
-        android:text="Make appointment"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvWelcome" />
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/tropical_teal"
-        android:layout_marginBottom="-15dp"
+        android:background="@color/navDown"
+        android:layout_marginBottom="0dp"
         app:itemIconTint="@android:color/white"
         app:itemTextColor="@android:color/white"
         app:labelVisibilityMode="labeled"
@@ -88,6 +65,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@navigation/bottom_nav_menu" />
+        app:menu="@navigation/bottom_nav_menu"
+        app:itemIconSize="40dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

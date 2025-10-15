@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#E3F2FD"
-    android:padding="8dp">
+    android:background="@color/white"
+    android:padding="0dp">
 
     <TextView
         android:id="@+id/tvHeader"
@@ -13,10 +13,10 @@
         android:layout_height="wrap_content"
         android:text="Daftar Antrian"
         android:gravity="center"
-        android:background="#2196F3"
+        android:background="@color/tropical_teal"
         android:textColor="@android:color/white"
         android:textSize="20sp"
-        android:padding="12dp"/>
+        android:padding="30dp"/>
 
     <!-- Tombol kembali ke Home -->
     <Button
@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Kembali ke Home"
-        android:backgroundTint="#FF9800"
+        android:backgroundTint="@color/tropical_teal"
         android:textColor="@android:color/white"
         android:textStyle="bold"
         android:layout_marginTop="8dp"/>
