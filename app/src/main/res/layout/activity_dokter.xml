@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:text="Daftar Pasien Hari Ini"
         android:gravity="center"
-        android:background="#2196F3"
+        android:background="@color/primary"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:padding="12dp" />
@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Logout Dokter"
-        android:backgroundTint="#FF9800"
+        android:backgroundTint="#F44336"
         android:textColor="@android:color/white"
         android:textStyle="bold"
         android:layout_marginTop="8dp" />

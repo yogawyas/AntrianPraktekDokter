@@ -13,16 +13,14 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Toolbar with hamburger -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#2196F3"
+            android:background="@color/primary"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <!-- NavHostFragment container -->
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/nav_host_fragment"
             android:name="androidx.navigation.fragment.NavHostFragment"
@@ -31,7 +29,6 @@
             app:defaultNavHost="true"
             app:navGraph="@navigation/nav_graph" />
 
-        <!-- Logout button (di luar fragment, di bottom) -->
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
@@ -39,17 +36,22 @@
             android:layout_gravity="end"
             android:layout_margin="16dp"
             android:text="Logout"
-            android:backgroundTint="#F44336" />
+            android:backgroundTint="#F44336"
+            android:visibility="gone" />
 
     </LinearLayout>
 
-    <!-- Navigation Drawer -->
+    <!-- Navigation Drawer dengan Header -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:menu="@menu/drawer_menu" />
+        app:headerLayout="@layout/drawer_header"
+        app:menu="@menu/drawer_menu"
+        app:itemIconTint="#2196F3"
+        app:itemTextColor="#000000"
+        app:itemRippleColor="#E0E0E0" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

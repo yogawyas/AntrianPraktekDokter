@@ -9,18 +9,23 @@
 
         <item
             android:id="@+id/tambahAntrianFragment"
-            android:icon="@drawable/ic_add"
+            android:icon="@android:drawable/ic_menu_add"
             android:title="Tambah Antrian" />
 
         <item
             android:id="@+id/lihatLaporanFragment"
-            android:icon="@drawable/ic_report"
+            android:icon="@android:drawable/ic_menu_info_details"
             android:title="Lihat Laporan" />
 
         <item
             android:id="@+id/aturJadwalFragment"
-            android:icon="@drawable/ic_schedule"
+            android:icon="@android:drawable/ic_menu_day"
             android:title="Atur Jadwal" />
+
+        <item
+            android:id="@+id/logout"
+            android:icon="@android:drawable/ic_menu_close_clear_cancel"
+            android:title="Logout" />
     </group>
 
 </menu>

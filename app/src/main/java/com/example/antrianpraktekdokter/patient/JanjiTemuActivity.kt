@@ -162,21 +162,21 @@ class JanjiTemuActivity : AppCompatActivity() {
         }
 
         // Tambah tombol Riwayat langsung ke LinearLayout utama
-        btnRiwayat = Button(this).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { setMargins(0, dpToPx(8), 0, 0) }
-            text = "Lihat Riwayat Kunjungan"
-            setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#2196F3")))
-            setTextColor(android.graphics.Color.WHITE)
-        }
-        val parentLayout = findViewById<LinearLayout>(R.id.parentLayout)
-        parentLayout?.addView(btnRiwayat)
-
-        btnRiwayat.setOnClickListener {
-            showRiwayatKunjungan()
-        }
+//        btnRiwayat = Button(this).apply {
+//            layoutParams = LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.MATCH_PARENT,
+//                LinearLayout.LayoutParams.WRAP_CONTENT
+//            ).apply { setMargins(0, dpToPx(8), 0, 0) }
+//            text = "Lihat Riwayat Kunjungan"
+//            setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#2196F3")))
+//            setTextColor(android.graphics.Color.WHITE)
+//        }
+//        val parentLayout = findViewById<LinearLayout>(R.id.parentLayout)
+//        parentLayout?.addView(btnRiwayat)
+//
+//        btnRiwayat.setOnClickListener {
+//            showRiwayatKunjungan()
+//        }
     }
 
     private fun simpanData() {

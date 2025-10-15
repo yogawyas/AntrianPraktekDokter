@@ -2,15 +2,20 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="white_smoke">#F6F6F6</color>
     <color name="purple_500">#6200EE</color>
     <color name="purple_700">#3700B3</color>
     <color name="teal_200">#03DAC5</color>
     <color name="teal_500">#aae3d2</color>
-    <color name="gray_light">#ababab</color>
+    <color name="gray_light">#757575</color>
 <!--    Primary color-->
     <color name="tropical_teal">#1cabb0</color>
     <color name="primary">#04aa78</color>
     <color name="button">#00bf63</color>
     <color name="navDown">#056353</color>
+    <color name="yellow">#D5C441</color>
+    <color name="red">#FF2B2B</color>
+    <color name="yellow_light">#FFF198</color>
+    <color name="green_light">#9AFF9B</color>
 
 </resources>
