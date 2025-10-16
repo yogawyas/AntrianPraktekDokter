@@ -7,9 +7,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.antrianpraktekdokter.model.NotificationItem
 
-class NotificationAdapter(
+class BeritaAdapter(
     private val items: MutableList<NotificationItem>
-) : RecyclerView.Adapter<NotificationAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<BeritaAdapter.ViewHolder>() {
 
     // ViewHolder = represents each row in the RecyclerView
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

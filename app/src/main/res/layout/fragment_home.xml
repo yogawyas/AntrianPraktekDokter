@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".patient.HomeActivity">
+    >
 
     <!-- Background Image (responsif) -->
     <ImageView
@@ -20,10 +19,10 @@
         android:id="@+id/tvWelcome"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="32dp"
         android:text=""
         android:textColor="@android:color/white"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         android:textAlignment="center"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,12 +33,11 @@
 
     <!-- Two Buttons Under 'Make Appointment' -->
 
-    <!-- Bottom Navigation -->
     <ImageButton
         android:id="@+id/btnJanjiTemu"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="176dp"
+        android:layout_marginTop="244dp"
         android:adjustViewBounds="true"
         android:background="@null"
         android:scaleType="fitCenter"
@@ -53,26 +51,25 @@
         android:id="@+id/underAppointmentButtons"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/btnJanjiTemu"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnJanjiTemu">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <!-- Queue Number Button -->
         <ImageButton
             android:id="@+id/nav_list_antrian"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:background="@null"
             android:contentDescription="List Antrian"
-            android:src="@drawable/queuenum" />
+            android:src="@drawable/queuenum"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
 
         <!-- Space Between Buttons -->
         <Space
@@ -84,13 +81,13 @@
             android:id="@+id/btnNews"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:background="@null"
-            android:contentDescription="News"
-            android:src="@drawable/news" />
+            android:contentDescription="Notifikasi"
+            android:src="@drawable/news"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -106,8 +103,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@navigation/bottom_nav_menu"
         app:itemIconSize="24dp" />
-
-    <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

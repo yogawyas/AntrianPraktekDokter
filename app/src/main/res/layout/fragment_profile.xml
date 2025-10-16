@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_profile"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/profilbg"
+    android:gravity="center_horizontal"
+    android:padding="24dp"
+    tools:context=".patient.fragment.ProfileFragment">
+
+    <!-- Profile Picture -->
+    <ImageView
+        android:id="@+id/imgProfile"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="225dp"
+        android:background="@drawable/background_circle"
+        android:contentDescription="Profile Picture"
+        android:scaleType="centerCrop"
+        android:src="@drawable/profile_picture_background" />
+
+    <!-- Button to change picture -->
+    <Button
+        android:id="@+id/btnChangePhoto"
+        android:layout_width="wrap_content"
+        android:backgroundTint="@color/button"
+        android:layout_height="wrap_content"
+        android:text="CHANGE PHOTO" />
+
+    <!-- Name input -->
+    <EditText
+        android:id="@+id/edtName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:hint="Enter your name"
+        android:inputType="textPersonName" />
+
+    <!-- Save Button -->
+    <Button
+        android:id="@+id/btnSaveProfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/button"
+        android:text="SAVE PROFILE" />
+
+</LinearLayout>

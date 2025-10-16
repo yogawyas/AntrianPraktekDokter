@@ -11,7 +11,7 @@
         android:title="Medical History" />
 
     <item
-        android:id="@+id/nav_reminder"
+        android:id="@+id/nav_notifikasi"
         android:icon="@drawable/ic_reminder"
         android:title="Notification" />
 
