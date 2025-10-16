@@ -26,8 +26,8 @@
     <Button
         android:id="@+id/btnChangePhoto"
         android:layout_width="wrap_content"
-        android:backgroundTint="@color/button"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/button"
         android:text="CHANGE PHOTO" />
 
     <!-- Name input -->
@@ -38,6 +38,16 @@
         android:layout_marginTop="24dp"
         android:hint="Enter your name"
         android:inputType="textPersonName" />
+
+    <!-- Email input (readonly) -->
+    <EditText
+        android:id="@+id/edtEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:enabled="false" />
 
     <!-- Save Button -->
     <Button

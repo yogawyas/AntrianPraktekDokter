@@ -13,7 +13,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.antrianpraktekdokter.R
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
@@ -63,16 +62,9 @@ class JanjiTemuActivity : AppCompatActivity() {
         // Load nama dari Firestore
         val user = auth.currentUser
         if (user != null) {
-            db.collection("users").document(user.uid)
-                .get()
+            db.collection("users").document(user.uid).get()
                 .addOnSuccessListener { doc ->
-                    Log.d("JanjiTemuActivity", "User data fetched: ${doc.data}")
                     etNama.setText(doc.getString("nama") ?: user.email)
-                }
-                .addOnFailureListener { e ->
-                    Log.e("JanjiTemuActivity", "Fetch user failed: ${e.message}", e)
-                    Toast.makeText(this, "Gagal fetch nama: ${e.message}", Toast.LENGTH_SHORT).show()
-                    etNama.setText(user.email) // Fallback ke email jika gagal
                 }
         }
 
@@ -110,16 +102,17 @@ class JanjiTemuActivity : AppCompatActivity() {
             }.show()
         }
 
-        // Time picker dibatasi 00:00 - 21:00 dan tidak boleh jam terlewat
-        val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        // Time picker dibatasi 00:00 - 21:00
         etJam.setOnClickListener {
+            val c = Calendar.getInstance()
             TimePickerDialog(this, { _, h, m ->
-                if (h < currentHour || h > 21) {
-                    Toast.makeText(this, "Jam harus antara ${String.format("%02d:00", currentHour)} - 21:00!", Toast.LENGTH_SHORT).show()
-                } else {
+                val selectedHour = h
+                if (selectedHour >= 0 && selectedHour <= 21) {
                     etJam.setText(String.format("%02d:%02d", h, m))
+                } else {
+                    Toast.makeText(this, "Jam antrian hanya 00:00 - 21:00!", Toast.LENGTH_SHORT).show()
                 }
-            }, currentHour, 0, true).show()
+            }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true).show()
         }
 
         // Dynamic fields for alergi/penyakit bawaan
@@ -180,23 +173,6 @@ class JanjiTemuActivity : AppCompatActivity() {
         btnDaftar.setOnClickListener {
             simpanData()
         }
-
-        // Tambah tombol Riwayat
-//        btnRiwayat = Button(this).apply {
-//            layoutParams = LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT
-//            ).apply { setMargins(0, dpToPx(8), 0, 0) }
-//            text = "Lihat Riwayat Kunjungan"
-//            setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#2196F3")))
-//            setTextColor(android.graphics.Color.WHITE)
-//        }
-//        val parentLayout = findViewById<LinearLayout>(R.id.parentLayout)
-//        parentLayout?.addView(btnRiwayat)
-//
-//        btnRiwayat.setOnClickListener {
-//            showRiwayatKunjungan()
-//        }
     }
 
     private fun simpanData() {
@@ -211,6 +187,8 @@ class JanjiTemuActivity : AppCompatActivity() {
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val todayString = sdf.format(Date())
 
+
+
         // Validasi tanggal hanya hari ini
         if (tanggal != todayString) {
             Toast.makeText(this, "Hanya bisa membuat janji untuk hari ini!", Toast.LENGTH_SHORT).show()
@@ -222,181 +200,133 @@ class JanjiTemuActivity : AppCompatActivity() {
             return
         }
 
-        val user = auth.currentUser ?: run {
-            Toast.makeText(this, "User tidak login", Toast.LENGTH_SHORT).show()
-            return
+        // Cek apakah user sudah punya janji aktif hari ini (tidak dibatalkan atau selesai)
+        val user = auth.currentUser ?: return
+        Log.d("JanjiTemuActivity", "Saving appointment for userId: ${user.uid}")
+        if (user != null) {
+            db.collection("antrian")
+                .whereEqualTo("user_id", user.uid)
+                .whereEqualTo("tanggal_simpan", todayString)
+                .whereEqualTo("dihapus", false)
+                .whereEqualTo("selesai", false)
+                .get()
+                .addOnSuccessListener { snapshot ->
+                    if (!snapshot.isEmpty) {
+                        Toast.makeText(this, "Anda sudah punya janji hari ini. Batalkan dulu untuk reschedule!", Toast.LENGTH_LONG).show()
+                        return@addOnSuccessListener
+                    }
+
+                    // Lanjut ke validasi batas harian (max 20)
+                    db.collection("antrian")
+                        .whereEqualTo("tanggal_simpan", tanggal)
+                        .whereEqualTo("dihapus", false)
+                        .get()
+                        .addOnSuccessListener { snapshot ->
+                            if (snapshot.size() >= 20) {
+                                Toast.makeText(this, "Antrian penuh untuk tanggal $tanggal!", Toast.LENGTH_SHORT).show()
+                                return@addOnSuccessListener
+                            }
+
+                            // Cek batas jam (max 2 per jam)
+                            db.collection("antrian")
+                                .whereEqualTo("tanggal_simpan", tanggal)
+                                .whereEqualTo("jam", jam)
+                                .whereEqualTo("dihapus", false)
+                                .get()
+                                .addOnSuccessListener { jamSnapshot ->
+                                    if (jamSnapshot.size() >= 2) {
+                                        Toast.makeText(this, "Jam $jam sudah penuh! Pilih jam lain.", Toast.LENGTH_SHORT).show()
+                                        return@addOnSuccessListener
+                                    }
+
+                                    // Validasi jam user (00:00 - 21:00)
+                                    val selectedHour = jam.substring(0, 2).toIntOrNull() ?: 0
+                                    if (selectedHour < 0 || selectedHour > 21) {
+                                        Toast.makeText(this, "Jam antrian hanya 00:00 - 21:00!", Toast.LENGTH_SHORT).show()
+                                        return@addOnSuccessListener
+                                    }
+
+                                    // Hitung nomor antrian
+                                    db.runTransaction { transaction ->
+                                        val countRef = db.collection("config").document("antrian_count_$tanggal")
+                                        val snapshot = transaction.get(countRef)
+                                        val currentCount = snapshot.getLong("count") ?: 0
+                                        val newCount = currentCount + 1
+                                        transaction.set(countRef, hashMapOf("count" to newCount))
+                                        newCount
+                                    }.addOnSuccessListener { newNomor ->
+                                        val estimasiMenit = (newNomor * 15).toInt() // 15 menit/pasien
+                                        val newItem = hashMapOf(
+                                            "nama_pasien" to nama,
+                                            "usia" to usia,
+                                            "tanggal_simpan" to tanggal,
+                                            "jam" to jam,
+                                            "keluhan" to keluhan,
+                                            "alergi" to alergi,
+                                            "penyakit_bawaan" to penyakitBawaan,
+                                            "selesai" to false,
+                                            "dipanggil" to 0,
+                                            "dihapus" to false,
+                                            "nomor_antrian" to newNomor,
+                                            "createdAt" to FieldValue.serverTimestamp(),
+                                            "user_id" to user.uid
+                                        )
+
+                                        // Dialog konfirmasi dengan tombol batal
+                                        AlertDialog.Builder(this)
+                                            .setTitle("Konfirmasi Antrian")
+                                            .setMessage("Nomor antrian Anda: $newNomor\nEstimasi tunggu: $estimasiMenit menit\nLanjutkan?")
+                                            .setPositiveButton("Daftar") { _, _ ->
+                                                db.collection("antrian").add(newItem)
+                                                    .addOnSuccessListener {
+                                                        Toast.makeText(this, "Antrian berhasil didaftarkan!", Toast.LENGTH_SHORT).show()
+                                                        startActivity(Intent(this, ListAntrianActivity::class.java))
+                                                        finish()
+                                                    }
+                                                    .addOnFailureListener { e ->
+                                                        Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                                                    }
+                                            }
+                                            .setNegativeButton("Batal Antrian") { _, _ ->
+                                                // Kurangi nomor antrian jika batal
+                                                db.collection("config").document("antrian_count_$tanggal")
+                                                    .update("count", FieldValue.increment(-1))
+                                            }
+                                            .setNeutralButton("Tutup", null)
+                                            .show()
+                                    }
+                                }
+                        }
+                }
         }
 
-        // Cek apakah user sudah punya janji aktif hari ini
-        db.collection("antrian")
-            .whereEqualTo("user_id", user.uid)
-            .whereEqualTo("tanggal_simpan", tanggal)
-            .whereEqualTo("dihapus", false)
-            .get()
-            .addOnSuccessListener { snapshot ->
-                Log.d("JanjiTemuActivity", "Existing appointments found: ${snapshot.size()}")
-                if (snapshot.isEmpty) {
-                    checkDailyAndHourlyLimits(tanggal, jam, nama, usia, keluhan, alergi, penyakitBawaan)
-                } else {
-                    val existingAntrian = snapshot.documents.first()
-                    val existingStatus = existingAntrian.getBoolean("dihapus") ?: false
-                    if (existingStatus) {
-                        showRescheduleDialog(existingAntrian, tanggal, jam, nama, usia, keluhan, alergi, penyakitBawaan)
-                    } else {
-                        Toast.makeText(this, "Anda sudah punya janji hari ini! Batalkan dulu untuk reschedule.", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("JanjiTemuActivity", "Check existing appointment failed: ${e.message}", e)
-                Toast.makeText(this, "Gagal cek janji: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+
     }
 
-    private fun checkDailyAndHourlyLimits(tanggal: String, jam: String, nama: String, usia: String, keluhan: String, alergi: String, penyakitBawaan: String) {
-        // Cek batas harian (max 20)
-        db.collection("antrian")
-            .whereEqualTo("tanggal_simpan", tanggal)
-            .whereEqualTo("dihapus", false)
-            .get()
-            .addOnSuccessListener { dailySnapshot ->
-                if (dailySnapshot.size() >= 20) {
-                    Toast.makeText(this, "Antrian penuh untuk tanggal $tanggal!", Toast.LENGTH_SHORT).show()
-                    return@addOnSuccessListener
-                }
 
-                // Cek batas jam (max 2 per jam)
-                db.collection("antrian")
-                    .whereEqualTo("tanggal_simpan", tanggal)
-                    .whereEqualTo("jam", jam)
-                    .whereEqualTo("dihapus", false)
-                    .get()
-                    .addOnSuccessListener { jamSnapshot ->
-                        if (jamSnapshot.size() >= 2) {
-                            Toast.makeText(this, "Jam $jam sudah penuh! Pilih jam lain.", Toast.LENGTH_SHORT).show()
-                            return@addOnSuccessListener
-                        }
-
-                        // Validasi jam (00:00 - 21:00)
-                        val selectedHour = jam.substring(0, 2).toIntOrNull() ?: 0
-                        if (selectedHour < 0 || selectedHour > 21) {
-                            Toast.makeText(this, "Jam antrian hanya 00:00 - 21:00!", Toast.LENGTH_SHORT).show()
-                            return@addOnSuccessListener
-                        }
-
-                        // Hitung nomor antrian
-                        db.runTransaction { transaction ->
-                            val countRef = db.collection("config").document("antrian_count_$tanggal")
-                            val snapshot = transaction.get(countRef)
-                            val currentCount = snapshot.getLong("count") ?: 0
-                            val newCount = currentCount + 1
-                            transaction.set(countRef, hashMapOf("count" to newCount))
-                            newCount
-                        }.addOnSuccessListener { newNomor ->
-                            val estimasiMenit = (newNomor * 15).toInt() // 15 menit/pasien
-                            val newItem = hashMapOf(
-                                "nama_pasien" to nama,
-                                "usia" to usia,
-                                "tanggal_simpan" to tanggal,
-                                "jam" to jam,
-                                "keluhan" to keluhan,
-                                "alergi" to alergi,
-                                "penyakit_bawaan" to penyakitBawaan,
-                                "selesai" to false,
-                                "dipanggil" to 0,
-                                "dihapus" to false,
-                                "nomor_antrian" to newNomor,
-                                "createdAt" to FieldValue.serverTimestamp(),
-                                "user_id" to auth.currentUser?.uid
-                            )
-
-                            // Dialog konfirmasi
-                            AlertDialog.Builder(this)
-                                .setTitle("Konfirmasi Antrian")
-                                .setMessage("Nomor antrian Anda: $newNomor\nEstimasi tunggu: $estimasiMenit menit\nLanjutkan?")
-                                .setPositiveButton("Daftar") { _, _ ->
-                                    db.collection("antrian").add(newItem)
-                                        .addOnSuccessListener {
-                                            Toast.makeText(this, "Antrian berhasil didaftarkan!", Toast.LENGTH_SHORT).show()
-                                            startActivity(Intent(this, ListAntrianActivity::class.java))
-                                            finish()
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Log.e("JanjiTemuActivity", "Save appointment failed: ${e.message}", e)
-                                            Toast.makeText(this, "Gagal simpan antrian: ${e.message}", Toast.LENGTH_SHORT).show()
-                                        }
-                                }
-                                .setNegativeButton("Batal", null)
-                                .show()
-                        }.addOnFailureListener { e ->
-                            Log.e("JanjiTemuActivity", "Transaction failed: ${e.message}", e)
-                            Toast.makeText(this, "Gagal hitung nomor: ${e.message}", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e("JanjiTemuActivity", "Check hourly limit failed: ${e.message}", e)
-                        Toast.makeText(this, "Gagal cek jam: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-            }
-            .addOnFailureListener { e ->
-                Log.e("JanjiTemuActivity", "Check daily limit failed: ${e.message}", e)
-                Toast.makeText(this, "Gagal cek batas harian: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun showRescheduleDialog(existingAntrian: DocumentSnapshot, tanggal: String, jam: String, nama: String, usia: String, keluhan: String, alergi: String, penyakitBawaan: String) {
-        AlertDialog.Builder(this)
-            .setTitle("Reschedule Antrian")
-            .setMessage("Anda sudah punya antrian hari ini. Reschedule jam dan keluhan?")
-            .setPositiveButton("Reschedule") { _, _ ->
-                val updatedItem: Map<String, Any?> = hashMapOf(
-                    "jam" to jam,
-                    "keluhan" to keluhan,
-                    "alergi" to alergi,
-                    "penyakit_bawaan" to penyakitBawaan
-                )
-                existingAntrian.reference.update(updatedItem)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Antrian berhasil direschedule!", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, ListAntrianActivity::class.java))
-                        finish()
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e("JanjiTemuActivity", "Reschedule failed: ${e.message}", e)
-                        Toast.makeText(this, "Gagal reschedule: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-            }
-            .setNegativeButton("Batal", null)
-            .show()
-    }
-
-    private fun showRiwayatKunjungan() {
-        val user = auth.currentUser ?: return
-        db.collection("antrian")
-            .whereEqualTo("user_id", user.uid)
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val riwayat = StringBuilder()
-                for (doc in snapshot.documents) {
-                    val tanggal = doc.getString("tanggal_simpan") ?: "-"
-                    val jam = doc.getString("jam") ?: "-"
-                    val keluhan = doc.getString("keluhan") ?: "-"
-                    val selesai = doc.getBoolean("selesai") ?: false
-                    val dihapus = doc.getBoolean("dihapus") ?: false
-                    val nomor = doc.getLong("nomor_antrian")?.toInt() ?: 0
-                    riwayat.append("No: $nomor | $tanggal, $jam | Keluhan: $keluhan | Status: ${if (dihapus) "Dibatalkan" else if (selesai) "Selesai" else "Menunggu"}\n\n")
-                }
-                AlertDialog.Builder(this)
-                    .setTitle("Riwayat Kunjungan")
-                    .setMessage(if (riwayat.isEmpty()) "Belum ada riwayat kunjungan" else riwayat.toString())
-                    .setPositiveButton("OK", null)
-                    .show()
-            }
-            .addOnFailureListener { e ->
-                Log.e("JanjiTemuActivity", "Fetch history failed: ${e.message}", e)
-                Toast.makeText(this, "Gagal load riwayat: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
+//    private fun showRiwayatKunjungan() {
+//        val user = auth.currentUser ?: return
+//        db.collection("antrian")
+//            .whereEqualTo("user_id", user.uid)
+//            .get()
+//            .addOnSuccessListener { snapshot ->
+//                val riwayat = StringBuilder()
+//                for (doc in snapshot.documents) {
+//                    val tanggal = doc.getString("tanggal_simpan") ?: "-"
+//                    val jam = doc.getString("jam") ?: "-"
+//                    val keluhan = doc.getString("keluhan") ?: "-"
+//                    val selesai = doc.getBoolean("selesai") ?: false
+//                    val dihapus = doc.getBoolean("dihapus") ?: false
+//                    val nomor = doc.getLong("nomor_antrian")?.toInt() ?: 0
+//                    riwayat.append("No: $nomor | $tanggal, $jam | Keluhan: $keluhan | Status: ${if (dihapus) "Dibatalkan" else if (selesai) "Selesai" else "Menunggu"}\n\n")
+//                }
+//                AlertDialog.Builder(this)
+//                    .setTitle("Riwayat Kunjungan")
+//                    .setMessage(if (riwayat.isEmpty()) "Belum ada riwayat kunjungan" else riwayat.toString())
+//                    .setPositiveButton("OK", null)
+//                    .show()
+//            }
+//    }
 
     private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
 }

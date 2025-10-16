@@ -28,7 +28,7 @@ class AntrianAdapter(private val antrianList: List<DocumentSnapshot>) :
         val tvKeluhan: TextView = itemView.findViewById(R.id.tvKeluhan)
         val cardView: CardView = itemView.findViewById(R.id.cardAntrian)
         val btnPanggil: Button = itemView.findViewById(R.id.btnPanggil)
-        val btnHapus: Button = itemView.findViewById(R.id.btnHapus)
+        val btnHapus: Button = itemView.findViewById(R.id.btnCancel)
         val btnLayout: ViewGroup = itemView.findViewById(R.id.btnLayout)
     }
 
