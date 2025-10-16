@@ -5,11 +5,13 @@ import android.widget.Button
 import android.widget.TextView
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.antrianpraktekdokter.patient.HomeActivity
 import com.example.antrianpraktekdokter.DoctorPage.DokterActivity
 import com.example.antrianpraktekdokter.R
+import com.example.antrianpraktekdokter.patient.DashboardActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -95,4 +97,29 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
+//    override fun onStart() {
+//        super.onStart()
+//        val currentUser = auth.currentUser
+//        if (currentUser != null) {
+//            Log.d("LoginActivity", "User logged in: ${currentUser.uid}")
+//            // Fetch nama dari Firestore
+//            db.collection("users").document(currentUser.uid)
+//                .get()
+//                .addOnSuccessListener { doc ->
+//                    Log.d("LoginActivity", "User data fetched: ${doc.data}")
+//                    val nama = doc.getString("nama") ?: currentUser.email
+//                    val prefs = getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
+//                    with(prefs.edit()) {
+//                        putString("nama", nama)
+//                        apply()
+//                    }
+//                    startActivity(Intent(this, DashboardActivity::class.java))
+//                    finish()
+//                }
+//                .addOnFailureListener { e ->
+//                    Log.e("LoginActivity", "Fetch user failed: ${e.message}", e)
+//                    Toast.makeText(this, "Gagal fetch data user: ${e.message}", Toast.LENGTH_SHORT).show()
+//                }
+//        }
+//    }
 }

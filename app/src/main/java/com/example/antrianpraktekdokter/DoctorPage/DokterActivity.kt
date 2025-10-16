@@ -12,6 +12,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.antrianpraktekdokter.R
+import com.example.antrianpraktekdokter.auth.MainActivity
 import com.example.antrianpraktekdokter.patient.HomeActivity
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -44,7 +45,7 @@ class DokterActivity : AppCompatActivity() {
 
         val btnLogout = findViewById<Button>(R.id.btnLogout)
         btnLogout.setOnClickListener {
-            startActivity(Intent(this, HomeActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
 
