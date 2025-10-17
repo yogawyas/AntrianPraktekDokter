@@ -1,6 +1,7 @@
 package com.example.antrianpraktekdokter.patient.fragment
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -17,12 +18,12 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.example.antrianpraktekdokter.R
+import com.example.antrianpraktekdokter.auth.MainActivity // Pastikan path ini sesuai
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import java.io.ByteArrayOutputStream
 import android.util.Base64
-import androidx.appcompat.app.AlertDialog
 
 class ProfileFragment : Fragment() {
 
@@ -31,6 +32,7 @@ class ProfileFragment : Fragment() {
     private lateinit var edtEmail: EditText
     private lateinit var btnChangePhoto: Button
     private lateinit var btnSaveProfile: Button
+    private lateinit var btnLogout: Button
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
 
@@ -67,9 +69,10 @@ class ProfileFragment : Fragment() {
 
         imgProfile = view.findViewById(R.id.imgProfile)
         edtName = view.findViewById(R.id.edtName)
-        edtEmail = view.findViewById(R.id.edtEmail) // Tambah referensi ke edtEmail
+        edtEmail = view.findViewById(R.id.edtEmail)
         btnChangePhoto = view.findViewById(R.id.btnChangePhoto)
         btnSaveProfile = view.findViewById(R.id.btnSaveProfile)
+        btnLogout = view.findViewById(R.id.btnLogout) // Tambah referensi ke btnLogout
 
         loadProfile()
 
@@ -84,6 +87,13 @@ class ProfileFragment : Fragment() {
                 return@setOnClickListener
             }
             saveProfile(name, encodedImage)
+        }
+
+        btnLogout.setOnClickListener {
+            auth.signOut()
+            Toast.makeText(requireContext(), "Logout successful", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(requireContext(), MainActivity::class.java))
+            requireActivity().finish()
         }
 
         return view
@@ -129,7 +139,7 @@ class ProfileFragment : Fragment() {
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
                     edtName.setText(doc.getString("nama"))
-                    edtEmail.setText(user.email) // Isi email dari Firebase Auth
+                    edtEmail.setText(user.email)
                     val photoBase64 = doc.getString("photo")
                     if (!photoBase64.isNullOrEmpty()) {
                         val imageBytes = Base64.decode(photoBase64, Base64.DEFAULT)
