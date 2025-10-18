@@ -5,25 +5,27 @@
     android:id="@+id/layout_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".patient.HistoryMedisActivity"
-    android:background="@drawable/dokterbg">
+    android:background="@drawable/dokterbg"
+    tools:context=".patient.fragment.HistoryMedisFragment">
 
-
-<!-- Toolbar untuk tombol back -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="0dp"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/tropical_teal"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+    <!-- Toolbar untuk tombol back -->
 
     <!-- RecyclerView untuk history -->
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/tvHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tooltip_history"
+        android:background="@color/navDown"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:padding="30dp"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerHistory"
+        android:text="@string/tooltip_history"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
@@ -31,7 +33,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/tvHeader"/>
 
     <!-- ProgressBar untuk loading -->
     <ProgressBar
@@ -57,6 +59,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

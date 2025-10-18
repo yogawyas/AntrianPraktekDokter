@@ -16,6 +16,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.antrianpraktekdokter.R
 import com.example.antrianpraktekdokter.auth.LoginActivity
+import com.example.antrianpraktekdokter.auth.MainActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 
@@ -65,7 +66,7 @@ class AdminHomeActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.logout -> {
                     FirebaseAuth.getInstance().signOut()
-                    startActivity(Intent(this, LoginActivity::class.java))
+                    startActivity(Intent(this, MainActivity::class.java))
                     finish()
                     true
                 }

@@ -8,7 +8,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.TextView
+//import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.antrianpraktekdokter.patient.ListAntrianActivity  // Pastikan import ini ditambahkan
 import androidx.navigation.fragment.findNavController
@@ -32,10 +32,10 @@ class HomeFragment : Fragment() {
 
         auth = FirebaseAuth.getInstance()
 
-//        val tvWelcome: TextView = view.findViewById(R.id.tvWelcome)
+        //val tvWelcome: TextView = view.findViewById(R.id.tvWelcome)
         val prefs = requireContext().getSharedPreferences("AntrianPrefs", Context.MODE_PRIVATE)
         val nama = prefs.getString("nama", "") ?: ""
-//        tvWelcome.text = "ini Home Fragment, $nama!"
+        //tvWelcome.text = "ini Home Fragment, $nama!"
         btnJanjiTemu = view.findViewById(R.id.btnJanjiTemu)
         navListAntrian = view.findViewById(R.id.nav_list_antrian)
         btnNews = view.findViewById(R.id.btnNews)

@@ -8,6 +8,8 @@
     <color name="teal_200">#03DAC5</color>
     <color name="teal_500">#aae3d2</color>
     <color name="gray_light">#757575</color>
+
+    <color name="red_light">#FFCDD2</color>
 <!--    Primary color-->
     <color name="tropical_teal">#1cabb0</color>
     <color name="primary">#04aa78</color>

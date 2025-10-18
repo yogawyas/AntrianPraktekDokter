@@ -1,8 +1,10 @@
 package com.example.antrianpraktekdokter.patient.fragment
 
-import android.app.Activity.RESULT_OK
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -13,8 +15,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.example.antrianpraktekdokter.R
+import com.example.antrianpraktekdokter.auth.MainActivity // Pastikan path ini sesuai
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -25,14 +29,34 @@ class ProfileFragment : Fragment() {
 
     private lateinit var imgProfile: ImageView
     private lateinit var edtName: EditText
+    private lateinit var edtEmail: EditText
     private lateinit var btnChangePhoto: Button
     private lateinit var btnSaveProfile: Button
+    private lateinit var btnLogout: Button
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
 
-    private val PICK_IMAGE_REQUEST = 100
     private var imageUri: Uri? = null
     private var encodedImage: String? = null
+
+    private val pickImage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            imageUri = result.data?.data
+            imageUri?.let { uri ->
+                val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, uri)
+                imgProfile.setImageBitmap(bitmap)
+                encodedImage = encodeImage(bitmap)
+            }
+        }
+    }
+
+    private val takePhoto = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            val imageBitmap = result.data?.extras?.get("data") as Bitmap
+            imgProfile.setImageBitmap(imageBitmap)
+            encodedImage = encodeImage(imageBitmap)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,13 +69,15 @@ class ProfileFragment : Fragment() {
 
         imgProfile = view.findViewById(R.id.imgProfile)
         edtName = view.findViewById(R.id.edtName)
+        edtEmail = view.findViewById(R.id.edtEmail)
         btnChangePhoto = view.findViewById(R.id.btnChangePhoto)
         btnSaveProfile = view.findViewById(R.id.btnSaveProfile)
+        btnLogout = view.findViewById(R.id.btnLogout) // Tambah referensi ke btnLogout
 
         loadProfile()
 
         btnChangePhoto.setOnClickListener {
-            openImagePicker()
+            showImageSourceDialog()
         }
 
         btnSaveProfile.setOnClickListener {
@@ -63,21 +89,40 @@ class ProfileFragment : Fragment() {
             saveProfile(name, encodedImage)
         }
 
+        btnLogout.setOnClickListener {
+            auth.signOut()
+            Toast.makeText(requireContext(), "Logout successful", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(requireContext(), MainActivity::class.java))
+            requireActivity().finish()
+        }
+
         return view
     }
 
-    private fun openImagePicker() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, PICK_IMAGE_REQUEST)
+    private fun showImageSourceDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Pilih Sumber Foto")
+            .setItems(arrayOf("Galeri", "Kamera")) { _, which ->
+                when (which) {
+                    0 -> openGallery()
+                    1 -> openCamera()
+                }
+            }
+            .setNegativeButton("Batal", null)
+            .show()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            imageUri = data.data
-            imgProfile.setImageURI(imageUri)
-            val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
-            encodedImage = encodeImage(bitmap)
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        pickImage.launch(intent)
+    }
+
+    private fun openCamera() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (intent.resolveActivity(requireContext().packageManager) != null) {
+            takePhoto.launch(intent)
+        } else {
+            Toast.makeText(requireContext(), "Kamera tidak tersedia", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -94,8 +139,18 @@ class ProfileFragment : Fragment() {
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
                     edtName.setText(doc.getString("nama"))
-                    // Skip photo decode for now
+                    edtEmail.setText(user.email)
+                    val photoBase64 = doc.getString("photo")
+                    if (!photoBase64.isNullOrEmpty()) {
+                        val imageBytes = Base64.decode(photoBase64, Base64.DEFAULT)
+                        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                        imgProfile.setImageBitmap(bitmap)
+                        encodedImage = photoBase64
+                    }
                 }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(requireContext(), "Error loading profile: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
