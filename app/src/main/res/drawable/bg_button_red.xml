@@ -1,4 +1,14 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Warna latar tombol -->
     <solid android:color="#F44336" />
-    <corners android:radius="8dp" />
+
+    <!-- Ubah radius besar supaya bentuknya lonjong -->
+    <corners android:radius="50dp" />
+
+    <!-- (Opsional) Tambah padding biar teksnya enak dilihat -->
+    <padding
+        android:left="20dp"
+        android:top="10dp"
+        android:right="20dp"
+        android:bottom="10dp" />
 </shape>

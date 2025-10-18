@@ -38,8 +38,6 @@ class ListAntrianActivity : AppCompatActivity() {
             insets
         }
 
-
-
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         progressBar = ProgressBar(this).apply {
@@ -126,21 +124,27 @@ class ListAntrianActivity : AppCompatActivity() {
                         useCompatPadding = true
                     }
 
-                    val inner = LinearLayout(this).apply {
-                        orientation = LinearLayout.VERTICAL
+                    // Ubah inner jadi RelativeLayout agar tombol bisa di kanan bawah
+                    val inner = RelativeLayout(this).apply {
                         setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12))
                     }
 
-                    val tvNama = TextView(this).apply {
-                        text = "Nama: $nama"
-                        textSize = 16f
-                        setTextColor(Color.BLACK)
+                    // Layout teks
+                    val infoLayout = LinearLayout(this).apply {
+                        orientation = LinearLayout.VERTICAL
+                        id = View.generateViewId()
                     }
 
                     val tvNomor = TextView(this).apply {
                         text = "No. Antrian: $nomor"
                         textSize = 14f
                         setTextColor(Color.parseColor("#2196F3"))
+                    }
+
+                    val tvNama = TextView(this).apply {
+                        text = "Nama: $nama"
+                        textSize = 16f
+                        setTextColor(Color.BLACK)
                     }
 
                     val tvJam = TextView(this).apply {
@@ -177,15 +181,41 @@ class ListAntrianActivity : AppCompatActivity() {
                         setTextColor(Color.DKGRAY)
                     }
 
-                    // Tombol batalkan (hanya untuk antrian user sendiri)
+                    infoLayout.addView(tvNomor)
+                    infoLayout.addView(tvNama)
+                    infoLayout.addView(tvJam)
+                    infoLayout.addView(tvKeluhan)
+                    infoLayout.addView(tvStatus)
+                    infoLayout.addView(tvEstimasi)
+
+                    val infoParams = RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        addRule(RelativeLayout.ALIGN_PARENT_START)
+                        addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                    }
+                    inner.addView(infoLayout, infoParams)
+
+                    // Tombol batalkan (kanan bawah)
                     if (docUserId == userId && !selesai && dipanggil == 0) {
                         val btnCancel = Button(this).apply {
                             text = "Batalkan Antrian"
                             setTextColor(Color.WHITE)
                             textSize = 14f
-                            setPadding(dpToPx(16), dpToPx(8), dpToPx(16), dpToPx(8))
                             background = resources.getDrawable(R.drawable.bg_button_red, null)
                         }
+
+                        val paramsBtn = RelativeLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            addRule(RelativeLayout.ALIGN_PARENT_END)
+                            addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+                        }
+
+                        btnCancel.layoutParams = paramsBtn
+
                         btnCancel.setOnClickListener {
                             AlertDialog.Builder(this@ListAntrianActivity)
                                 .setTitle("Batalkan Antrian?")
@@ -193,21 +223,20 @@ class ListAntrianActivity : AppCompatActivity() {
                                 .setPositiveButton("Ya") { _, _ ->
                                     doc.reference.update("dihapus", true)
                                         .addOnSuccessListener {
-                                            Toast.makeText(this@ListAntrianActivity, "Antrian dibatalkan", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(
+                                                this@ListAntrianActivity,
+                                                "Antrian dibatalkan",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                 }
                                 .setNegativeButton("Tidak", null)
                                 .show()
                         }
+
                         inner.addView(btnCancel)
                     }
 
-                    inner.addView(tvNomor)
-                    inner.addView(tvNama)
-                    inner.addView(tvJam)
-                    inner.addView(tvKeluhan)
-                    inner.addView(tvStatus)
-                    inner.addView(tvEstimasi)
                     card.addView(inner)
                     container.addView(card)
 
@@ -215,7 +244,6 @@ class ListAntrianActivity : AppCompatActivity() {
                 }
 
                 progressBar.visibility = View.GONE
-                // Tampilkan posisi antrian user
                 if (userPosition > 0) {
                     Toast.makeText(this, "Antrian Anda saat ini: Nomor $userPosition", Toast.LENGTH_LONG).show()
                 }
