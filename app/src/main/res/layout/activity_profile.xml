@@ -4,9 +4,9 @@
     android:id="@+id/layout_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:gravity="center"
     android:orientation="vertical"
+    android:background="@drawable/profilbg"
+    android:gravity="center_horizontal"
     android:padding="24dp"
     tools:context=".patient.ProfileActivity">
 
@@ -16,6 +16,7 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginBottom="16dp"
+        android:layout_marginTop="225dp"
         android:background="@drawable/background_circle"
         android:contentDescription="Profile Picture"
         android:scaleType="centerCrop"
@@ -25,8 +26,9 @@
     <Button
         android:id="@+id/btnChangePhoto"
         android:layout_width="wrap_content"
+        android:backgroundTint="@color/button"
         android:layout_height="wrap_content"
-        android:text="Change Photo" />
+        android:text="CHANGE PHOTO" />
 
     <!-- Name input -->
     <EditText
@@ -43,6 +45,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Save Profile" />
+        android:backgroundTint="@color/button"
+        android:text="SAVE PROFILE" />
 
 </LinearLayout>

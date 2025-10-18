@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,10 +31,11 @@ class BeritaActivity : AppCompatActivity() {
     private lateinit var rvHealthNews: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var tvEmpty: TextView
+    private lateinit var toolbar: Toolbar
     private val newsList = mutableListOf<HealthNews>()
-    private lateinit var adapter: NewsAdapter
+    private lateinit var adapter: BeritaAdapter
 
-    private val TAG = "NotifikasiActivity"
+    private val TAG = "BeritaActivity"
     private val API_KEY = "b29df8fc2ca3f2bccb2e02b83b11983b"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,12 +49,17 @@ class BeritaActivity : AppCompatActivity() {
             insets
         }
 
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Medical News"
+
         rvHealthNews = findViewById(R.id.rvHealthNews)
         progressBar = findViewById(R.id.progressBar)
         tvEmpty = findViewById(R.id.tvEmpty)
 
         rvHealthNews.layoutManager = LinearLayoutManager(this)
-        adapter = NewsAdapter(newsList)
+        adapter = BeritaAdapter(newsList)
         rvHealthNews.adapter = adapter
 
         tvEmpty.setOnClickListener { fetchHealthNews() }
@@ -60,10 +67,14 @@ class BeritaActivity : AppCompatActivity() {
         fetchHealthNews()
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
     private fun fetchHealthNews() {
         progressBar.visibility = View.VISIBLE
         tvEmpty.visibility = View.GONE
-
 
         val url = "https://gnews.io/api/v4/top-headlines?category=health&lang=en&country=id&max=10&apikey=$API_KEY"
 
@@ -117,8 +128,8 @@ class BeritaActivity : AppCompatActivity() {
         }
     }
 
-    inner class NewsAdapter(private val list: List<HealthNews>) :
-        RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
+    inner class BeritaAdapter(private val list: List<HealthNews>) :
+        RecyclerView.Adapter<BeritaAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_health_news, parent, false)

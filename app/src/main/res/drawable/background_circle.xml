@@ -3,7 +3,7 @@
     android:shape="oval">
 
     <!-- Fill color -->
-    <solid android:color="@color/gray_light" />
+    <solid android:color="@color/primary" />
 
     <!-- Border (optional) -->
     <stroke

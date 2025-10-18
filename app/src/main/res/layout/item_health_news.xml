@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="12dp">
 
         <!-- Image untuk thumbnail berita (jika ada) -->
         <ImageView
@@ -29,7 +29,9 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="12dp"
+            android:maxLines="2"
+            android:ellipsize="end" />
 
         <!-- Deskripsi singkat -->
         <TextView
@@ -38,7 +40,7 @@
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
             android:maxLines="3"
             android:ellipsize="end" />
 

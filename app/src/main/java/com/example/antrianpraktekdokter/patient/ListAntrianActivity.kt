@@ -3,7 +3,9 @@ package com.example.antrianpraktekdokter.patient
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
@@ -12,6 +14,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.antrianpraktekdokter.R
+import com.example.antrianpraktekdokter.patient.fragment.HomeFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -22,6 +25,7 @@ class ListAntrianActivity : AppCompatActivity() {
 
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +38,18 @@ class ListAntrianActivity : AppCompatActivity() {
             insets
         }
 
+
+
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
+        progressBar = ProgressBar(this).apply {
+            layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+            visibility = View.GONE
+        }
+        findViewById<LinearLayout>(R.id.main).addView(progressBar, 1)
 
         findViewById<Button>(R.id.btnKembaliHome).setOnClickListener {
-            startActivity(Intent(this, HomeActivity::class.java))
+            startActivity(Intent(this, HomeFragment::class.java))
             finish()
         }
 
@@ -48,18 +59,19 @@ class ListAntrianActivity : AppCompatActivity() {
     private fun renderAntrian() {
         val container = findViewById<LinearLayout>(R.id.containerAntrian)
         container.removeAllViews()
+        progressBar.visibility = View.VISIBLE
 
         val db = FirebaseFirestore.getInstance()
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val today = sdf.format(Date())
 
-        // Simplifikasi: Hilangkan orderBy("createdAt") untuk hindari index kompleks sementara
         db.collection("antrian")
             .whereEqualTo("tanggal_simpan", today)
             .whereEqualTo("dihapus", false)
             .orderBy("jam", Query.Direction.ASCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
+                    progressBar.visibility = View.GONE
                     Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                     return@addSnapshotListener
                 }
@@ -73,6 +85,7 @@ class ListAntrianActivity : AppCompatActivity() {
                         setPadding(dpToPx(8), dpToPx(16), dpToPx(8), 0)
                     }
                     container.addView(tvEmpty)
+                    progressBar.visibility = View.GONE
                     return@addSnapshotListener
                 }
 
@@ -201,6 +214,7 @@ class ListAntrianActivity : AppCompatActivity() {
                     if (!selesai && dipanggil == 0) position++
                 }
 
+                progressBar.visibility = View.GONE
                 // Tampilkan posisi antrian user
                 if (userPosition > 0) {
                     Toast.makeText(this, "Antrian Anda saat ini: Nomor $userPosition", Toast.LENGTH_LONG).show()

@@ -1,93 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".auth.MainActivity">
+    tools:context=".patient.HomeActivity">
 
-    <View
-        android:id="@+id/topBackground"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:background="#2E9E9C"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+    <!-- Background Image (responsif) -->
     <ImageView
-        android:id="@+id/ivLogo"
-        android:layout_width="350dp"
-        android:layout_height="350dp"
-        android:contentDescription="Antrian logo"
-        android:src="@drawable/antrian_logo2"
-        android:paddingTop="12dp"
-        app:layout_constraintBottom_toBottomOf="@id/topBackground"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/topBackground"
-        app:layout_constraintVertical_bias="0.566" />
+        android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/mainmenu"
+        android:scaleType="centerCrop"
+        android:contentDescription="Background" />
 
-    <TextView
-        android:id="@+id/tvAntrian"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="ANTRIAN"
-        android:textColor="@android:color/white"
-        android:textSize="35sp"
-        android:textStyle="bold"
-        android:fontFamily="sans-serif-condensed"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivLogo" />
-
+    <!-- Welcome Text -->
     <TextView
         android:id="@+id/tvWelcome"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@color/tropical_teal"
-        android:paddingStart="16dp"
-        android:paddingTop="1dp"
-        android:paddingBottom="1dp"
-        android:text="WELCOME BACK"
+        android:layout_marginTop="60dp"
+        android:text=""
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBackground" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
+    <!-- Make Appointment Button -->
+
+    <!-- Two Buttons Under 'Make Appointment' -->
+
+    <!-- Bottom Navigation -->
+    <ImageButton
         android:id="@+id/btnJanjiTemu"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:backgroundTint="@color/tropical_teal"
-        android:text="Make appointment"
-        android:textColor="@android:color/white"
+        android:layout_marginTop="176dp"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/tombol_selector"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvWelcome" />
 
+    <LinearLayout
+        android:id="@+id/underAppointmentButtons"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnJanjiTemu">
+
+        <!-- Queue Number Button -->
+        <ImageButton
+            android:id="@+id/nav_list_antrian"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:contentDescription="List Antrian"
+            android:src="@drawable/queuenum" />
+
+        <!-- Space Between Buttons -->
+        <Space
+            android:layout_width="16dp"
+            android:layout_height="wrap_content" />
+
+        <!-- News Button -->
+        <ImageButton
+            android:id="@+id/btnNews"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:contentDescription="News"
+            android:src="@drawable/news" />
+    </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/tropical_teal"
-        android:layout_marginBottom="-15dp"
+        android:background="@color/navDown"
         app:itemIconTint="@android:color/white"
         app:itemTextColor="@android:color/white"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@navigation/bottom_nav_menu" />
+        app:menu="@navigation/bottom_nav_menu"
+        app:itemIconSize="24dp" />
+
+    <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
