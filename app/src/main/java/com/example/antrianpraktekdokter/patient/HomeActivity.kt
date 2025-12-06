@@ -35,6 +35,10 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_home)
 
         val tvWelcome: TextView = findViewById(R.id.tvWelcome)
+        val tvWelcomeName: TextView = findViewById(R.id.tvWelcomeName)
+        val tvLocation: TextView = findViewById(R.id.tvLocation)
+        val tvDetails: TextView = findViewById(R.id.tvDetails)
+        val tvSeeUsOnGMaps: TextView = findViewById(R.id.tvSeeUsOnGMaps)
         val prefs = getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
         val nama = prefs.getString("nama", "") ?: ""
         tvWelcome.text = "Selamat datang, $nama!"
