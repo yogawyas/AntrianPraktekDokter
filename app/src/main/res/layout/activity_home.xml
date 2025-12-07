@@ -6,14 +6,33 @@
     tools:context=".auth.MainActivity">
 
     <!-- Background -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/mainMenuBG"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:paddingTop="70dp"
-        android:paddingBottom="40dp" />
+    <ImageView
+        android:id="@+id/bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/mainMenuBG"
+        android:scaleType="centerCrop"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <ImageButton
+        android:id="@+id/notification"
+        android:layout_width="50dp"
+        android:layout_height="55dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Notification"
+        android:src="@drawable/ic_notification"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        android:layout_marginTop="26dp"
+        android:layout_marginEnd="26dp" />
+
 
     <TextView
         android:id="@+id/tvWelcome"
@@ -103,7 +122,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="26dp"
-        android:src="@drawable/buttonGmaps"
+        android:src="@drawable/button_gmaps"
     android:layout_marginTop="8dp"
 
     app:layout_constraintStart_toStartOf="parent"
@@ -136,48 +155,80 @@
             android:id="@+id/pullPage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:padding="10dp"
             android:src="@drawable/pullPage"
-            android:scaleType="fitXY"/>
+            android:layout_marginBottom="120dp"
+            android:scaleType="fitXY" />
 
-        <!-- Row of ImageButtons -->
-        <LinearLayout
-            android:id="@+id/buttonRow"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center"
-            android:padding="20dp">
 
-            <ImageButton
-                android:id="@+id/queueNum"
-                android:layout_width="10dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:paddingRight="10dp"
-                android:src="@drawable/queueNum"
-                android:background="@android:color/transparent"
-                android:contentDescription="Queue" />
 
-            <ImageButton
-                android:id="@+id/newsButton"
-                android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_weight="1"
-                android:src="@drawable/newsButton"
-                android:background="@android:color/transparent"
-                android:contentDescription="News" />
+        <ImageButton
+            android:id="@+id/queueNum"
+            android:layout_width="110dp"
+            android:layout_height="141dp"
+            android:layout_weight="1"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="left"
+            android:background="@android:color/transparent"
+            android:contentDescription="Queue"
+            android:src="@drawable/queueNum" />
 
-            <ImageButton
-                android:id="@+id/historyButton"
-                android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_weight="1"
-                android:src="@drawable/historyButton"
-                android:background="@android:color/transparent"
-                android:contentDescription="History" />
+        <ImageButton
+            android:id="@+id/newsButton"
+            android:layout_width="110dp"
+            android:layout_height="141dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="50dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="News"
+            android:src="@drawable/newsButton" />
 
-        </LinearLayout>
+        <ImageButton
+            android:id="@+id/historyButton"
+            android:layout_width="110dp"
+            android:layout_height="141dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="13dp"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="end"
+            android:src="@drawable/historyButton"
+            android:background="@android:color/transparent"
+            android:contentDescription="History" />
+
 
     </FrameLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:background="@color/primary"
+        app:itemIconTint="@android:color/white"
+        app:itemTextColor="@android:color/white"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@navigation/bottom_nav_menu"
+        app:itemIconSize="60dp"
+        app:itemPadding="400dp" />
+
+    <ImageButton
+        android:id="@+id/btnJanjiTemu"
+        android:layout_width="140dp"
+        android:layout_height="141dp"
+        android:src="@drawable/janjiTemu"
+        android:background="@android:color/transparent"
+        android:contentDescription="JanjiTemu"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="20dp"
+
+        android:elevation="20dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

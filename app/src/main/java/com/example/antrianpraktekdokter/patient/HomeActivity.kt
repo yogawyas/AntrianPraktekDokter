@@ -11,6 +11,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.antrianpraktekdokter.auth.LoginActivity
 import android.widget.ImageButton
+import com.example.antrianpraktekdokter.adapter.NewsAdapter
 
 
 import com.google.firebase.auth.FirebaseAuth
@@ -82,27 +83,29 @@ class HomeActivity : AppCompatActivity() {
 //            val intent = Intent(this, JanjiTemuActivity::class.java)
 //            startActivity(intent)
 //        }
+        val queueButton = findViewById<ImageButton>(R.id.queueNum)
+        queueButton.setOnClickListener {
+            startActivity(Intent(this, ListAntrianActivity::class.java))
+        }
 
+        val newsButton = findViewById<ImageButton>(R.id.newsButton)
+        newsButton.setOnClickListener {
+            startActivity(Intent(this, NewsAdapter::class.java))
+        }
 
+        val historyButton = findViewById<ImageButton>(R.id.historyButton)
+        historyButton.setOnClickListener {
+            startActivity(Intent(this, HistoryMedisActivity::class.java))
+        }
 
         bottomNav.setOnItemSelectedListener { item ->
             when(item.itemId) {
-                R.id.nav_history_medis -> {
-                    startActivity(Intent(this, HistoryMedisActivity::class.java))
-                    true
-                }
+
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
                     true
                 }
-                R.id.nav_list_antrian -> {
-                    startActivity(Intent(this, ListAntrianActivity::class.java))
-                    true
-                }
-                R.id.nav_notifikasi -> {
-                    startActivity(Intent(this, NotifikasiActivity::class.java))
-                    true
-                }
+
                 else -> false
             }
         }
