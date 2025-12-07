@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
@@ -9,28 +11,245 @@
     android:background="@drawable/loginregister"
     android:backgroundTintMode="src_over">
 
+    <TextView
+        android:id="@+id/welcome_to_"
+        android:layout_width="358dp"
+        android:layout_height="96dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="280dp"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="-20sp"
+        android:fontFamily="@font/signika_semibold"
+        android:text="@string/welcome_to_"
+        android:textAppearance="@style/welcome_to_"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/alexcare_is"
+        android:layout_width="346dp"
+        android:layout_height="74dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="28dp"
+        android:alpha="0.62"
+        android:fontFamily="@font/signika_light"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="-3sp"
+        android:text="@string/alexcare_is"
+        android:textAppearance="@style/alexcare_is"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/welcome_to_" />
+
+    <TextView
+        android:id="@+id/login_with_"
+        android:layout_width="248dp"
+        android:layout_height="24dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:fontFamily="@font/signika_light"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="-2sp"
+        android:text="@string/login_with_"
+        android:textAppearance="@style/login_with_"
+        app:layout_constraintBottom_toTopOf="@+id/btnGoLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/alexcare_is"
+        app:layout_constraintVertical_bias="0.629" />
 
     <Button
         android:id="@+id/btnGoLogin"
-        android:layout_width="350dp"
-        android:layout_height="70dp"
-        android:backgroundTint="@color/button"
-        android:fontFamily="sans-serif"
-        android:layout_marginTop="525dp"
-        android:text="LOGIN"
-        android:textColor="@android:color/white"
-        android:textSize="20dp"
-        android:textStyle="bold" />
+        android:layout_width="291dp"
+        android:layout_height="49dp"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="@color/primary"
+        android:drawableEnd="@drawable/baseline_login_24"
+        android:drawablePadding="8dp"
+        android:drawableTint="@color/white"
+        android:fontFamily="@font/signika_regular"
+        android:paddingStart="100dp"
+        android:paddingEnd="97dp"
+        android:text="Login"
+        android:textAllCaps="true"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toTopOf="@+id/text_separator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/line_left"
+        android:layout_width="125dp"
+        android:layout_height="1dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/primary"
+        app:layout_constraintBottom_toBottomOf="@+id/text_separator"
+        app:layout_constraintEnd_toStartOf="@+id/text_separator"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text_separator" />
+
+    <TextView
+        android:id="@+id/text_separator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:text="or connect with"
+        android:textColor="@color/primary"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_google_login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/line_right"
+        android:layout_width="125dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="8dp"
+        android:background="@color/primary"
+        app:layout_constraintBottom_toBottomOf="@+id/text_separator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/text_separator"
+        app:layout_constraintTop_toTopOf="@+id/text_separator" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_facebook_login"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="50dp"
+        android:layout_height="60dp"
+        android:padding="0dp"
+        android:paddingStart="3.99999dp"
+
+        app:backgroundTint="@android:color/transparent"
+        app:cornerRadius="30dp"
+        app:icon="@drawable/icon_facebook_logo"
+        app:iconGravity="textStart"
+
+        app:iconSize="60dp"
+        app:iconTint="@null"
+
+        app:layout_constraintBottom_toBottomOf="@+id/btn_google_login"
+        app:layout_constraintEnd_toStartOf="@+id/btn_google_login"
+        app:layout_constraintHorizontal_bias="0.586"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btn_google_login"
+        app:layout_constraintVertical_bias="0.0"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_google_login"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="50dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="12dp"
+        android:padding="0dp"
+        android:paddingStart="5dp"
+        app:backgroundTint="@android:color/transparent"
+        app:cornerRadius="30dp"
+
+        app:icon="@drawable/icon_google_login"
+        app:iconGravity="textStart"
+        app:iconSize="40dp"
+        app:iconTint="@null"
+        app:layout_constraintBottom_toTopOf="@+id/dont_have_acc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_email_login"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="50dp"
+        android:layout_height="60dp"
+        android:padding="0dp"
+        android:paddingStart="5dp"
+        app:backgroundTint="@android:color/transparent"
+        app:cornerRadius="30dp"
+        app:icon="@drawable/icon_emai_logo"
+        app:iconGravity="textStart"
+
+        app:iconSize="32dp"
+        app:iconTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_google_login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.374"
+        app:layout_constraintStart_toEndOf="@+id/btn_google_login"
+        app:layout_constraintTop_toTopOf="@+id/btn_google_login"
+        app:layout_constraintVertical_bias="0.0"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp" />
+
+    <TextView
+        android:id="@+id/dont_have_acc"
+        android:layout_width="248dp"
+        android:layout_height="24dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="@font/signika_light"
+        android:gravity="center_horizontal|top"
+        android:lineSpacingExtra="-2sp"
+        android:text="If you dont have an account, you could register"
+        android:textAppearance="@style/login_with_"
+        app:layout_constraintBottom_toTopOf="@+id/btnGoRegister"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-    android:id="@+id/btnGoRegister"
-    android:layout_width="270dp"
-    android:layout_height="55dp"
-    android:layout_marginTop="125dp"
-    android:backgroundTint="@color/button"
-    android:fontFamily="sans-serif"
-    android:text="REGISTER"
-    android:textColor="@android:color/white"
-    android:textStyle="bold" />
-</LinearLayout>
+        android:id="@+id/btnGoRegister"
+        android:layout_width="291dp"
+        android:layout_height="49dp"
+        android:layout_marginBottom="4dp"
+        android:backgroundTint="@color/primary"
+        android:drawablePadding="8dp"
+        android:drawableTint="@color/white"
+        android:fontFamily="@font/signika_regular"
+        android:paddingStart="100dp"
+        android:paddingEnd="97dp"
+        android:text="SIGN UP"
+        android:textAllCaps="true"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+    <!--    <Button-->
+<!--        android:id="@+id/btnGoLogin"-->
+<!--        android:layout_width="350dp"-->
+<!--        android:layout_height="70dp"-->
+<!--        android:layout_marginTop="525dp"-->
+<!--        android:backgroundTint="@color/button"-->
+<!--        android:fontFamily="sans-serif"-->
+<!--        android:text="LOGIN"-->
+<!--        android:textColor="@android:color/white"-->
+<!--        android:textSize="20dp"-->
+<!--        android:textStyle="bold" />-->
+
+<!--    <Button-->
+<!--    android:id="@+id/btnGoRegister"-->
+<!--    android:layout_width="270dp"-->
+<!--    android:layout_height="55dp"-->
+<!--    android:layout_marginTop="125dp"-->
+<!--    android:backgroundTint="@color/button"-->
+<!--    android:fontFamily="sans-serif"-->
+<!--    android:text="REGISTER"-->
+<!--    android:textColor="@android:color/white"-->
+<!--    android:textStyle="bold" />-->
+</androidx.constraintlayout.widget.ConstraintLayout>
 

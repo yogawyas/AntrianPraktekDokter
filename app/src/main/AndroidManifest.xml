@@ -1,25 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-    <!-- permission -->
+    xmlns:tools="http://schemas.android.com/tools" >
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/assets"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/assets"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AntrianPraktekDokter"
-        android:usesCleartextTraffic="true">
-
-        <activity android:name=".DoctorPage.DokterActivity" />
+        android:theme="@style/Theme.AntrianPraktekDokter">
+        android:usesCleartextTraffic="true"
 
         <activity
-            android:name=".patient.NotifikasiActivity"
+            android:name=".patient.DashboardActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AntrianPraktekDokter" />
+        <activity
+            android:name=".auth.MainActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".patient.HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".patient.BeritaActivity"
             android:exported="false" />
         <activity
             android:name=".patient.ListAntrianActivity"
@@ -33,18 +60,30 @@
         <activity
             android:name=".patient.JanjiTemuActivity"
             android:exported="false" />
-        <activity android:name=".patient.HomeActivity" />
-        <activity android:name=".auth.LoginActivity" />
-        <activity android:name=".auth.RegisterActivity" />
         <activity
-            android:name=".auth.MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:name=".auth.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".auth.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".doctor.DoctorHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".admin.AdminHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DoctorPage.DokterActivity"
+            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".BrowseErrorActivity"-->
+<!--            android:exported="false" />-->
+<!--        <activity-->
+<!--            android:name=".PlaybackActivity"-->
+<!--            android:exported="false" />-->
+<!--        <activity-->
+<!--            android:name=".patient.DetailsActivity"-->
+<!--            android:exported="false" />-->
     </application>
 
 </manifest>
