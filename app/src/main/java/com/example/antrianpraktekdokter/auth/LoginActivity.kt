@@ -5,13 +5,16 @@ import android.widget.Button
 import android.widget.TextView
 import android.content.Intent
 import android.os.Bundle
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.antrianpraktekdokter.patient.HomeActivity
 import com.example.antrianpraktekdokter.DoctorPage.DokterActivity
 import com.example.antrianpraktekdokter.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlin.jvm.java
 
 class LoginActivity : AppCompatActivity() {
 
@@ -29,7 +32,11 @@ class LoginActivity : AppCompatActivity() {
         val etEmail: EditText = findViewById(R.id.etEmail)
         val etPassword: EditText = findViewById(R.id.etPassword)
         val btnLogin: Button = findViewById(R.id.btnLogin)
-        val tvRegisterLink: TextView = findViewById(R.id.tvRegisterLink)
+        //val tvRegisterLink: TextView = findViewById(R.id.tvRegisterLink)
+        val tvForgotPassword: TextView = findViewById(R.id.tv_forgot_password)
+        val btnBack: Button = findViewById(R.id.btn_back)
+
+
 
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString().trim()
@@ -91,8 +98,73 @@ class LoginActivity : AppCompatActivity() {
                 }
         }
 
-        tvRegisterLink.setOnClickListener {
-            startActivity(Intent(this, RegisterActivity::class.java))
+        btnBack.setOnClickListener {
+            val intent = Intent(this, com.example.antrianpraktekdokter.auth.MainActivity::class.java)
+            startActivity(intent)
+            finish()
         }
+        tvForgotPassword.setOnClickListener {
+            showResetPasswordDialog()
+        }
+
+//        tvRegisterLink.setOnClickListener {
+//            startActivity(Intent(this, RegisterActivity::class.java))
+//        }
+    }
+    private fun showResetPasswordDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Reset Password")
+
+        // Setup input EditText untuk email
+        val input = EditText(this)
+        input.hint = "Masukkan Email Anda"
+        input.setPadding(50, 50, 50, 50)
+
+        // Tambahkan EditText ke dalam LinearLayout agar padding lebih rapi
+        val container = LinearLayout(this)
+        container.orientation = LinearLayout.VERTICAL
+        container.setPadding(45, 10, 45, 10) // Padding kiri, atas, kanan, bawah
+        container.addView(input)
+
+        builder.setView(container)
+
+        // Tombol Kirim Reset
+        builder.setPositiveButton("Kirim") { dialog, which ->
+            val email = input.text.toString().trim()
+            if (email.isNotEmpty()) {
+                sendPasswordResetEmail(email)
+            } else {
+                Toast.makeText(this, "Email tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Tombol Batal
+        builder.setNegativeButton("Batal") { dialog, which ->
+            dialog.cancel()
+        }
+
+        builder.show()
+    }
+
+    /**
+     * Mengirim email reset password menggunakan Firebase Auth.
+     */
+    private fun sendPasswordResetEmail(email: String) {
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(
+                        this,
+                        "Email reset password telah dikirim ke $email. Cek folder spam Anda juga.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Gagal mengirim email reset: ${task.exception?.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
     }
 }

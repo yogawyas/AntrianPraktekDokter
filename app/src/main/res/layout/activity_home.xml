@@ -6,98 +6,206 @@
     android:layout_height="match_parent"
     tools:context=".patient.HomeActivity">
 
-    <!-- Background Image (responsif) -->
+    <!-- Background -->
     <ImageView
-        android:id="@+id/backgroundImage"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/mainmenu"
+        android:id="@+id/bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/mainMenuBG"
         android:scaleType="centerCrop"
-        android:contentDescription="Background" />
 
-    <!-- Welcome Text -->
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <ImageButton
+        android:id="@+id/notification"
+        android:layout_width="50dp"
+        android:layout_height="55dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Notification"
+        android:src="@drawable/ic_notification"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        android:layout_marginTop="26dp"
+        android:layout_marginEnd="26dp" />
+
+
     <TextView
         android:id="@+id/tvWelcome"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:text=""
+        android:layout_marginTop="16dp"
+        android:textIsSelectable="false"
+        android:text="Selamat Datang,"
         android:textColor="@android:color/white"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textAlignment="center"
+        android:textSize="22sp"
+        android:gravity="left"
+        android:layout_marginLeft="26dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Make Appointment Button -->
-
-    <!-- Two Buttons Under 'Make Appointment' -->
-
-    <!-- Bottom Navigation -->
-    <ImageButton
-        android:id="@+id/btnJanjiTemu"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="176dp"
-        android:adjustViewBounds="true"
-        android:background="@null"
-        android:scaleType="fitCenter"
-        android:src="@drawable/tombol_selector"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvWelcome" />
-
-    <LinearLayout
-        android:id="@+id/underAppointmentButtons"
+    <TextView
+        android:id="@+id/tvWelcomeName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginTop="16dp"
+        android:paddingTop="22dp"
+        android:textIsSelectable="false"
+        android:text="Yoga Wyas Pramudita"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="left"
+        android:layout_marginLeft="26dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnJanjiTemu">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Queue Number Button -->
+    <TextView
+        android:id="@+id/tvLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:layout_marginLeft="26dp"
+        android:text="Jl Cendana..."
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:gravity="left"
+        android:drawableLeft="@drawable/ic_location"
+        android:drawablePadding="6dp"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvWelcomeName"
+        />
+    <!-- Details -->
+    <TextView
+        android:id="@+id/tvDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="66dp"
+        android:layout_marginLeft="26dp"
+        android:text="Dr. Alexanders Wyas \nLokasi Klinik \nJl. Gading Serpong"
+        android:textColor="@color/primary"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:outlineAmbientShadowColor="@color/white"
+        android:gravity="left"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvLocation"
+        />
+
+    <TextView
+        android:id="@+id/tvSeeUsOnGMaps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:layout_marginLeft="26dp"
+        android:text="See us on Google Maps"
+        android:textColor="@color/primary"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:outlineAmbientShadowColor="@color/white"
+        android:gravity="left"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvDetails"
+        />
+
+    <ImageView
+        android:id="@+id/buttonGmaps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="26dp"
+        android:src="@drawable/button_gmaps"
+    android:layout_marginTop="8dp"
+
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/tvSeeUsOnGMaps" />
+
+    <ImageView
+        android:id="@+id/lineStatus"
+        android:layout_width="370dp"
+        android:layout_height="500px"
+        android:layout_marginLeft="26dp"
+        android:src="@drawable/lineStatus"
+        android:layout_marginTop="8dp"
+        android:foregroundGravity="center"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonGmaps" />
+    />
+
+    <FrameLayout
+        android:id="@+id/pullPageContainer"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_marginLeft="26dp"
+        android:layout_marginRight="26dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lineStatus">
+
+        <!-- Background Image -->
+        <ImageView
+            android:id="@+id/pullPage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:src="@drawable/pullPage"
+            android:layout_marginBottom="120dp"
+            android:scaleType="fitXY" />
+
+
+
         <ImageButton
-            android:id="@+id/nav_list_antrian"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:id="@+id/queueNum"
+            android:layout_width="110dp"
+            android:layout_height="141dp"
             android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:background="@null"
-            android:contentDescription="List Antrian"
-            android:src="@drawable/queuenum" />
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="left"
+            android:background="@android:color/transparent"
+            android:contentDescription="Queue"
+            android:src="@drawable/queueNum" />
 
-        <!-- Space Between Buttons -->
-        <Space
-            android:layout_width="16dp"
-            android:layout_height="wrap_content" />
-
-        <!-- News Button -->
         <ImageButton
-            android:id="@+id/btnNews"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:id="@+id/newsButton"
+            android:layout_width="110dp"
+            android:layout_height="141dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="50dp"
             android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:background="@null"
+            android:background="@android:color/transparent"
             android:contentDescription="News"
-            android:src="@drawable/news" />
-    </LinearLayout>
+            android:src="@drawable/newsButton" />
 
+        <ImageButton
+            android:id="@+id/historyButton"
+            android:layout_width="110dp"
+            android:layout_height="141dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="13dp"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="end"
+            android:src="@drawable/historyButton"
+            android:background="@android:color/transparent"
+            android:contentDescription="History" />
+
+
+    </FrameLayout>
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/navDown"
+        android:layout_height="70dp"
+        android:background="@color/primary"
         app:itemIconTint="@android:color/white"
         app:itemTextColor="@android:color/white"
         app:labelVisibilityMode="labeled"
@@ -105,9 +213,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@navigation/bottom_nav_menu"
-        app:itemIconSize="24dp" />
+        app:itemIconSize="60dp"
+        app:itemPadding="400dp" />
 
-    <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <ImageButton
+        android:id="@+id/btnJanjiTemu"
+        android:layout_width="140dp"
+        android:layout_height="141dp"
+        android:src="@drawable/janjiTemu"
+        android:background="@android:color/transparent"
+        android:contentDescription="JanjiTemu"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="20dp"
+
+        android:elevation="20dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

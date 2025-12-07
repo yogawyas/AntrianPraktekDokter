@@ -30,6 +30,8 @@ class RegisterActivity : AppCompatActivity() {
         val etPassword: EditText = findViewById(R.id.etPassword)
         val btnRegister: Button = findViewById(R.id.btnRegister)
         val tvLoginLink: TextView = findViewById(R.id.tvLoginLink)
+        val btnBack: Button = findViewById(R.id.btn_back)
+
 
         btnRegister.setOnClickListener {
             val nama = etNama.text.toString().trim()
@@ -102,6 +104,11 @@ class RegisterActivity : AppCompatActivity() {
             // }
             //
             // Volley.newRequestQueue(this).add(request)
+        }
+        btnBack.setOnClickListener {
+            val intent = Intent(this, com.example.antrianpraktekdokter.auth.MainActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
         tvLoginLink.setOnClickListener {
