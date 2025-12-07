@@ -1,4 +1,15 @@
 <resources>
+
+    <string name="default_web_client_id">412117468423-j11rs4f91o8418nv32q2ucstd6uavc2m.apps.googleusercontent.com</string>
+
+    <string name="facebook_app_id">MASUKKAN_APP_ID_FB_ANDA</string>
+    <string name="fb_login_protocol_scheme">fbMASUKKAN_APP_ID_FB_ANDA</string>
+
+    <string name="login_with_">Login with your existing account!</string>
+    <string name="login">Login</string>
+    <string name="welcome_to_">Welcome to AlexCare</string>
+    <string name="alexcare_is">AlexCare is used to manage your appointment with Dr. Alexanders and much more.</string>
+
     <string name="app_name">AntrianPraktekDokter</string>
     <string name="pilih_dokter" />
     <string name="pilih_keluhan" />
