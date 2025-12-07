@@ -8,11 +8,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.antrianpraktekdokter.R
 import com.example.antrianpraktekdokter.auth.LoginActivity
-import android.widget.ImageButton
+
 import com.example.antrianpraktekdokter.adapter.NewsAdapter
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 import com.google.firebase.auth.FirebaseAuth
+
 
 class HomeActivity : AppCompatActivity() {
 
@@ -42,10 +44,10 @@ class HomeActivity : AppCompatActivity() {
         val tvSeeUsOnGMaps: TextView = findViewById(R.id.tvSeeUsOnGMaps)
         val prefs = getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
         val nama = prefs.getString("nama", "") ?: ""
-        tvWelcome.text = "Ini HomeActivity, $nama!"
+        tvWelcome.text = "Selamat Datang, \n$nama!"
         btnJanjiTemu = findViewById(R.id.btnJanjiTemu)
-        navListAntrian = findViewById(R.id.nav_list_antrian)
-        btnNews = findViewById(R.id.btnNews)
+        navListAntrian = findViewById(R.id.queueNum)
+        btnNews = findViewById(R.id.newsButton)
 
         // Handle klik button Janji Temu
         btnJanjiTemu.setOnTouchListener { v, event ->

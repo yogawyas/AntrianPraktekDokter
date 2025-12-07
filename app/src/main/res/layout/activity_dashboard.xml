@@ -10,7 +10,7 @@
         android:id="@+id/backgroundImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/mainmenu"
+        android:src="@drawable/main_menu_bg"
         android:scaleType="centerCrop"
         android:contentDescription="Background" />
 
@@ -42,7 +42,6 @@
         android:adjustViewBounds="true"
         android:background="@null"
         android:scaleType="fitCenter"
-        android:src="@drawable/tombol_selector"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,7 +71,7 @@
             android:adjustViewBounds="true"
             android:background="@null"
             android:contentDescription="List Antrian"
-            android:src="@drawable/queuenum" />
+            android:src="@drawable/queue_num" />
 
         <!-- Space Between Buttons -->
         <Space
@@ -90,7 +89,7 @@
             android:adjustViewBounds="true"
             android:background="@null"
             android:contentDescription="Notifikasi"
-            android:src="@drawable/news" />
+            android:src="@drawable/news_button" />
     </LinearLayout>
 
     <!-- Bottom Navigation -->

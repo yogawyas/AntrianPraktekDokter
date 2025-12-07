@@ -11,7 +11,7 @@
         android:id="@+id/bg"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:src="@drawable/mainMenuBG"
+        android:src="@drawable/main_menu_bg"
         android:scaleType="centerCrop"
 
         app:layout_constraintTop_toTopOf="parent"
@@ -57,7 +57,6 @@
         android:layout_marginTop="16dp"
         android:paddingTop="22dp"
         android:textIsSelectable="false"
-        android:text="Yoga Wyas Pramudita"
         android:textColor="@android:color/white"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -73,7 +72,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
         android:layout_marginLeft="26dp"
-        android:text="Jl Cendana..."
         android:textColor="@android:color/white"
         android:textSize="16sp"
         android:gravity="left"
@@ -90,7 +88,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="66dp"
         android:layout_marginLeft="26dp"
-        android:text="Dr. Alexanders Wyas \nLokasi Klinik \nJl. Gading Serpong"
+        android:text="Dr. Alexanders \nLokasi Klinik \nJl. Gading Serpong"
         android:textColor="@color/primary"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -134,7 +132,7 @@
         android:layout_width="370dp"
         android:layout_height="500px"
         android:layout_marginLeft="26dp"
-        android:src="@drawable/lineStatus"
+        android:src="@drawable/line_status"
         android:layout_marginTop="8dp"
         android:foregroundGravity="center"
 
@@ -157,12 +155,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="10dp"
-            android:src="@drawable/pullPage"
+            android:src="@drawable/pull_page"
             android:layout_marginBottom="120dp"
             android:scaleType="fitXY" />
 
 
-
+<!--list antrian-->
         <ImageButton
             android:id="@+id/queueNum"
             android:layout_width="110dp"
@@ -173,8 +171,9 @@
             android:layout_gravity="left"
             android:background="@android:color/transparent"
             android:contentDescription="Queue"
-            android:src="@drawable/queueNum" />
+            android:src="@drawable/queue_num" />
 
+<!--medical news-->
         <ImageButton
             android:id="@+id/newsButton"
             android:layout_width="110dp"
@@ -185,8 +184,9 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:contentDescription="News"
-            android:src="@drawable/newsButton" />
+            android:src="@drawable/news_button" />
 
+<!--medical history-->
         <ImageButton
             android:id="@+id/historyButton"
             android:layout_width="110dp"
@@ -195,7 +195,7 @@
             android:layout_marginEnd="13dp"
             android:layout_marginTop="50dp"
             android:layout_gravity="end"
-            android:src="@drawable/historyButton"
+            android:src="@drawable/history_button"
             android:background="@android:color/transparent"
             android:contentDescription="History" />
 
@@ -220,7 +220,7 @@
         android:id="@+id/btnJanjiTemu"
         android:layout_width="140dp"
         android:layout_height="141dp"
-        android:src="@drawable/janjiTemu"
+        android:src="@drawable/janji_temu"
         android:background="@android:color/transparent"
         android:contentDescription="JanjiTemu"
 

@@ -79,7 +79,7 @@ class LoginActivity : AppCompatActivity() {
                                         //"patient" -> Intent(this, com.example.antrianpraktekdokter.patient.HomeActivity::class.java)
                                         "doctor" -> Intent(this, com.example.antrianpraktekdokter.doctor.DoctorHomeActivity::class.java)
                                         "admin" -> Intent(this, com.example.antrianpraktekdokter.admin.AdminHomeActivity::class.java)
-                                        else -> Intent(this, com.example.antrianpraktekdokter.patient.DashboardActivity::class.java)
+                                        else -> Intent(this, com.example.antrianpraktekdokter.patient.HomeActivity::class.java)
                                     }
                                     intent.putExtra("nama", nama)
                                     intent.putExtra("role", role)
