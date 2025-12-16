@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
         // 3. Navigasi Tombol Standar
         btnGoLogin.setOnClickListener {
-            startActivity(Intent(this, HomeActivity::class.java))
+            startActivity(Intent(this, LoginActivity::class.java))
         }
 
         btnGoRegister.setOnClickListener {

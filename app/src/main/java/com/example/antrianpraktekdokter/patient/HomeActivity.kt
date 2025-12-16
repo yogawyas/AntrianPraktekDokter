@@ -12,7 +12,11 @@ import com.example.antrianpraktekdokter.adapter.NewsAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.auth.User
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class HomeActivity : AppCompatActivity() {
@@ -22,6 +26,10 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var btnJanjiTemu: ImageButton
     private lateinit var navListAntrian: ImageButton
     private lateinit var btnNews: ImageButton
+    private lateinit var tvCurrentQueueNumber: TextView
+    private lateinit var tvYourQueueNumber: TextView
+    private var currentQueueListener: ListenerRegistration? = null
+    private var myQueueListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,8 +54,10 @@ class HomeActivity : AppCompatActivity() {
         val tvSeeUsOnGMaps: TextView = findViewById(R.id.tvSeeUsOnGMaps)
         val bottomNav: BottomNavigationView = findViewById(R.id.bottomNavigation)
         val namaDariIntent = intent.getStringExtra("nama")
+        tvCurrentQueueNumber = findViewById(R.id.tvCurrentQueueNumber)
+        tvYourQueueNumber = findViewById(R.id.tvYourQueueNumber)
 
-
+        setupQueueMonitoring()
 
 
         //segala macam function
@@ -132,5 +142,67 @@ class HomeActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+    private fun setupQueueMonitoring() {
+        val user = auth.currentUser ?: return
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val todayString = sdf.format(Date()) // Contoh: "12/12/2025"
+
+        // -------------------------------------------------------------
+        // 1. LOGIKA "CURRENT LINE NUMBER" (Nomor yang sedang dipanggil)
+        // -------------------------------------------------------------
+        // Kita ambil dari koleksi 'config', dokumen 'status_harian' (atau nama lain yg disepakati)
+        // Dokumen ini harus di-update oleh Admin saat menekan tombol "Next Patient"
+
+        val statusRef = db.collection("config").document("status_antrian_$todayString")
+
+        currentQueueListener = statusRef.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                // Error atau dokumen belum ada
+                tvCurrentQueueNumber.text = "-"
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                // Ambil field 'nomor_sekarang' (integer/string)
+                val currentNumber = snapshot.getLong("nomor_sekarang") ?: 0
+                // Format jadi 3 digit (contoh: 005)
+                tvCurrentQueueNumber.text = String.format("%03d", currentNumber)
+            } else {
+                // Belum ada antrian dimulai hari ini
+                tvCurrentQueueNumber.text = "000"
+            }
+        }
+        val myQueueQuery = db.collection("antrian")
+            .whereEqualTo("user_id", user.uid)
+            .whereEqualTo("tanggal_simpan", todayString)
+            .whereEqualTo("dihapus", false) // Hanya yang tidak dibatalkan
+            .whereEqualTo("selesai", false) // Hanya yang belum selesai (opsional, tergantung keinginan)
+
+        myQueueListener = myQueueQuery.addSnapshotListener { snapshots, e ->
+            if (e != null) {
+                tvYourQueueNumber.text = "-"
+                return@addSnapshotListener
+            }
+
+            if (snapshots != null && !snapshots.isEmpty) {
+                // User punya janji temu hari ini
+                val doc = snapshots.documents[0] // Ambil yang pertama ditemukan
+                val myNumber = doc.getLong("nomor_antrian") ?: 0
+
+                // Tampilkan nomor user (Format 3 digit)
+                tvYourQueueNumber.text = String.format("%03d", myNumber)
+            } else {
+                // Tidak ada janji temu hari ini
+                tvYourQueueNumber.text = "-"
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Hentikan pemantauan database saat aplikasi ditutup agar hemat baterai/kuota
+        currentQueueListener?.remove()
+        myQueueListener?.remove()
     }
 }
