@@ -5,89 +5,197 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
-
-    <ImageView
-        android:id="@+id/headerBg"
-        android:layout_width="413dp"
-        android:layout_height="892dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/profilbg"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="-2dp" />
-
-    <com.google.android.material.card.MaterialCardView
+    android:background="@drawable/bg_profile">
+    <LinearLayout
+        android:id="@+id/headerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="24dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="8dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="24dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBack"
+            style="@style/Animation.Design.BottomSheetDialog"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:paddingStart="1.5dp"
+            app:backgroundTint="@android:color/transparent"
+            app:cornerRadius="100dp"
+            app:icon="@drawable/baseline_arrow_back_24"
+            app:iconSize="48dp"
+            app:iconTint="@null"
+            app:tint="@null" />
+
+        <TextView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="24dp">
+            android:layout_weight="1"
+            android:text="PROFILE"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="16dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Edit Profile"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="@color/primary"
-                android:layout_marginBottom="24dp"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogout"
+            style="@style/Animation.Design.BottomSheetDialog"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:paddingStart="1.5dp"
+            app:backgroundTint="@android:color/transparent"
+            app:cornerRadius="100dp"
+            app:icon="@drawable/ic_logout"
+            app:iconSize="50dp"
+            app:iconTint="@null"
+            app:tint="@null" />
+    </LinearLayout>
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imgProfile"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/profile_picture_background"
-                app:shapeAppearanceOverlay="@style/CircleImage"
-                app:strokeColor="@color/primary"
-                app:strokeWidth="2dp"
-                android:padding="2dp"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/whiteContainer"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_marginTop="250dp"
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnChangePhoto"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Change Photo"
-                android:textColor="@color/primary"
-                android:layout_marginTop="8dp"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="0dp">
 
-            <com.google.android.material.textfield.TextInputLayout
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:paddingTop="100dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Full Name"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                android:orientation="vertical"
+                android:paddingHorizontal="32dp"
+                android:paddingBottom="100dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edtName"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Full Name"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilName"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    app:boxBackgroundColor="@android:color/transparent"
+                    app:boxStrokeColor="@color/primary"
+                    app:boxStrokeWidth="1dp"
+                    app:endIconDrawable="@drawable/ic_edit"
+                    app:endIconMode="custom"
+                    app:endIconTint="@color/primary"
+                    app:startIconDrawable="@drawable/ic_profile2"
+                    app:startIconTint="@color/primary">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSaveProfile"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginTop="32dp"
-                android:text="SAVE PROFILE"
-                android:backgroundTint="@color/button"
-                app:cornerRadius="30dp"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:inputType="textPersonName"
+                        android:text="Yoga Wyas Pramudita"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Email"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundColor="@android:color/transparent"
+                    app:boxStrokeColor="@color/primary"
+                    app:boxStrokeWidth="1dp"
+                    app:startIconDrawable="@drawable/icon_emai_logo"
+                    app:startIconTint="@color/primary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:inputType="textEmailAddress"
+                        android:text="yoga.wyas@exampl..."
+                        android:textColor="@color/primary"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSaveProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="40dp"
+                    android:text="Save Profile"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/primary"
+                    app:cornerRadius="30dp" />
+
+            </LinearLayout>
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imgProfile"
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:src="@drawable/profile_picture_background"
+        android:scaleType="centerCrop"
+        android:padding="4dp"
+        app:shapeAppearanceOverlay="@style/CircleImage"
+        app:strokeColor="@color/primary"
+        app:strokeWidth="3dp"
+        app:layout_constraintBottom_toTopOf="@+id/whiteContainer"
+        app:layout_constraintTop_toTopOf="@+id/whiteContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnChangePhoto"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/ic_camera_alt"
+        android:padding="8dp"
+        app:tint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/imgProfile"
+        app:layout_constraintEnd_toEndOf="@+id/imgProfile"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"/>
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@color/primary"
+        app:itemRippleColor="@android:color/transparent"
+        app:itemActiveIndicatorStyle="@null"
+        app:itemIconSize="50dp"
+        app:itemIconTint="@android:color/white"
+        app:itemTextColor="@android:color/white"
+        app:labelVisibilityMode="labeled"
+        app:menu="@navigation/bottom_nav_menu"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

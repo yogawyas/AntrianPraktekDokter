@@ -1,6 +1,7 @@
 package com.example.antrianpraktekdokter.patient
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -10,8 +11,9 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Base64
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +22,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.example.antrianpraktekdokter.R
+import com.example.antrianpraktekdokter.auth.LoginActivity // Import LoginActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -32,10 +39,18 @@ import java.util.Locale
 
 class ProfileActivity : AppCompatActivity() {
 
+    // UI Components
     private lateinit var imgProfile: ImageView
-    private lateinit var edtName: EditText
-    private lateinit var btnChangePhoto: Button
-    private lateinit var btnSaveProfile: Button
+    private lateinit var edtName: TextInputEditText
+    private lateinit var edtEmail: TextInputEditText
+    private lateinit var tilName: TextInputLayout
+    private lateinit var btnChangePhoto: ImageButton
+    private lateinit var btnSaveProfile: MaterialButton
+    private lateinit var btnBack: MaterialButton
+    private lateinit var btnLogout: MaterialButton // Variabel Logout
+
+    // Navigasi
+    private lateinit var bottomNav: BottomNavigationView
 
     // Firebase
     private lateinit var db: FirebaseFirestore
@@ -45,32 +60,24 @@ class ProfileActivity : AppCompatActivity() {
     private var currentPhotoPath: String? = null
     private var encodedImage: String? = null
 
-    // Permission Launcher
+    // Permission & Activity Launchers
     private val requestCameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
-        if (isGranted) {
-            startCamera()
-        } else {
-            Toast.makeText(this, "Camera permission required", Toast.LENGTH_SHORT).show()
-        }
+        if (isGranted) startCamera() else Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
     }
 
-    // Camera Result Launcher
     private val takePictureLauncher = registerForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { isSuccess ->
         if (isSuccess && currentPhotoPath != null) {
             val file = File(currentPhotoPath!!)
             val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-            // Tampilkan ke ImageView
             imgProfile.setImageBitmap(bitmap)
-            // Encode ke Base64 untuk disimpan
             encodedImage = encodeImage(bitmap)
         }
     }
 
-    // Gallery Result Launcher
     private val pickGalleryLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -81,9 +88,7 @@ class ProfileActivity : AppCompatActivity() {
                 try {
                     val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
                     encodedImage = encodeImage(bitmap)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
+                } catch (e: IOException) { e.printStackTrace() }
             }
         }
     }
@@ -96,48 +101,113 @@ class ProfileActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        // Init Views
+        // --- INISIALISASI VIEW (FIXED) ---
         imgProfile = findViewById(R.id.imgProfile)
+
+        try { tilName = findViewById(R.id.tilName) } catch (e: Exception) { }
+
         edtName = findViewById(R.id.edtName)
+        edtEmail = findViewById(R.id.edtEmail)
         btnChangePhoto = findViewById(R.id.btnChangePhoto)
         btnSaveProfile = findViewById(R.id.btnSaveProfile)
+        btnBack = findViewById(R.id.btnBack)
+        bottomNav = findViewById(R.id.bottomNavigation)
 
+        // PENTING: Inisialisasi tombol Logout
+        btnLogout = findViewById(R.id.btnLogout)
+
+        // 1. Load Data
         loadProfile()
 
-        // Button Change Photo Click
-        btnChangePhoto.setOnClickListener {
-            showImagePickerOptions()
+        // 2. Logic Tombol Back
+        btnBack.setOnClickListener { kembaliKeHome() }
+
+        // 3. Logic Edit Nama
+        if (::tilName.isInitialized) {
+            tilName.setEndIconOnClickListener {
+                edtName.isEnabled = true
+                edtName.requestFocus()
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(edtName, InputMethodManager.SHOW_IMPLICIT)
+                Toast.makeText(this, "You can now edit your name", Toast.LENGTH_SHORT).show()
+            }
         }
 
-        // Button Save Click
+        // 4. Logic Ganti Foto
+        btnChangePhoto.setOnClickListener { showImagePickerOptions() }
+
+        // 5. Logic Simpan Profil
         btnSaveProfile.setOnClickListener {
             val name = edtName.text.toString().trim()
             if (name.isEmpty()) {
-                Toast.makeText(this, "Please enter your name", Toast.LENGTH_SHORT).show()
+                edtName.error = "Name required"
                 return@setOnClickListener
             }
             saveProfile(name, encodedImage)
         }
+
+        // 6. Logic LOGOUT
+        btnLogout.setOnClickListener {
+            showLogoutConfirmation()
+        }
+
+        // 7. Setup Bottom Navigation
+        bottomNav.selectedItemId = R.id.nav_profile
+        bottomNav.setOnItemSelectedListener { item ->
+            when(item.itemId) {
+                R.id.nav_home -> {
+                    kembaliKeHome()
+                    false
+                }
+                R.id.nav_profile -> true
+                else -> false
+            }
+        }
     }
 
-    // Menampilkan Dialog Pilihan (Kamera / Galeri)
+    private fun showLogoutConfirmation() {
+        AlertDialog.Builder(this)
+            .setTitle("Logout")
+            .setMessage("Are you sure you want to logout?")
+            .setPositiveButton("Yes") { _, _ ->
+                auth.signOut()
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
+            .setNegativeButton("No", null)
+            .show()
+    }
+
+    private fun kembaliKeHome() {
+        val intent = Intent(this, HomeActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        startActivity(intent)
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+        finish()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        kembaliKeHome()
+    }
+
+    // ... (Fungsi showImagePicker, startCamera, encodeImage, loadProfile, saveProfile SAMA SEPERTI SEBELUMNYA) ...
+    // Pastikan fungsi-fungsi helper tersebut tetap ada di bawah sini
+
     private fun showImagePickerOptions() {
         val options = arrayOf("Camera", "Gallery")
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Change Profile Photo")
-        builder.setItems(options) { dialog, which ->
-            when (which) {
-                0 -> checkCameraPermissionAndOpen() // Camera
-                1 -> openGallery() // Gallery
-            }
+        builder.setItems(options) { _, which ->
+            if (which == 0) checkCameraPermissionAndOpen() else openGallery()
         }
         builder.show()
     }
 
-    // 1. Logic Kamera
     private fun checkCameraPermissionAndOpen() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             startCamera()
         } else {
             requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
@@ -145,112 +215,70 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
-        // Membuat file temporary untuk menyimpan hasil foto [cite: 371]
-        val photoFile: File? = try {
-            createImageFile()
-        } catch (ex: IOException) {
-            null
-        }
-
+        val photoFile: File? = try { createImageFile() } catch (ex: IOException) { null }
         photoFile?.also {
-            // Menggunakan FileProvider untuk mendapatkan URI yang aman [cite: 393]
-            val photoURI: Uri = FileProvider.getUriForFile(
-                this,
-                "${applicationContext.packageName}.fileprovider",
-                it
-            )
-            // Meluncurkan kamera [cite: 584]
+            val photoURI: Uri = FileProvider.getUriForFile(this, "${applicationContext.packageName}.fileprovider", it)
             takePictureLauncher.launch(photoURI)
         }
     }
 
     @Throws(IOException::class)
     private fun createImageFile(): File {
-        // Create an image file name
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES) // [cite: 404]
-        return File.createTempFile(
-            "JPEG_${timeStamp}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
-        ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
-            currentPhotoPath = absolutePath
-        }
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile("JPEG_${timeStamp}_", ".jpg", storageDir).apply { currentPhotoPath = absolutePath }
     }
 
-    // 2. Logic Galeri
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         pickGalleryLauncher.launch(intent)
     }
 
-    // Helper: Convert Bitmap to Base64 String
     private fun encodeImage(bitmap: Bitmap): String {
-        // Resize bitmap to avoid Firestore limit (1MB)
         val previewWidth = 400
         val previewHeight = bitmap.height * previewWidth / bitmap.width
         val resizedBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false)
-
         val baos = ByteArrayOutputStream()
-        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos) // Compress quality 70%
+        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos)
         val imageBytes = baos.toByteArray()
         return Base64.encodeToString(imageBytes, Base64.DEFAULT)
     }
 
-    // Load Data from Firestore
     private fun loadProfile() {
         val user = auth.currentUser ?: return
-        db.collection("users").document(user.uid).get()
-            .addOnSuccessListener { doc ->
-                if (doc.exists()) {
-                    edtName.setText(doc.getString("nama"))
-
-                    // Load Profile Image if exists
-                    val photoBase64 = doc.getString("photo")
-                    if (!photoBase64.isNullOrEmpty()) {
-                        try {
-                            val decodedString = Base64.decode(photoBase64, Base64.DEFAULT)
-                            val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-                            imgProfile.setImageBitmap(decodedByte)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
+        edtEmail.setText(user.email)
+        db.collection("users").document(user.uid).get().addOnSuccessListener { doc ->
+            if (doc.exists()) {
+                edtName.setText(doc.getString("nama"))
+                val photoBase64 = doc.getString("photo")
+                if (!photoBase64.isNullOrEmpty()) {
+                    try {
+                        val decodedString = Base64.decode(photoBase64, Base64.DEFAULT)
+                        val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+                        imgProfile.setImageBitmap(decodedByte)
+                    } catch (e: Exception) { e.printStackTrace() }
                 }
             }
+        }
     }
 
-    // Save Data to Firestore
     private fun saveProfile(name: String, photoBase64: String?) {
         val user = auth.currentUser ?: return
-
-        // Disable button to prevent double click
         btnSaveProfile.isEnabled = false
         btnSaveProfile.text = "Saving..."
-
-        val profile = hashMapOf<String, Any>(
-            "nama" to name,
-            "email" to (user.email ?: "")
-        )
-        if (photoBase64 != null) {
-            profile["photo"] = photoBase64
-        }
-
-        db.collection("users").document(user.uid)
-            .set(profile, SetOptions.merge())
+        val profile = hashMapOf<String, Any>("nama" to name, "email" to (user.email ?: ""))
+        if (photoBase64 != null) profile["photo"] = photoBase64
+        db.collection("users").document(user.uid).set(profile, SetOptions.merge())
             .addOnSuccessListener {
-                Toast.makeText(this, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show()
                 btnSaveProfile.isEnabled = true
-                btnSaveProfile.text = "SAVE PROFILE"
-
-                // Optional: Kembali ke halaman sebelumnya
-                finish()
+                btnSaveProfile.text = "Save Profile"
+                edtName.isEnabled = false
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 btnSaveProfile.isEnabled = true
-                btnSaveProfile.text = "SAVE PROFILE"
+                btnSaveProfile.text = "Save Profile"
             }
     }
 }
