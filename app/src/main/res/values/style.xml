@@ -28,6 +28,10 @@
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">#056353</item>
     </style>
+    <style name="CircleImage" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 
 
 

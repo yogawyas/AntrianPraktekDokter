@@ -14,7 +14,6 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.antrianpraktekdokter.R
-import com.example.antrianpraktekdokter.patient.fragment.HomeFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -47,7 +46,7 @@ class ListAntrianActivity : AppCompatActivity() {
         findViewById<LinearLayout>(R.id.main).addView(progressBar, 1)
 
         findViewById<Button>(R.id.btnKembaliHome).setOnClickListener {
-            startActivity(Intent(this, HomeFragment::class.java))
+            startActivity(Intent(this, HomeActivity::class.java))
             finish()
         }
 

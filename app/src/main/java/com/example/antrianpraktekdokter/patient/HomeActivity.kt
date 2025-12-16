@@ -8,17 +8,17 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.antrianpraktekdokter.R
 import com.example.antrianpraktekdokter.auth.LoginActivity
-
 import com.example.antrianpraktekdokter.adapter.NewsAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationView
-
-
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.auth.User
 
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
     private lateinit var btnJanjiTemu: ImageButton
     private lateinit var navListAntrian: ImageButton
     private lateinit var btnNews: ImageButton
@@ -27,9 +27,11 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
 
         // Check jika user belum login, redirect ke Login
-        if (auth.currentUser == null) {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
@@ -37,19 +39,39 @@ class HomeActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_home)
 
-        val tvWelcome: TextView = findViewById(R.id.tvWelcome)
+        //val tvWelcome: TextView = findViewById(R.id.tvWelcome)
         val tvWelcomeName: TextView = findViewById(R.id.tvWelcomeName)
-        val tvLocation: TextView = findViewById(R.id.tvLocation)
+        //val tvLocation: TextView = findViewById(R.id.tvLocation)
         val tvDetails: TextView = findViewById(R.id.tvDetails)
         val tvSeeUsOnGMaps: TextView = findViewById(R.id.tvSeeUsOnGMaps)
-        val prefs = getSharedPreferences("AntrianPrefs", MODE_PRIVATE)
-        val nama = prefs.getString("nama", "") ?: ""
-        tvWelcome.text = "Selamat Datang, \n$nama!"
+        val bottomNav: BottomNavigationView = findViewById(R.id.bottomNavigation)
+        val namaDariIntent = intent.getStringExtra("nama")
+
+
+
+
+        //segala macam function
+
+
+        if (namaDariIntent != null) {
+            tvWelcomeName.text = "Hello, $namaDariIntent!"
+        } else {
+            tvWelcomeName.text = "Loading..."
+            db.collection("users").document(currentUser.uid).get()
+                .addOnSuccessListener { document ->
+                    if (document != null && document.exists()) {
+                        val namaDiDb = document.getString("nama")
+                        tvWelcomeName.text = "${namaDiDb ?: "User"}!"
+                    }
+                }
+                .addOnFailureListener {
+                    tvWelcomeName.text = "User!"
+                }
+        }
+
         btnJanjiTemu = findViewById(R.id.btnJanjiTemu)
         navListAntrian = findViewById(R.id.queueNum)
         btnNews = findViewById(R.id.newsButton)
-
-        // Handle klik button Janji Temu
         btnJanjiTemu.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -66,7 +88,6 @@ class HomeActivity : AppCompatActivity() {
             }
             true
         }
-
 //        btnJanjiTemu.setOnClickListener {
 //            val intent = Intent(this, JanjiTemuActivity::class.java)
 //            startActivity(intent)
@@ -78,7 +99,7 @@ class HomeActivity : AppCompatActivity() {
 
         val newsButton = findViewById<ImageButton>(R.id.newsButton)
         newsButton.setOnClickListener {
-            startActivity(Intent(this, NewsAdapter::class.java))
+            startActivity(Intent(this, BeritaActivity::class.java))
         }
 
         val historyButton = findViewById<ImageButton>(R.id.historyButton)
@@ -86,16 +107,28 @@ class HomeActivity : AppCompatActivity() {
             startActivity(Intent(this, HistoryMedisActivity::class.java))
         }
 
-        // Setup Bottom Navigation dengan tipe eksplisit
-        val bottomNav: BottomNavigationView = findViewById(R.id.bottomNavigation)
+        // animasu Bottom Nav
         bottomNav.setOnItemSelectedListener { item ->
-            when(item.itemId) {
+            val menuView = bottomNav.findViewById<android.view.View>(item.itemId)
 
+            if (menuView != null) {
+                menuView.animate()
+                    .scaleX(1.2f)
+                    .scaleY(1.2f)
+                    .setDuration(100)
+                    .withEndAction {
+                        menuView.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
+                    }
+                    .start()
+            }
+            when(item.itemId) {
+                R.id.nav_home -> {
+                    true
+                }
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
                     true
                 }
-
                 else -> false
             }
         }

@@ -62,10 +62,6 @@ class HistoryMedisActivity : AppCompatActivity() {
                     startActivity(Intent(this, HomeActivity::class.java))
                     true
                 }
-                R.id.nav_notifikasi -> {
-                    startActivity(Intent(this, BeritaActivity::class.java))
-                    true
-                }
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
                     true

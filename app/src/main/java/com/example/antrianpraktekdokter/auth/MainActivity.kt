@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.antrianpraktekdokter.DoctorPage.DokterActivity
 import com.example.antrianpraktekdokter.R
+import com.example.antrianpraktekdokter.patient.HomeActivity
 //import com.facebook.CallbackManager
 //import com.facebook.FacebookCallback
 //import com.facebook.FacebookException
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
         // 3. Navigasi Tombol Standar
         btnGoLogin.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
+            startActivity(Intent(this, HomeActivity::class.java))
         }
 
         btnGoRegister.setOnClickListener {
@@ -188,7 +189,7 @@ class MainActivity : AppCompatActivity() {
                     val intent = when (role) {
                         "doctor" -> Intent(this, com.example.antrianpraktekdokter.doctor.DoctorHomeActivity::class.java)
                         "admin" -> Intent(this, com.example.antrianpraktekdokter.admin.AdminHomeActivity::class.java)
-                        else -> Intent(this, com.example.antrianpraktekdokter.patient.DashboardActivity::class.java)
+                        else -> Intent(this, com.example.antrianpraktekdokter.patient.HomeActivity::class.java)
                     }
                     intent.putExtra("nama", nama)
                     intent.putExtra("role", role)

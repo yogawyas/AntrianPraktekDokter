@@ -1,140 +1,338 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:paddingTop="70dp"
-    android:paddingBottom="40dp"
-    android:background="@drawable/appointment"
-    android:backgroundTintMode="src_over">
+    android:background="@drawable/bg_activity"
+    tools:context=".patient.JanjiTemuActivity">
 
-    <ScrollView
-        android:id="@+id/main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="16dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="80dp"
-        tools:context=".patient.JanjiTemuActivity">
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="412dp"
+        android:layout_height="138dp"
+        android:orientation="horizontal"
+        android:padding="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBack"
+            style="@style/Animation.Design.BottomSheetDialog"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="2dp"
+            android:paddingStart="1.5dp"
+            app:backgroundTint="@android:color/transparent"
+            app:cornerRadius="100dp"
+            app:icon="@drawable/baseline_arrow_back_24"
+            app:iconSize="48dp"
+            app:iconTint="@null"
+            app:tint="@null" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="298dp"
+            android:layout_height="110dp"
+            android:layout_marginStart="16dp"
             android:orientation="vertical">
 
-            <androidx.cardview.widget.CardView
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/signika_bold"
+                android:text="MAKE AN APPOINTMENT"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="225dp"
+                android:layout_height="59dp"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/signika_light"
+                android:text="You can make an appointment with Dr. Alexanders. Insert your detail and time of appointment."
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/formContainer"
+        android:layout_width="374dp"
+        android:layout_height="650dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/bg_bottom_sheet_rounded"
+        android:gravity="start"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.432"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/headerLayout"
+        app:layout_constraintVertical_bias="0.163">
+
+        <ScrollView
+            android:layout_width="318dp"
+            android:layout_height="600dp"
+            android:scrollbars="none">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="6dp">
+                android:orientation="vertical"
+                android:paddingBottom="40dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/signika_medium"
+                    android:text="Full Name"
+                    android:textColor="@color/primary" />
+
+                <EditText
+                    android:id="@+id/etNama"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/primary"
+                    android:drawablePadding="12dp"
+                    android:fontFamily="@font/signika_medium"
+                    android:hint="Insert your full name here..." />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/signika_medium"
+                    android:text="Birthdate"
+                    android:textColor="@color/primary" />
+
+                <EditText
+                    android:id="@+id/etBirthdate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/primary"
+                    android:clickable="true"
+                    android:drawableStart="@drawable/ic_brithdate"
+                    android:drawablePadding="12dp"
+                    android:focusable="false"
+                    android:fontFamily="@font/signika_medium"
+                    android:hint="DD/MM/YY" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/signika_medium"
+                    android:text="Age"
+                    android:textColor="@color/primary" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:backgroundTint="@color/tropical_teal">
-
-                    <EditText
-                        android:id="@+id/etNama"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        android:hint="Nama Lengkap" />
+                    android:fontFamily="@font/signika_medium"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <EditText
                         android:id="@+id/etUsia"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        android:backgroundTint="#2196F3"
-                        android:hint="Usia"
-                        android:inputType="number" />
-
-                    <EditText
-                        android:id="@+id/etTanggal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        android:backgroundTint="#2196F3"
-                        android:clickable="true"
-                        android:focusable="false"
-                        android:hint="Pilih Hari" />
-
-                    <EditText
-                        android:id="@+id/etJam"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        android:backgroundTint="#2196F3"
-                        android:clickable="true"
-                        android:focusable="false"
-                        android:hint="Pilih Jam" />
-
-                    <EditText
-                        android:id="@+id/etKeluhan"
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:layout_marginBottom="12dp"
-                        android:backgroundTint="#2196F3"
-                        android:gravity="top"
-                        android:hint="Tuliskan keluhan Anda..."
-                        android:inputType="textMultiLine" />
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/primary"
+                        android:drawableStart="@drawable/ic_age"
+                        android:drawablePadding="12dp"
+                        android:fontFamily="@font/signika_medium"
+                        android:hint="0"
+                        android:inputType="number"
+                        android:textSize="20sp" />
 
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp"
-                        android:text="Dokter:"
-                        android:textColor="#000000"
-                        android:textStyle="bold" />
+                        android:fontFamily="@font/signika_medium"
+                        android:text="years old"
+                        android:textColor="@color/primary" />
+                </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/tvDokter"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:text="Dr. Alexander (Umum)"
-                        android:textColor="#2196F3"
-                        android:textSize="16sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/signika_medium"
+                    android:text="Appointment Date"
+                    android:textColor="@color/primary" />
 
-                    <CheckBox
-                        android:id="@+id/cbAlergi"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:text="Memiliki alergi obat" />
+                <EditText
+                    android:id="@+id/etTanggal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/primary"
+                    android:clickable="true"
+                    android:drawableStart="@drawable/ic_calendar_today"
+                    android:drawablePadding="12dp"
+                    android:focusable="false"
+                    android:fontFamily="@font/signika_medium"
+                    android:hint="DD/MM/YY" />
 
-                    <CheckBox
-                        android:id="@+id/cbPenyakitBawaan"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:text="Memiliki penyakit bawaan" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/signika_medium"
+                    android:text="Appointment Time"
+                    android:textColor="@color/primary" />
+
+                <EditText
+                    android:id="@+id/etJam"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/primary"
+                    android:clickable="true"
+                    android:drawableStart="@drawable/ic_access_time"
+                    android:drawablePadding="12dp"
+                    android:focusable="false"
+                    android:fontFamily="@font/signika_medium"
+                    android:hint="00:00" />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    app:cardBackgroundColor="#E6E6E6"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp">
 
                     <LinearLayout
-                        android:id="@+id/containerExtraFields"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:orientation="vertical" />
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                    <Button
-                        android:id="@+id/btnDaftar"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:backgroundTint="#4CAF50"
-                        android:text="Daftar Janji Temu"
-                        android:textColor="@android:color/white"
-                        android:textStyle="bold" />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:layout_marginBottom="8dp"
+                            android:background="@color/primary" />
 
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/signika_medium"
+                            android:text="Doctor :"
+                            android:textColor="@color/primary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvDokter"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/signika_medium"
+                            android:text="Dr. Alexanders (General)\nPractice Time 08:00 - 21:00"
+                            android:textColor="@color/primary" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/signika_medium"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/signika_medium"
+                                android:text="Status : Open"
+                                android:textColor="@color/primary" />
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/circle_green_status" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <EditText
+                    android:id="@+id/etKeluhan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="@color/primary"
+                    android:fontFamily="@font/signika_medium"
+                    android:hint="Describe your symptoms..." />
+
+                <CheckBox
+                    android:id="@+id/cbAlergi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/signika_medium"
+                    android:text="Medicine Allergies"
+                    android:textColor="@color/primary" />
+
+                <CheckBox
+                    android:id="@+id/cbPenyakitBawaan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/signika_medium"
+                    android:text="Congenital disease"
+                    android:textColor="@color/primary" />
+
+                <LinearLayout
+                    android:id="@+id/containerExtraFields"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_appointment"
+        android:layout_width="412dp"
+        android:layout_height="110dp"
+        android:orientation="horizontal"
+        android:layout_marginBottom="25dp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/formContainer">
+        <ImageButton
+            android:id="@+id/help"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:backgroundTint="@null"
+            android:background="@null"
+            android:src="@drawable/ic_help"
+            android:contentDescription="Help"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="35dp"
+            android:layout_marginStart="35dp"
+            />
+        <ImageButton
+            android:id="@+id/btnJanjiTemu"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:backgroundTint="@null"
+            android:background="@drawable/janji_temu"
+            android:contentDescription="JanjiTemu"
+
+            />
+
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

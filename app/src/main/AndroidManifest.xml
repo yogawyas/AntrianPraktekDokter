@@ -4,19 +4,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 
-    <uses-feature
-        android:name="android.hardware.touchscreen"
-        android:required="false" />
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
-    <uses-feature
-        android:name="android.software.leanback"
-        android:required="false" />
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -26,22 +19,29 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/assets"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AntrianPraktekDokter">
-        android:usesCleartextTraffic="true"
+        android:theme="@style/Theme.AntrianPraktekDokter"
+        android:usesCleartextTraffic="true">
 
-        <activity
-            android:name=".patient.DashboardActivity"
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
-            android:theme="@style/Theme.AntrianPraktekDokter" />
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+
         <activity
             android:name=".auth.MainActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".patient.HomeActivity"
             android:exported="false" />
@@ -75,15 +75,7 @@
         <activity
             android:name=".DoctorPage.DokterActivity"
             android:exported="false" />
-<!--        <activity-->
-<!--            android:name=".BrowseErrorActivity"-->
-<!--            android:exported="false" />-->
-<!--        <activity-->
-<!--            android:name=".PlaybackActivity"-->
-<!--            android:exported="false" />-->
-<!--        <activity-->
-<!--            android:name=".patient.DetailsActivity"-->
-<!--            android:exported="false" />-->
+
     </application>
 
 </manifest>
