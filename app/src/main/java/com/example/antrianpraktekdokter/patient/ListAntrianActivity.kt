@@ -31,7 +31,12 @@ class ListAntrianActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_list_antrian)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        // 1. DEKLARASI mainLayout agar tidak 'Unresolved reference'
+        // Sesuai dengan android:id="@+id/main" di XML ConstraintLayout Anda
+        val mainLayout = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.main)
+
+        // 2. Set Padding untuk System Bars (Edge-to-Edge)
+        ViewCompat.setOnApplyWindowInsetsListener(mainLayout) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -39,14 +44,25 @@ class ListAntrianActivity : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
+
+        // 3. Inisialisasi ProgressBar secara programmatik (atau lewat XML)
         progressBar = ProgressBar(this).apply {
-            layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+            layoutParams = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                // Menempatkan ProgressBar di tengah ConstraintLayout
+                bottomToBottom = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+                topToTop = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+                startToStart = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+                endToEnd = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+            }
             visibility = View.GONE
         }
-        findViewById<LinearLayout>(R.id.main).addView(progressBar, 1)
+        mainLayout.addView(progressBar)
 
-        findViewById<Button>(R.id.btnKembaliHome).setOnClickListener {
-            startActivity(Intent(this, HomeActivity::class.java))
+        // 4. Tombol Back (Gunakan finish agar kembali ke Home tanpa tumpukan activity)
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBack).setOnClickListener {
             finish()
         }
 
@@ -58,7 +74,6 @@ class ListAntrianActivity : AppCompatActivity() {
         container.removeAllViews()
         progressBar.visibility = View.VISIBLE
 
-        val db = FirebaseFirestore.getInstance()
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val today = sdf.format(Date())
 
@@ -69,184 +84,100 @@ class ListAntrianActivity : AppCompatActivity() {
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     progressBar.visibility = View.GONE
-                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                     return@addSnapshotListener
                 }
 
                 container.removeAllViews()
+
+                // Tampilkan teks jika kosong (ID dari XML sebelumnya)
+                val tvEmpty = findViewById<TextView>(R.id.tvEmptyQueue)
                 if (snapshot?.isEmpty == true) {
-                    val tvEmpty = TextView(this).apply {
-                        text = "Belum ada antrian hari ini"
-                        textSize = 16f
-                        setTextColor(Color.DKGRAY)
-                        setPadding(dpToPx(8), dpToPx(16), dpToPx(8), 0)
-                    }
-                    container.addView(tvEmpty)
+                    tvEmpty?.visibility = View.VISIBLE
                     progressBar.visibility = View.GONE
                     return@addSnapshotListener
+                } else {
+                    tvEmpty?.visibility = View.GONE
                 }
 
-                var position = 1
-                var userPosition = -1
                 val userId = auth.currentUser?.uid
+                var position = 1
 
                 for (doc in snapshot!!.documents) {
-                    val nama = doc.getString("nama_pasien") ?: ""
-                    val jam = doc.getString("jam") ?: ""
-                    val keluhan = doc.getString("keluhan") ?: ""
+                    // Inflate layout dari XML item_antrian_patient
+                    val itemView = layoutInflater.inflate(R.layout.item_antrian_patient, container, false)
+
+                    // Binding View dari XML
+                    val tvNumberLabel = itemView.findViewById<TextView>(R.id.tvNumberLabel)
+                    val tvNameValue = itemView.findViewById<TextView>(R.id.tvNameValue)
+                    val tvTimeValue = itemView.findViewById<TextView>(R.id.tvTimeValue)
+                    val tvProblemsValue = itemView.findViewById<TextView>(R.id.tvProblemsValue)
+                    val tvStatusText = itemView.findViewById<TextView>(R.id.tvStatusText)
+                    val viewStatusIndicator = itemView.findViewById<View>(R.id.viewStatusIndicator)
+                    val btnCancel = itemView.findViewById<Button>(R.id.btnCancelAppointment)
+
                     val selesai = doc.getBoolean("selesai") ?: false
                     val dipanggil = doc.getLong("dipanggil")?.toInt() ?: 0
-                    val nomor = doc.getLong("nomor_antrian")?.toInt() ?: 0
                     val docUserId = doc.getString("user_id")
 
-                    val estimasi = if (selesai || dipanggil > 0) "Sedang/Selesai" else "${position * 15} menit"
-                    if (docUserId == userId && !selesai && dipanggil == 0) {
-                        userPosition = position
-                    }
+                    // Isi Data
+                    tvNumberLabel.text = "Number ${position}"
+                    tvNameValue.text = doc.getString("nama_pasien")
+                    tvTimeValue.text = doc.getString("jam")
+                    tvProblemsValue.text = doc.getString("keluhan")
 
-                    val card = CardView(this).apply {
-                        val lp = LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        )
-                        lp.setMargins(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8))
-                        layoutParams = lp
-                        radius = dpToPx(10).toFloat()
-                        cardElevation = dpToPx(6).toFloat()
-                        setCardBackgroundColor(
-                            when {
-                                selesai -> Color.parseColor("#C8E6C9")
-                                dipanggil > 0 -> Color.parseColor("#FFF9C4")
-                                else -> Color.WHITE
-                            }
-                        )
-                        useCompatPadding = true
-                    }
-
-                    // Ubah inner jadi RelativeLayout agar tombol bisa di kanan bawah
-                    val inner = RelativeLayout(this).apply {
-                        setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12))
-                    }
-
-                    // Layout teks
-                    val infoLayout = LinearLayout(this).apply {
-                        orientation = LinearLayout.VERTICAL
-                        id = View.generateViewId()
-                    }
-
-                    val tvNomor = TextView(this).apply {
-                        text = "No. Antrian: $nomor"
-                        textSize = 14f
-                        setTextColor(Color.parseColor("#2196F3"))
-                    }
-
-                    val tvNama = TextView(this).apply {
-                        text = "Nama: $nama"
-                        textSize = 16f
-                        setTextColor(Color.BLACK)
-                    }
-
-                    val tvJam = TextView(this).apply {
-                        text = "Jam: $jam"
-                        textSize = 14f
-                        setTextColor(Color.parseColor("#2196F3"))
-                    }
-
-                    val tvKeluhan = TextView(this).apply {
-                        text = "Keluhan: $keluhan"
-                        textSize = 14f
-                        setTextColor(Color.DKGRAY)
-                    }
-
-                    val tvStatus = TextView(this).apply {
-                        text = when {
-                            selesai -> "Selesai ✅"
-                            dipanggil > 0 -> "Sedang dipanggil ($dipanggil)"
-                            else -> "Menunggu"
+                    // Logika Status
+                    when {
+                        selesai -> {
+                            tvStatusText.text = "Finished"
+                            tvStatusText.setTextColor(Color.parseColor("#4CAF50"))
+                            viewStatusIndicator.setBackgroundColor(Color.parseColor("#4CAF50"))
+                            btnCancel.visibility = View.GONE
                         }
-                        textSize = 14f
-                        setTextColor(
-                            when {
-                                selesai -> Color.parseColor("#388E3C")
-                                dipanggil > 0 -> Color.parseColor("#FF6F00")
-                                else -> Color.DKGRAY
-                            }
-                        )
-                    }
-
-                    val tvEstimasi = TextView(this).apply {
-                        text = "Estimasi: $estimasi"
-                        textSize = 14f
-                        setTextColor(Color.DKGRAY)
-                    }
-
-                    infoLayout.addView(tvNomor)
-                    infoLayout.addView(tvNama)
-                    infoLayout.addView(tvJam)
-                    infoLayout.addView(tvKeluhan)
-                    infoLayout.addView(tvStatus)
-                    infoLayout.addView(tvEstimasi)
-
-                    val infoParams = RelativeLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        addRule(RelativeLayout.ALIGN_PARENT_START)
-                        addRule(RelativeLayout.ALIGN_PARENT_TOP)
-                    }
-                    inner.addView(infoLayout, infoParams)
-
-                    // Tombol batalkan (kanan bawah)
-                    if (docUserId == userId && !selesai && dipanggil == 0) {
-                        val btnCancel = Button(this).apply {
-                            text = "Batalkan Antrian"
-                            setTextColor(Color.WHITE)
-                            textSize = 14f
-                            background = resources.getDrawable(R.drawable.bg_button_red, null)
+                        dipanggil > 0 -> {
+                            tvStatusText.text = "Calling"
+                            tvStatusText.setTextColor(Color.parseColor("#FF9800"))
+                            viewStatusIndicator.setBackgroundColor(Color.parseColor("#FF9800"))
+                            btnCancel.visibility = View.GONE
                         }
+                        else -> {
+                            tvStatusText.text = "Waiting"
+                            tvStatusText.setTextColor(Color.parseColor("#FFEB3B")) // Kuning sesuai gambar
+                            viewStatusIndicator.setBackgroundColor(Color.parseColor("#FFEB3B"))
 
-                        val paramsBtn = RelativeLayout.LayoutParams(
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        ).apply {
-                            addRule(RelativeLayout.ALIGN_PARENT_END)
-                            addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-                        }
-
-                        btnCancel.layoutParams = paramsBtn
-
-                        btnCancel.setOnClickListener {
-                            AlertDialog.Builder(this@ListAntrianActivity)
-                                .setTitle("Batalkan Antrian?")
-                                .setMessage("Yakin ingin membatalkan antrian Anda?")
-                                .setPositiveButton("Ya") { _, _ ->
-                                    doc.reference.update("dihapus", true)
-                                        .addOnSuccessListener {
-                                            Toast.makeText(
-                                                this@ListAntrianActivity,
-                                                "Antrian dibatalkan",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
+                            // Hanya tampilkan tombol cancel jika ini milik user yang login
+                            if (docUserId == userId) {
+                                btnCancel.visibility = View.VISIBLE
+                                btnCancel.setOnClickListener {
+                                    showCancelDialog(doc.reference)
                                 }
-                                .setNegativeButton("Tidak", null)
-                                .show()
+                            }
                         }
-
-                        inner.addView(btnCancel)
                     }
 
-                    card.addView(inner)
-                    container.addView(card)
-
-                    if (!selesai && dipanggil == 0) position++
+                    container.addView(itemView)
+                    if (!selesai) position++
                 }
-
                 progressBar.visibility = View.GONE
-                if (userPosition > 0) {
-                    Toast.makeText(this, "Antrian Anda saat ini: Nomor $userPosition", Toast.LENGTH_LONG).show()
-                }
             }
+    }
+    private fun showCancelDialog(docRef: com.google.firebase.firestore.DocumentReference) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_cancel_queue, null)
+        val builder = AlertDialog.Builder(this).setView(dialogView)
+        val dialog = builder.create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialogView.findViewById<Button>(R.id.btnNo).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogView.findViewById<Button>(R.id.btnYes).setOnClickListener {
+            docRef.update("dihapus", true).addOnSuccessListener {
+                Toast.makeText(this, "Antrian dibatalkan", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
     }
 
     private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()

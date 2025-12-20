@@ -1,62 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/dokterbg"
+    android:background="@drawable/bg_dokter_activity"
     android:padding="8dp">
 
-    <TextView
-        android:id="@+id/tvHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TODAY DOCTOR'S LIST"
-        android:gravity="center"
-        android:background="#D9D9D9"
-        android:textStyle="bold"
-        android:textColor="@color/primary"
-        android:textSize="20sp"
-        android:padding="12dp" />
-
-    <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Logout Dokter"
-        android:backgroundTint="#FF9800"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
-        android:layout_marginTop="8dp" />
-
-    <!-- Statistik pasien -->
     <LinearLayout
-        android:id="@+id/statLayout"
+        android:id="@+id/headerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="8dp"
-        android:padding="8dp"
-        android:background="#BBDEFB">
+        android:gravity="center_vertical"
+        android:padding="24dp"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/tvSelesai"
-            android:layout_width="wrap_content"
+            android:layout_width="158dp"
             android:layout_height="wrap_content"
-            android:text="Pasien selesai: 0"
-            android:textColor="#000000"
-            android:textSize="16sp"
-            android:layout_marginEnd="16dp" />
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:paddingStart="50dp"
+            android:gravity="center"
+            android:text="Welcome Back \n Dr. Alexander"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:fontFamily="@font/signika_bold" />
 
-        <TextView
-            android:id="@+id/tvSisa"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sisa pasien: 0"
-            android:textColor="#000000"
-            android:textSize="16sp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogout"
+            style="@style/Animation.Design.BottomSheetDialog"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:paddingStart="1.5dp"
+            app:backgroundTint="@android:color/transparent"
+            app:cornerRadius="100dp"
+            app:icon="@drawable/ic_logout"
+            app:iconSize="50dp"
+            app:iconTint="@null"
+            app:tint="@null" />
     </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/statCard"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="6dp"
+        app:cardBackgroundColor="@android:color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/signika_medium"
+                    android:text="WAITING"
+                    android:textSize="10sp"
+                    android:textColor="@color/primary" />
+                <TextView
+                    android:id="@+id/tvSisa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#FF3737" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#51BA31" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.2"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PATIENTS"
+                    android:fontFamily="@font/signika_bold"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="STATISTICS"
+                    android:fontFamily="@font/signika_medium"
+                    android:textSize="10sp"
+                    android:textColor="@color/primary" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#51BA31" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/signika_medium"
+                    android:text="FINISHED"
+                    android:textSize="10sp"
+                    android:textColor="@color/primary" />
+                <TextView
+                    android:id="@+id/tvSelesai"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
     <ScrollView
         android:layout_width="match_parent"

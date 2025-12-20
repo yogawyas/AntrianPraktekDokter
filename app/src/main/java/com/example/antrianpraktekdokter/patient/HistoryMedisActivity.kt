@@ -1,16 +1,19 @@
 package com.example.antrianpraktekdokter.patient
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,13 +31,15 @@ class HistoryMedisActivity : AppCompatActivity() {
     private lateinit var recyclerHistory: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var tvEmpty: TextView
-    private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_history_medis)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.layout_profile)) { v, insets ->
+
+        // FIX: id harus sesuai dengan XML (id/main)
+        val mainView = findViewById<View>(R.id.main)
+        ViewCompat.setOnApplyWindowInsetsListener(mainView) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -46,36 +51,14 @@ class HistoryMedisActivity : AppCompatActivity() {
         recyclerHistory = findViewById(R.id.recyclerHistory)
         progressBar = findViewById(R.id.progressBar)
         tvEmpty = findViewById(R.id.tvEmpty)
-        toolbar = findViewById(R.id.toolbar)
 
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Riwayat Medis"
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBack).setOnClickListener {
+            finish()
+        }
 
         recyclerHistory.layoutManager = LinearLayoutManager(this)
 
-        // Setup Bottom Navigation sama seperti Home
-        val bottomNav: BottomNavigationView = findViewById(R.id.bottomNavigation)
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    true
-                }
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    true
-                }
-                else -> false
-            }
-        }
-
         loadHistory()
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
     }
 
     private fun loadHistory() {
@@ -85,52 +68,90 @@ class HistoryMedisActivity : AppCompatActivity() {
         val user = auth.currentUser ?: return
         db.collection("antrian")
             .whereEqualTo("user_id", user.uid)
-            .whereIn("status", listOf("selesai", "dibatalkan"))  // Filter selesai atau dibatalkan
-            .orderBy("tanggal_simpan", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { snapshot ->
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, e ->
                 progressBar.visibility = View.GONE
-                if (snapshot.isEmpty) {
-                    tvEmpty.text = "Belum ada riwayat kunjungan"
+                if (e != null) {
+                    Log.e("FirestoreError", e.message.toString())
+                    return@addSnapshotListener
+                }
+
+                if (snapshot == null || snapshot.isEmpty) {
                     tvEmpty.visibility = View.VISIBLE
                 } else {
-                    val historyList = snapshot.documents.map { doc ->
+                    // Filter hanya yang selesai atau dihapus/cancel
+                    val historyList = snapshot.documents.filter {
+                        it.getBoolean("selesai") == true || it.getBoolean("dihapus") == true
+                    }.map { doc ->
                         HistoryItem(
-                            nomor = doc.getLong("nomor_antrian")?.toInt() ?: 0,
+                            nama = doc.getString("nama_pasien") ?: "",
                             tanggal = doc.getString("tanggal_simpan") ?: "",
                             jam = doc.getString("jam") ?: "",
                             keluhan = doc.getString("keluhan") ?: "",
-                            status = doc.getString("status") ?: ""
+                            resep = doc.getString("resep_obat") ?: "No prescription",
+                            saran = doc.getString("saran_dokter") ?: "No advice",
+                            isSelesai = doc.getBoolean("selesai") ?: false,
+                            isDibatalkan = doc.getBoolean("dihapus") ?: false
                         )
                     }
-                    recyclerHistory.adapter = HistoryAdapter(historyList)
+
+                    if (historyList.isEmpty()) {
+                        tvEmpty.visibility = View.VISIBLE
+                    } else {
+                        tvEmpty.visibility = View.GONE
+                        // Memasukkan lambda click listener ke constructor adapter
+                        recyclerHistory.adapter = HistoryAdapter(historyList) { item ->
+                            if (item.isSelesai) {
+                                showDetailPopup(item)
+                            } else {
+                                Toast.makeText(this, "Cancelled records have no detail", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
                 }
             }
-            .addOnFailureListener { e ->
-                progressBar.visibility = View.GONE
-                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+    }
+
+    private fun showDetailPopup(item: HistoryItem) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_detail_history, null)
+        val dialog = AlertDialog.Builder(this).setView(dialogView).create()
+
+        dialogView.findViewById<TextView>(R.id.detNama).text = item.nama
+        dialogView.findViewById<TextView>(R.id.detSymptom).text = item.keluhan
+        dialogView.findViewById<TextView>(R.id.detPrescription).text = item.resep
+        dialogView.findViewById<TextView>(R.id.detAdvice).text = item.saran
+
+        dialogView.findViewById<Button>(R.id.btnClose).setOnClickListener { dialog.dismiss() }
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
     }
 }
 
-// Data class untuk item history
+// FIX: Data Class dengan atribut yang lengkap
 data class HistoryItem(
-    val nomor: Int,
+    val nama: String,
     val tanggal: String,
     val jam: String,
     val keluhan: String,
-    val status: String
+    val resep: String,
+    val saran: String,
+    val isSelesai: Boolean,
+    val isDibatalkan: Boolean
 )
 
-// Adapter untuk RecyclerView
-class HistoryAdapter(private val historyList: List<HistoryItem>) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
+// FIX: Adapter dengan listener untuk handle click card
+class HistoryAdapter(
+    private val historyList: List<HistoryItem>,
+    private val onItemClick: (HistoryItem) -> Unit
+) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvNomor: TextView = view.findViewById(R.id.tvNomor)
-        val tvTanggal: TextView = view.findViewById(R.id.tvTanggal)
-        val tvJam: TextView = view.findViewById(R.id.tvJam)
-        val tvKeluhan: TextView = view.findViewById(R.id.tvKeluhan)
-        val tvStatus: TextView = view.findViewById(R.id.tvStatus)
+        val viewStatusBar: View = view.findViewById(R.id.viewStatusBar)
+        val tvDate: TextView = view.findViewById(R.id.tvDate)
+        val tvSymptomPreview: TextView = view.findViewById(R.id.tvSymptomPreview)
+        val tvStatusLabel: TextView = view.findViewById(R.id.tvStatusLabel)
+        val tvTime: TextView = view.findViewById(R.id.tvTime)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -140,11 +161,21 @@ class HistoryAdapter(private val historyList: List<HistoryItem>) : RecyclerView.
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = historyList[position]
-        holder.tvNomor.text = "No. ${item.nomor}"
-        holder.tvTanggal.text = "Tanggal: ${item.tanggal}"
-        holder.tvJam.text = "Jam: ${item.jam}"
-        holder.tvKeluhan.text = "Keluhan: ${item.keluhan}"
-        holder.tvStatus.text = "Status: ${item.status}"
+        holder.tvDate.text = item.tanggal
+        holder.tvTime.text = item.jam
+        holder.tvSymptomPreview.text = item.keluhan
+
+        if (item.isDibatalkan) {
+            holder.tvStatusLabel.text = "CANCELLED"
+            holder.tvStatusLabel.setTextColor(Color.RED)
+            holder.viewStatusBar.setBackgroundColor(Color.RED)
+        } else {
+            holder.tvStatusLabel.text = "FINISHED"
+            holder.tvStatusLabel.setTextColor(Color.parseColor("#4CAF50"))
+            holder.viewStatusBar.setBackgroundColor(Color.parseColor("#4CAF50"))
+        }
+
+        holder.itemView.setOnClickListener { onItemClick(item) }
     }
 
     override fun getItemCount() = historyList.size

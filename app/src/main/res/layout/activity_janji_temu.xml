@@ -64,6 +64,7 @@
         android:layout_height="650dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/bg_bottom_sheet_rounded"
         android:gravity="start"
         android:orientation="vertical"
@@ -261,11 +262,18 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/signika_medium"
+                    android:text="Your Symptoms"
+                    android:textColor="@color/primary" />
+
                 <EditText
                     android:id="@+id/etKeluhan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
                     android:backgroundTint="@color/primary"
                     android:fontFamily="@font/signika_medium"
                     android:hint="Describe your symptoms..." />

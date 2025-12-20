@@ -1,48 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/dokterbg"
-    android:padding="0dp">
+    android:background="@drawable/bg_activity">
 
+    <ProgressBar
+        android:id="@+id/loadingProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvHeader"
+    <LinearLayout
+        android:id="@+id/headerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Daftar Antrian"
-        android:gravity="center"
-        android:background="@color/navDown"
-        android:textColor="@android:color/white"
-        android:textSize="20sp"
-        android:padding="30dp"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="24dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <!-- Tombol kembali ke Home -->
-    <Button
-        android:id="@+id/btnKembaliHome"
-        android:layout_width="319dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/button"
-        android:text="Back To Home"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
-        android:outlineAmbientShadowColor="@color/black"
-        />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBack"
+            style="@style/Animation.Design.BottomSheetDialog"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="2dp"
+            android:paddingStart="2.25dp"
+            app:backgroundTint="@android:color/transparent"
+            app:cornerRadius="100dp"
+            app:icon="@drawable/baseline_arrow_back_24"
+            app:iconSize="48dp"
+            app:iconTint="@null"
+            app:tint="@null" />
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="8dp">
-
-        <LinearLayout
-            android:id="@+id/containerAntrian"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="16dp"/>
-    </ScrollView>
-</LinearLayout>
+            android:text="QUEUE LIST"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/signika_bold" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/whiteContainer"
+        android:layout_width="375dp"
+        android:layout_height="650dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_bottom_sheet_rounded"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="20dp"
+            android:scrollbars="none"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="-32dp">
+
+            <LinearLayout
+                android:id="@+id/containerAntrian"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="100dp">
+
+                <TextView
+                    android:id="@+id/tvEmptyQueue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="150dp"
+                    android:fontFamily="@font/signika_medium"
+                    android:gravity="center"
+                    android:text="There are no more queue"
+                    android:textColor="#BDBDBD"
+                    android:textSize="28sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

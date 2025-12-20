@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Medical Record &amp; Prescription"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#04AA78"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etPrescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Doctor's Prescription (Resep Obat)"
+        android:minLines="3"
+        android:gravity="top"
+        android:background="@android:drawable/editbox_background"/>
+
+    <EditText
+        android:id="@+id/etAdvice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Doctor's Advice (Saran Dokter)"
+        android:minLines="3"
+        android:gravity="top"
+        android:background="@android:drawable/editbox_background"/>
+
+    <Button
+        android:id="@+id/btnSaveRecord"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="COMPLETE &amp; FINISH"
+        android:backgroundTint="#04AA78"/>
+</LinearLayout>

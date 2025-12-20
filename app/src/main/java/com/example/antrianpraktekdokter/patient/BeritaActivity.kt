@@ -13,7 +13,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +23,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import com.example.antrianpraktekdokter.R
+import com.google.android.material.button.MaterialButton
 import org.json.JSONObject
 
 class BeritaActivity : AppCompatActivity() {
@@ -31,11 +31,14 @@ class BeritaActivity : AppCompatActivity() {
     private lateinit var rvHealthNews: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var tvEmpty: TextView
-    private lateinit var toolbar: Toolbar
+    private lateinit var btnBack: MaterialButton
+
     private val newsList = mutableListOf<HealthNews>()
     private lateinit var adapter: BeritaAdapter
 
     private val TAG = "BeritaActivity"
+    // Tips: Jangan hardcode API Key di aplikasi produksi.
+    // GNews API terbatas (100 request/hari), pastikan key aktif.
     private val API_KEY = "b29df8fc2ca3f2bccb2e02b83b11983b"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,56 +48,50 @@ class BeritaActivity : AppCompatActivity() {
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
             insets
         }
 
-        toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Medical News"
-
+        // Inisialisasi View
+        btnBack = findViewById(R.id.btnBack)
         rvHealthNews = findViewById(R.id.rvHealthNews)
         progressBar = findViewById(R.id.progressBar)
         tvEmpty = findViewById(R.id.tvEmpty)
 
+        // Setup RecyclerView
         rvHealthNews.layoutManager = LinearLayoutManager(this)
         adapter = BeritaAdapter(newsList)
         rvHealthNews.adapter = adapter
 
+        // Event Klik
+        btnBack.setOnClickListener { finish() }
         tvEmpty.setOnClickListener { fetchHealthNews() }
 
         fetchHealthNews()
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
     }
 
     private fun fetchHealthNews() {
         progressBar.visibility = View.VISIBLE
         tvEmpty.visibility = View.GONE
 
-        val url = "https://gnews.io/api/v4/top-headlines?category=health&lang=en&country=id&max=10&apikey=$API_KEY"
+        // URL GNews untuk topik kesehatan
+        val url = "https://gnews.io/api/v4/top-headlines?category=health&lang=en&apikey=$API_KEY"
 
         val request = JsonObjectRequest(
             Request.Method.GET, url, null,
             { response ->
                 progressBar.visibility = View.GONE
-                Log.d(TAG, "Response: $response")
                 parseResponse(response)
             },
             { error ->
                 progressBar.visibility = View.GONE
-                tvEmpty.text = "Koneksi gagal. Coba lagi?"
+                tvEmpty.text = "Failed to load news. Tap to try again."
                 tvEmpty.visibility = View.VISIBLE
-                Log.e(TAG, "Error: ${error.message}")
-                Toast.makeText(this, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                Log.e(TAG, "Volley Error: ${error.message}")
             }
         )
 
-        request.retryPolicy = DefaultRetryPolicy(15000, 2, 1.0f)
+        request.retryPolicy = DefaultRetryPolicy(10000, 1, 1.0f)
         Volley.newRequestQueue(this).add(request)
     }
 
@@ -102,7 +99,6 @@ class BeritaActivity : AppCompatActivity() {
         try {
             val articles = response.optJSONArray("articles")
             if (articles == null || articles.length() == 0) {
-                tvEmpty.text = "Tidak ada berita kesehatan tersedia."
                 tvEmpty.visibility = View.VISIBLE
                 return
             }
@@ -110,20 +106,16 @@ class BeritaActivity : AppCompatActivity() {
             newsList.clear()
             for (i in 0 until articles.length()) {
                 val item = articles.getJSONObject(i)
-                val title = item.optString("title", "No Title")
-                val description = item.optString("description", "No Description")
-                val urlToImage = item.optString("image", null)
-                val url = item.optString("url", "")
-
-                newsList.add(HealthNews(title, description, urlToImage, url))
-                Log.d(TAG, "Added: $title")
+                newsList.add(HealthNews(
+                    title = item.optString("title", "No Title"),
+                    description = item.optString("description", "No Description"),
+                    image = item.optString("image", ""),
+                    url = item.optString("url", "")
+                ))
             }
-
             adapter.notifyDataSetChanged()
-            Toast.makeText(this, "Loaded ${newsList.size} berita!", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Log.e(TAG, "Parse error: ${e.message}", e)
-            tvEmpty.text = "Error: ${e.message}"
+            Log.e(TAG, "Parsing Error: ${e.message}")
             tvEmpty.visibility = View.VISIBLE
         }
     }
@@ -141,20 +133,16 @@ class BeritaActivity : AppCompatActivity() {
             holder.tvTitle.text = news.title
             holder.tvDescription.text = news.description
 
-            if (news.urlToImage != null && news.urlToImage.isNotEmpty()) {
-                holder.ivThumbnail.visibility = View.VISIBLE
-                Glide.with(this@BeritaActivity).load(news.urlToImage).into(holder.ivThumbnail)
-            } else {
-                holder.ivThumbnail.visibility = View.GONE
+            if (news.image.isNotEmpty()) {
+                Glide.with(this@BeritaActivity)
+                    .load(news.image)
+                    .placeholder(android.R.color.darker_gray)
+                    .into(holder.ivThumbnail)
             }
 
             holder.itemView.setOnClickListener {
-                if (news.url.isNotEmpty()) {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(news.url))
-                    startActivity(intent)
-                } else {
-                    Toast.makeText(this@BeritaActivity, "Link tidak ada", Toast.LENGTH_SHORT).show()
-                }
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(news.url))
+                startActivity(browserIntent)
             }
         }
 
@@ -170,7 +158,7 @@ class BeritaActivity : AppCompatActivity() {
     data class HealthNews(
         val title: String,
         val description: String,
-        val urlToImage: String?,
+        val image: String,
         val url: String
     )
 }

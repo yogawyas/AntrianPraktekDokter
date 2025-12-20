@@ -5,11 +5,11 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import android.view.ViewGroup
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.antrianpraktekdokter.R
@@ -32,7 +32,9 @@ class DokterActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_dokter)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        // Setup Padding untuk EdgeToEdge
+        val mainLayout = findViewById<View>(R.id.main)
+        ViewCompat.setOnApplyWindowInsetsListener(mainLayout) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -45,19 +47,25 @@ class DokterActivity : AppCompatActivity() {
 
         val btnLogout = findViewById<Button>(R.id.btnLogout)
         btnLogout.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Logout")
+            builder.setMessage("Apakah Anda yakin ingin keluar?")
+            builder.setPositiveButton("Ya") { _, _ ->
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            }
+            builder.setNegativeButton("Tidak", null)
+            builder.show()
         }
 
         renderPasien()
     }
 
     private fun renderPasien() {
-        containerPasien.removeAllViews()
-
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val today = sdf.format(Date())
 
+        // Mengambil data realtime dari Firestore
         db.collection("antrian")
             .whereEqualTo("tanggal_simpan", today)
             .whereEqualTo("dihapus", false)
@@ -65,236 +73,183 @@ class DokterActivity : AppCompatActivity() {
             .orderBy("createdAt", Query.Direction.ASCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e("DokterActivity", "Listen failed.", e)
                     return@addSnapshotListener
                 }
 
-                if (snapshot == null) {
-                    Toast.makeText(this, "Data antrian tidak tersedia", Toast.LENGTH_SHORT).show()
-                    return@addSnapshotListener
-                }
+                if (snapshot != null) {
+                    var countSelesai = 0
+                    var countSisa = 0
+                    containerPasien.removeAllViews()
 
-                var countSelesai = 0
-                var countSisa = 0
-                containerPasien.removeAllViews()
+                    for (doc in snapshot.documents) {
+                        val data = doc.data ?: continue
+                        val nama = data["nama_pasien"]?.toString() ?: "N/A"
+                        val jam = data["jam"]?.toString() ?: "N/A"
+                        val keluhan = data["keluhan"]?.toString() ?: "N/A"
+                        val selesai = data["selesai"] as? Boolean ?: false
+                        val dipanggil = (data["dipanggil"] as? Long)?.toInt() ?: 0
+                        val nomor = (data["nomor_antrian"] as? Long)?.toInt() ?: 0
+                        val userId = data["user_id"]?.toString() ?: ""
 
-                for (doc in snapshot.documents) {
-                    val nama = doc.getString("nama_pasien") ?: "Nama Tidak Diketahui"
-                    val jam = doc.getString("jam") ?: "Jam Tidak Diketahui"
-                    val keluhan = doc.getString("keluhan") ?: "Keluhan Tidak Diketahui"
-                    val selesai = doc.getBoolean("selesai") ?: false
-                    val dipanggil = doc.getLong("dipanggil")?.toInt() ?: 0
-                    val nomor = doc.getLong("nomor_antrian")?.toInt() ?: 0
-                    val userId = doc.getString("user_id") ?: ""
+                        if (selesai) countSelesai++ else countSisa++
 
-                    if (selesai) countSelesai++ else countSisa++
+                        // Memasukkan Item Layout dari XML
+                        val itemView = LayoutInflater.from(this).inflate(R.layout.item_pasien_dokter, containerPasien, false)
 
-                    val card = CardView(this).apply {
-                        val lp = LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        )
-                        lp.setMargins(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8))
-                        layoutParams = lp
-                        radius = dpToPx(10).toFloat()
-                        cardElevation = dpToPx(6).toFloat()
-                        setCardBackgroundColor(if (selesai) Color.parseColor("#C8E6C9") else Color.WHITE)
-                        useCompatPadding = true
-                    }
+                        val tvNomor = itemView.findViewById<TextView>(R.id.tvNomorAntrian)
+                        val tvNama = itemView.findViewById<TextView>(R.id.tvNamaPasien)
+                        val tvJam = itemView.findViewById<TextView>(R.id.tvJamJanji)
+                        val tvKeluhan = itemView.findViewById<TextView>(R.id.tvKeluhanSingkat)
+                        val viewStatus = itemView.findViewById<View>(R.id.viewStatusColor)
 
-                    val inner = LinearLayout(this).apply {
-                        orientation = LinearLayout.VERTICAL
-                        setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12))
-                    }
+                        val btnPanggil = itemView.findViewById<Button>(R.id.btnPanggil)
+                        val btnFinish = itemView.findViewById<Button>(R.id.btnFinish)
+                        val btnDetail = itemView.findViewById<Button>(R.id.btnDetail)
+                        val btnMore = itemView.findViewById<ImageButton>(R.id.btnMore)
 
-                    val tvNomor = TextView(this).apply {
-                        text = "No. Antrian: $nomor"
-                        textSize = 14f
-                        setTextColor(Color.parseColor("#2196F3"))
-                    }
+                        // Bind Data ke UI
+                        tvNomor.text = "No. Antrian: $nomor"
+                        tvNama.text = "Nama: $nama"
+                        tvJam.text = "Jam: $jam"
+                        tvKeluhan.text = "Keluhan: $keluhan"
 
-                    val tvNama = TextView(this).apply {
-                        text = "Nama Pasien: $nama"
-                        textSize = 16f
-                        setTextColor(Color.BLACK)
-                    }
+                        if (selesai) {
+                            viewStatus.setBackgroundColor(Color.GRAY)
+                            btnFinish.text = "COMPLETED"
+                            btnFinish.isEnabled = false
+                            btnPanggil.isEnabled = false
+                        }
 
-                    val tvJam = TextView(this).apply {
-                        text = "Jam Janji: $jam"
-                        textSize = 14f
-                        setTextColor(Color.parseColor("#2196F3"))
-                    }
+                        // --- FITUR 1: LIHAT DETAIL DATA PASIEN (POPUP) ---
+                        btnDetail.setOnClickListener {
+                            showDetailPopup(nama, jam, keluhan, nomor, userId)
+                        }
 
-                    val tvKeluhan = TextView(this).apply {
-                        text = "Keluhan: $keluhan"
-                        textSize = 14f
-                        setTextColor(Color.DKGRAY)
-                    }
+                        // --- FITUR 2: PANGGIL PASIEN ---
+                        btnPanggil.setOnClickListener {
+                            panggilLogika(doc.id, nama, nomor, dipanggil, userId, jam)
+                        }
 
-                    val cbSelesai = CheckBox(this).apply {
-                        text = if (selesai) "Pasien selesai ✅" else "Tandai pasien selesai"
-                        isChecked = selesai
-                        setTextColor(if (selesai) Color.parseColor("#388E3C") else Color.BLACK)
-                    }
+                        // --- FITUR 3: SELESAI PERIKSA (ISI RESEP POPUP) ---
+                        btnFinish.setOnClickListener {
+                            showResepPopup(doc.id, nama)
+                        }
 
-                    val btnPanggil = Button(this).apply {
-                        text = "PANGGIL"
-                        setTextColor(Color.WHITE)
-                        textSize = 14f
-                        setPadding(dpToPx(16), dpToPx(8), dpToPx(16), dpToPx(8))
-                        background = resources.getDrawable(R.drawable.bg_button_green, null)
-                    }
+                        // --- FITUR 4: MENU LAINNYA (CANCEL & PINDAH AKHIR) ---
+                        btnMore.setOnClickListener {
+                            val popup = PopupMenu(this, it)
+                            popup.menu.add("Batalkan Antrian")
+                            val itemPindah = popup.menu.add("Pindah ke Akhir")
 
-                    val btnCancel = Button(this).apply {
-                        text = "BATAL"
-                        setTextColor(Color.WHITE)
-                        textSize = 14f
-                        setPadding(dpToPx(16), dpToPx(8), dpToPx(16), dpToPx(8))
-                        background = resources.getDrawable(R.drawable.bg_button_red, null)
-                    }
+                            // Logika Anda: Hanya aktif jika dipanggil >= 3
+                            itemPindah.isEnabled = dipanggil >= 3 && !selesai
 
-                    val btnPindahAkhir = Button(this).apply {
-                        text = "PINDAH KE AKHIR"
-                        setTextColor(Color.WHITE)
-                        textSize = 14f
-                        setPadding(dpToPx(16), dpToPx(8), dpToPx(16), dpToPx(8))
-                        background = resources.getDrawable(R.drawable.bg_button_orange, null)
-                        isEnabled = dipanggil >= 3 && !selesai
-                    }
-
-                    cbSelesai.setOnCheckedChangeListener { _, isChecked ->
-                        doc.reference.update("selesai", isChecked)
-                            .addOnSuccessListener {
-                                Toast.makeText(
-                                    this@DokterActivity,
-                                    if (isChecked) "Pasien $nama selesai diperiksa." else "Status selesai dibatalkan.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(this@DokterActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                            }
-                    }
-
-                    btnPanggil.setOnClickListener {
-                        val newCount = dipanggil + 1
-                        doc.reference.update("dipanggil", newCount)
-                            .addOnSuccessListener {
-                                Toast.makeText(
-                                    this@DokterActivity,
-                                    "Hai, $nama! Sekarang waktunya pemeriksaan dengan dokter.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-
-                                // Tampilkan pop-up notifikasi untuk pasien
-                                AlertDialog.Builder(this@DokterActivity)
-                                    .setTitle("Panggilan Antrian")
-                                    .setMessage("Pasien $nama (No. $nomor), silakan masuk untuk pemeriksaan!")
-                                    .setPositiveButton("OK", null)
-                                    .show()
-
-                                // Simpan notifikasi ke Firestore
-                                val notifData = hashMapOf(
-                                    "user_id" to userId,
-                                    "nomor_antrian" to nomor,
-                                    "nama_pasien" to nama,
-                                    "jam" to jam,
-                                    "timestamp" to FieldValue.serverTimestamp()
-                                )
-                                db.collection("notifikasi").add(notifData)
-                                    .addOnSuccessListener {
-                                        Log.d("DokterActivity", "Notifikasi disimpan untuk user: $userId")
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.e("DokterActivity", "Gagal simpan notifikasi: ${e.message}", e)
-                                        Toast.makeText(this@DokterActivity, "Gagal simpan notifikasi: ${e.message}", Toast.LENGTH_SHORT).show()
-                                    }
-                            }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(this@DokterActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                            }
-                    }
-
-                    btnCancel.setOnClickListener {
-                        AlertDialog.Builder(this@DokterActivity)
-                            .setTitle("Batalkan Pasien?")
-                            .setMessage("Yakin ingin menghapus pasien ini dari antrian?")
-                            .setPositiveButton("Ya") { _, _ ->
-                                doc.reference.update("dihapus", true)
-                                    .addOnSuccessListener {
-                                        Toast.makeText(this@DokterActivity, "Antrian $nama dibatalkan", Toast.LENGTH_SHORT).show()
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Toast.makeText(this@DokterActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                                    }
-                            }
-                            .setNegativeButton("Tidak", null)
-                            .show()
-                    }
-
-                    btnPindahAkhir.setOnClickListener {
-                        AlertDialog.Builder(this@DokterActivity)
-                            .setTitle("Pindah ke Akhir?")
-                            .setMessage("Pindahkan pasien $nama ke antrian terakhir?")
-                            .setPositiveButton("Ya") { _, _ ->
-                                db.runTransaction { transaction ->
-                                    val countRef = db.collection("config").document("antrian_count_$today")
-                                    val snapshot = transaction.get(countRef)
-                                    val currentCount = snapshot.getLong("count") ?: 0
-                                    val newCount = currentCount + 1
-                                    transaction.set(countRef, hashMapOf("count" to newCount))
-                                    transaction.update(doc.reference, mapOf(
-                                        "nomor_antrian" to newCount,
-                                        "dipanggil" to 0,
-                                        "createdAt" to FieldValue.serverTimestamp()
-                                    ))
-                                    null
-                                }.addOnSuccessListener {
-                                    Toast.makeText(this@DokterActivity, "Antrian $nama dipindah ke akhir", Toast.LENGTH_SHORT).show()
-                                }.addOnFailureListener { e ->
-                                    Toast.makeText(this@DokterActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                            popup.setOnMenuItemClickListener { menu ->
+                                when (menu.title) {
+                                    "Batalkan Antrian" -> batalkanAntrian(doc.id, nama)
+                                    "Pindah ke Akhir" -> pindahLogika(doc.id, nama, today)
                                 }
+                                true
                             }
-                            .setNegativeButton("Tidak", null)
-                            .show()
+                            popup.show()
+                        }
+
+                        containerPasien.addView(itemView)
                     }
 
-                    val btnLayout = LinearLayout(this).apply {
-                        orientation = LinearLayout.HORIZONTAL
-                        val params = LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        )
-                        params.setMargins(0, dpToPx(8), 0, dpToPx(8))
-                        gravity = android.view.Gravity.CENTER_HORIZONTAL
-                        layoutParams = params
-                    }
-
-                    val space1 = Space(this).apply { layoutParams = LinearLayout.LayoutParams(dpToPx(12), 0) }
-                    val space2 = Space(this).apply { layoutParams = LinearLayout.LayoutParams(dpToPx(12), 0) }
-                    val space3 = Space(this).apply { layoutParams = LinearLayout.LayoutParams(dpToPx(12), 0) }
-
-                    btnLayout.addView(cbSelesai)
-                    btnLayout.addView(space1)
-                    btnLayout.addView(btnPanggil)
-                    btnLayout.addView(space2)
-                    btnLayout.addView(btnCancel)
-                    btnLayout.addView(space3)
-                    btnLayout.addView(btnPindahAkhir)
-
-                    inner.addView(tvNomor)
-                    inner.addView(tvNama)
-                    inner.addView(tvJam)
-                    inner.addView(tvKeluhan)
-                    inner.addView(btnLayout)
-                    card.addView(inner)
-                    containerPasien.addView(card)
+                    tvSelesai.text = countSelesai.toString()
+                    tvSisa.text = countSisa.toString()
                 }
-
-                tvSelesai.text = "Pasien selesai: $countSelesai"
-                tvSisa.text = "Sisa pasien: $countSisa"
             }
     }
 
-    private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
+    private fun showDetailPopup(nama: String, jam: String, keluhan: String, nomor: Int, uid: String) {
+        AlertDialog.Builder(this)
+            .setTitle("Data Diri Pasien")
+            .setMessage("Nomor Antrian: $nomor\nNama: $nama\nJam Janji: $jam\nKeluhan: $keluhan\nUser ID: $uid")
+            .setPositiveButton("Tutup", null)
+            .show()
+    }
+
+    private fun showResepPopup(docId: String, nama: String) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_isi_resep, null)
+        val etPrescription = dialogView.findViewById<EditText>(R.id.etPrescription)
+        val etAdvice = dialogView.findViewById<EditText>(R.id.etAdvice)
+        val btnSave = dialogView.findViewById<Button>(R.id.btnSaveRecord)
+
+        val dialog = AlertDialog.Builder(this).setView(dialogView).create()
+
+        btnSave.setOnClickListener {
+            val resep = etPrescription.text.toString().trim()
+            val saran = etAdvice.text.toString().trim()
+
+            if (resep.isEmpty() || saran.isEmpty()) {
+                Toast.makeText(this, "Harap isi semua kolom!", Toast.LENGTH_SHORT).show()
+            } else {
+                // Update dokumen yang sama di koleksi 'antrian'
+                db.collection("antrian").document(docId).update(
+                    "selesai", true,
+                    "resep_obat", resep,
+                    "saran_dokter", saran,
+                    "status", "Selesai"
+                ).addOnSuccessListener {
+                    Toast.makeText(this, "Pemeriksaan $nama Selesai!", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                }.addOnFailureListener { e ->
+                    Log.e("FIRESTORE_ERROR", "Gagal update: ${e.message}")
+                    // Jika masih error PERMISSION_DENIED di sini, berarti SHA belum terdaftar dengan benar
+                }
+            }
+        }
+        dialog.show()
+    }
+
+    private fun panggilLogika(id: String, nama: String, nomor: Int, dipanggil: Int, userId: String, jam: String) {
+        val newCount = dipanggil + 1
+        db.collection("antrian").document(id).update("dipanggil", newCount)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Panggilan dikirim ke $nama", Toast.LENGTH_SHORT).show()
+
+                // Fitur Notifikasi Anda
+                val notifData = hashMapOf(
+                    "user_id" to userId,
+                    "nomor_antrian" to nomor,
+                    "nama_pasien" to nama,
+                    "message" to "Silakan masuk ke ruang periksa sekarang!",
+                    "timestamp" to FieldValue.serverTimestamp()
+                )
+                db.collection("notifikasi").add(notifData)
+            }
+    }
+
+    private fun batalkanAntrian(id: String, nama: String) {
+        AlertDialog.Builder(this)
+            .setTitle("Batal")
+            .setMessage("Hapus $nama dari list?")
+            .setPositiveButton("Ya") { _, _ ->
+                db.collection("antrian").document(id).update("dihapus", true)
+            }
+            .setNegativeButton("Tidak", null)
+            .show()
+    }
+
+    private fun pindahLogika(id: String, nama: String, today: String) {
+        db.runTransaction { transaction ->
+            val countRef = db.collection("config").document("antrian_count_$today")
+            val snapshot = transaction.get(countRef)
+            val currentCount = snapshot.getLong("count") ?: 0
+            val newCount = currentCount + 1
+
+            transaction.set(countRef, hashMapOf("count" to newCount))
+            transaction.update(db.collection("antrian").document(id), mapOf(
+                "nomor_antrian" to newCount,
+                "dipanggil" to 0,
+                "createdAt" to FieldValue.serverTimestamp()
+            ))
+            null
+        }.addOnSuccessListener {
+            Toast.makeText(this, "$nama dipindah ke urutan terakhir", Toast.LENGTH_SHORT).show()
+        }
+    }
 }

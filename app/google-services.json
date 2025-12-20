@@ -12,7 +12,20 @@
           "package_name": "com.example.antrianpraktekdokter"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "412117468423-1vrbq1ipeovcoorcviepr9q3rmgs1m1s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.antrianpraktekdokter",
+            "certificate_hash": "949bde178ef4bffa4a5efc3be9cebc22acb4ed72"
+          }
+        },
+        {
+          "client_id": "412117468423-j11rs4f91o8418nv32q2ucstd6uavc2m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBzP1j7FDOiC0xOtrS2aoPi8fVlGr_AFn8"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "412117468423-j11rs4f91o8418nv32q2ucstd6uavc2m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

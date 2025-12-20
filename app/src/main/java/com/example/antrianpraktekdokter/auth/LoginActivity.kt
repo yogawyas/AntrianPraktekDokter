@@ -5,6 +5,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -47,50 +48,40 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (email.equals("admin@praktek.com", true) && password == "12345") {
-                Toast.makeText(this, "Login sebagai Admin", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, com.example.antrianpraktekdokter.admin.AdminHomeActivity::class.java)
-                startActivity(intent)
-                finish()
-                return@setOnClickListener
-            }
-
-            // 🩺 Cek dulu: apakah login dokter Alexander?
-            if (email.equals("alexander@dokter.com", true) && password == "12345") {
-                Toast.makeText(this, "Login sebagai Dokter Alexander", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, DokterActivity::class.java)
-                startActivity(intent)
-                finish()
-                return@setOnClickListener
-            }
-
-            // 🔑 Jika bukan dokter → lanjut login Firebase (pasien)
+            // 🔑 SEMUA LOGIN (Admin, Dokter, Pasien) sekarang melewati Firebase Auth
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         val user = auth.currentUser
+                        // Cek Role di Firestore setelah login berhasil
                         db.collection("users").document(user!!.uid).get()
                             .addOnSuccessListener { document ->
-                                if (document != null) {
+                                if (document.exists()) {
                                     val nama = document.getString("nama") ?: "User"
                                     val role = document.getString("role") ?: "patient"
 
+                                    Toast.makeText(this, "Welcome, $nama!", Toast.LENGTH_SHORT).show()
+
+                                    // Navigasi berdasarkan Role
                                     val intent = when (role) {
-                                        //"patient" -> Intent(this, com.example.antrianpraktekdokter.patient.HomeActivity::class.java)
-                                        "doctor" -> Intent(this, com.example.antrianpraktekdokter.doctor.DoctorHomeActivity::class.java)
                                         "admin" -> Intent(this, com.example.antrianpraktekdokter.admin.AdminHomeActivity::class.java)
+                                        "doctor" -> Intent(this, DokterActivity::class.java)
                                         else -> Intent(this, com.example.antrianpraktekdokter.patient.HomeActivity::class.java)
                                     }
+
                                     intent.putExtra("nama", nama)
                                     intent.putExtra("role", role)
                                     startActivity(intent)
                                     finish()
                                 } else {
-                                    Toast.makeText(this, "Data user tidak ditemukan", Toast.LENGTH_SHORT).show()
+                                    // Jika dokumen user belum ada di Firestore (misal akun baru dibuat di Auth Console)
+                                    // Kita arahkan ke default sesuai email (untuk kemudahan Anda)
+                                    handleDefaultNavigation(email)
                                 }
                             }
                             .addOnFailureListener { e ->
-                                Toast.makeText(this, "Gagal fetch data: ${e.message}", Toast.LENGTH_SHORT).show()
+                                Log.e("LoginError", e.message.toString())
+                                handleDefaultNavigation(email)
                             }
                     } else {
                         Toast.makeText(this, "Login gagal: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
@@ -110,6 +101,16 @@ class LoginActivity : AppCompatActivity() {
 //        tvRegisterLink.setOnClickListener {
 //            startActivity(Intent(this, RegisterActivity::class.java))
 //        }
+    }
+    private fun handleDefaultNavigation(email: String) {
+        if (email.contains("admin")) {
+            startActivity(Intent(this, com.example.antrianpraktekdokter.admin.AdminHomeActivity::class.java))
+        } else if (email.contains("dokter")) {
+            startActivity(Intent(this, DokterActivity::class.java))
+        } else {
+            startActivity(Intent(this, com.example.antrianpraktekdokter.patient.HomeActivity::class.java))
+        }
+        finish()
     }
     private fun showResetPasswordDialog() {
         val builder = AlertDialog.Builder(this)

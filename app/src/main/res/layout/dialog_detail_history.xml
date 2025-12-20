@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/bg_bottom_sheet_rounded2">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Medical Record Detail"
+        android:textSize="20sp"
+        android:fontFamily="@font/signika_bold"
+        android:textColor="@color/primary"
+        android:layout_marginBottom="16dp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="350dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="Patient Name"
+                android:textSize="12sp"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"/>
+            <TextView
+                android:id="@+id/detNama"
+                android:text="-"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/black"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"/>
+
+            <TextView
+                android:text="Symptoms"
+                android:textSize="12sp"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"/>
+            <TextView
+                android:id="@+id/detSymptom"
+                android:text="-"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/black"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#EEEEEE" android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:text="Doctor's Prescription (Medicine)"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"/>
+            <TextView
+                android:id="@+id/detPrescription"
+                android:text="Not yet provided"
+                android:layout_marginBottom="12dp"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"/>
+
+            <TextView
+                android:text="Doctor's Advice"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"/>
+            <TextView
+                android:id="@+id/detAdvice"
+                android:text="Not yet provided"
+                android:layout_marginBottom="12dp"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btnClose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Close"
+        android:backgroundTint="@color/primary"
+        android:layout_marginTop="16dp"/>
+</LinearLayout>
