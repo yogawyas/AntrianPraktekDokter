@@ -1,5 +1,6 @@
 package com.example.antrianpraktekdokter.admin
 
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,65 +10,73 @@ import android.widget.EditText
 import android.widget.Switch
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.antrianpraktekdokter.R
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
-//import java.text.StringFormat
+import com.example.antrianpraktekdokter.admin.viewmodel.JadwalViewModel
 import java.util.Calendar
-import android.app.TimePickerDialog
 
 class AturJadwalFragment : Fragment() {
 
-    private lateinit var db: FirebaseFirestore
+    private lateinit var viewModel: JadwalViewModel
+
+    // View components
     private lateinit var switchStatusPraktik: Switch
     private lateinit var etJamBuka: EditText
     private lateinit var etJamTutup: EditText
     private lateinit var btnSimpanJadwal: Button
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_atur_jadwal, container, false)
 
-        db = FirebaseFirestore.getInstance()
+
+        viewModel = ViewModelProvider(this)[JadwalViewModel::class.java]
+
+
         switchStatusPraktik = view.findViewById(R.id.switchStatusPraktik)
         etJamBuka = view.findViewById(R.id.etJamBuka)
         etJamTutup = view.findViewById(R.id.etJamTutup)
         btnSimpanJadwal = view.findViewById(R.id.btnSimpanJadwal)
 
-        // Load existing jadwal
-        db.collection("config").document("status_praktik").get()
-            .addOnSuccessListener { doc ->
-                switchStatusPraktik.isChecked = doc.getBoolean("isOpen") ?: false
-                etJamBuka.setText(doc.getString("bukaJam") ?: "")
-                etJamTutup.setText(doc.getString("tutupJam") ?: "")
-            }
+
+        viewModel.jadwalConfig.observe(viewLifecycleOwner) { config ->
+
+            switchStatusPraktik.setOnCheckedChangeListener(null)
+
+            switchStatusPraktik.isChecked = config.isOpen
+            etJamBuka.setText(config.bukaJam)
+            etJamTutup.setText(config.tutupJam)
+
+
+            setupSwitchListener()
+        }
+
+        viewModel.message.observe(viewLifecycleOwner) { msg ->
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        }
+
+
+        setupSwitchListener()
+
+        btnSimpanJadwal.setOnClickListener {
+            viewModel.saveJadwal(etJamBuka.text.toString(), etJamTutup.text.toString())
+        }
 
         etJamBuka.setOnClickListener { showTimePicker(etJamBuka) }
         etJamTutup.setOnClickListener { showTimePicker(etJamTutup) }
 
-        switchStatusPraktik.setOnCheckedChangeListener { _, isChecked ->
-            db.collection("config").document("status_praktik")
-                .set(hashMapOf("isOpen" to isChecked), SetOptions.merge())
-                .addOnSuccessListener {
-                    Toast.makeText(context, if (isChecked) "Praktek dibuka" else "Praktek ditutup", Toast.LENGTH_SHORT).show()
-                }
-        }
-
-        btnSimpanJadwal.setOnClickListener {
-            val buka = etJamBuka.text.toString()
-            val tutup = etJamTutup.text.toString()
-            if (buka.isEmpty() || tutup.isEmpty()) {
-                Toast.makeText(context, "Isi jam buka dan tutup!", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            db.collection("config").document("status_praktik")
-                .set(hashMapOf("bukaJam" to buka, "tutupJam" to tutup), SetOptions.merge())
-                .addOnSuccessListener {
-                    Toast.makeText(context, "Jadwal disimpan", Toast.LENGTH_SHORT).show()
-                }
-        }
+        // Load data awal dari database
+        viewModel.loadJadwal()
 
         return view
+    }
+
+    private fun setupSwitchListener() {
+        switchStatusPraktik.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.updateStatus(isChecked)
+        }
     }
 
     private fun showTimePicker(et: EditText) {

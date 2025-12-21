@@ -2,34 +2,41 @@ package com.example.antrianpraktekdokter.admin
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.antrianpraktekdokter.R
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.antrianpraktekdokter.admin.viewmodel.ListAntrianViewModel
+import com.example.antrianpraktekdokter.model.Antrian
 
 class ListAntrianFragment : Fragment() {
 
-    private lateinit var db: FirebaseFirestore
+    private lateinit var viewModel: ListAntrianViewModel
+    private lateinit var adapter: AntrianAdapter
+
+    // Views
     private lateinit var recyclerAntrian: RecyclerView
     private lateinit var tvSelesai: TextView
     private lateinit var tvSisa: TextView
     private lateinit var switchShowCompleted: Switch
-    private var showCompleted = false
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_list_antrian, container, false)
 
-        db = FirebaseFirestore.getInstance()
+        // Init ViewModel
+        viewModel = ViewModelProvider(this)[ListAntrianViewModel::class.java]
+
+        // Init Views
         recyclerAntrian = view.findViewById(R.id.recyclerAntrian)
         tvSelesai = view.findViewById(R.id.tvSelesai)
         tvSisa = view.findViewById(R.id.tvSisa)
@@ -37,56 +44,43 @@ class ListAntrianFragment : Fragment() {
 
         recyclerAntrian.layoutManager = LinearLayoutManager(context)
 
-        switchShowCompleted.setOnCheckedChangeListener { _, isChecked ->
-            showCompleted = isChecked
-            loadAntrian()
+        // Setup Adapter
+        adapter = AntrianAdapter(emptyList(), viewModel)
+        recyclerAntrian.adapter = adapter
+
+
+        viewModel.antrianList.observe(viewLifecycleOwner) { list ->
+
+            adapter.updateData(list)
+            viewModel.calculateStats(list)
         }
 
-        loadAntrian()
+        viewModel.stats.observe(viewLifecycleOwner) { (selesai, sisa) ->
+            tvSelesai.text = "Pasien selesai: $selesai"
+            tvSisa.text = "Sisa pasien: $sisa"
+        }
+
+        // --- LISTENERS ---
+        switchShowCompleted.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.loadAntrian(isChecked)
+        }
+
+
+        viewModel.loadAntrian(false)
 
         return view
     }
 
-    private fun loadAntrian() {
-        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val today = sdf.format(Date())
+    // --- INNER CLASS ADAPTER mvvm
+    inner class AntrianAdapter(
+        private var list: List<Antrian>,
+        private val vm: ListAntrianViewModel
+    ) : RecyclerView.Adapter<AntrianAdapter.ViewHolder>() {
 
-        val query = db.collection("antrian")
-            .whereEqualTo("tanggal_simpan", today)
-            .whereEqualTo("dihapus", false)
-
-        val finalQuery = if (showCompleted) {
-            query
-        } else {
-            query.whereEqualTo("selesai", false)
-        }.orderBy("jam", Query.Direction.ASCENDING)
-
-        finalQuery.addSnapshotListener { snapshot, e ->
-            if (e != null) {
-                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                return@addSnapshotListener
-            }
-
-            if (snapshot == null) return@addSnapshotListener
-
-            var countSelesai = 0
-            var countSisa = 0
-            val antrianList = snapshot.documents
-
-            recyclerAntrian.adapter = AntrianAdapter(antrianList)
-
-            for (doc in antrianList) {
-                val selesai = doc.getBoolean("selesai") ?: false
-                if (selesai) countSelesai++ else countSisa++
-            }
-
-            tvSelesai.text = "Pasien selesai: $countSelesai"
-            tvSisa.text = "Sisa pasien: $countSisa"
+        fun updateData(newList: List<Antrian>) {
+            this.list = newList
+            notifyDataSetChanged()
         }
-    }
-
-    inner class AntrianAdapter(private val antrianList: List<com.google.firebase.firestore.DocumentSnapshot>) :
-        RecyclerView.Adapter<AntrianAdapter.ViewHolder>() {
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val tvNomor: TextView = itemView.findViewById(R.id.tvNomor)
@@ -96,7 +90,7 @@ class ListAntrianFragment : Fragment() {
             val cbSelesai: CheckBox = itemView.findViewById(R.id.cbSelesai)
             val btnPanggil: Button = itemView.findViewById(R.id.btnPanggil)
             val btnCancel: Button = itemView.findViewById(R.id.btnCancel)
-            val cardView: androidx.cardview.widget.CardView = itemView.findViewById(R.id.cardAntrian)
+            val cardView: CardView = itemView.findViewById(R.id.cardAntrian)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -105,92 +99,44 @@ class ListAntrianFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val doc = antrianList[position]
-            val nama = doc.getString("nama_pasien") ?: "Nama Tidak Diketahui"
-            val jam = doc.getString("jam") ?: "Jam Tidak Diketahui"
-            val keluhan = doc.getString("keluhan") ?: "Keluhan Tidak Diketahui"
-            val selesai = doc.getBoolean("selesai") ?: false
-            val dipanggil = doc.getLong("dipanggil")?.toInt() ?: 0
-            val nomor = doc.getLong("nomor_antrian")?.toInt() ?: 0
-            val userId = doc.getString("user_id") ?: ""
+            val item = list[position]
 
-            holder.tvNomor.text = "No. $nomor"
-            holder.tvNama.text = "Nama: $nama"
-            holder.tvJam.text = "Jam: $jam"
-            holder.tvKeluhan.text = "Keluhan: $keluhan"
-            holder.cbSelesai.isChecked = selesai
-            holder.cbSelesai.text = if (selesai) "Selesai ✅" else "Tandai Selesai"
-            holder.cbSelesai.setTextColor(if (selesai) android.graphics.Color.parseColor("#388E3C") else android.graphics.Color.BLACK)
+            holder.tvNomor.text = "No. ${item.nomor_antrian}"
+            holder.tvNama.text = "Nama: ${item.nama_pasien}"
+            holder.tvJam.text = "Jam: ${item.jam}"
+            holder.tvKeluhan.text = "Keluhan: ${item.keluhan}"
 
-            // Ubah warna card menjadi hijau saat selesai
-            holder.cardView.setCardBackgroundColor(
-                if (selesai) android.graphics.Color.parseColor("#C8E6C9") else android.graphics.Color.WHITE
-            )
+
+            holder.cbSelesai.setOnCheckedChangeListener(null)
+            holder.cbSelesai.isChecked = item.selesai
+            holder.cbSelesai.text = if (item.selesai) "Selesai " else "Tandai Selesai"
+
+            val greenColor = ContextCompat.getColor(requireContext(), R.color.green_light)
+            val whiteColor = ContextCompat.getColor(requireContext(), R.color.white) // Pastikan ada color resource ini atau gunakan android.R.color.white
+
+
+            holder.cardView.setCardBackgroundColor(if (item.selesai) 0xFFC8E6C9.toInt() else 0xFFFFFFFF.toInt())
+
 
             holder.cbSelesai.setOnCheckedChangeListener { _, isChecked ->
-                doc.reference.update("selesai", isChecked)
-                    .addOnSuccessListener {
-                        Toast.makeText(context, if (isChecked) "Pasien $nama selesai diperiksa." else "Status selesai dibatalkan.", Toast.LENGTH_SHORT).show()
-                        loadAntrian() // Refresh untuk update warna dan hitungan
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+                vm.updateStatusSelesai(item, isChecked)
             }
 
             holder.btnPanggil.setOnClickListener {
-                val newCount = dipanggil + 1
-                doc.reference.update("dipanggil", newCount)
-                    .addOnSuccessListener {
-                        Toast.makeText(context, "Hai, $nama! Sekarang waktunya pemeriksaan dengan dokter.", Toast.LENGTH_SHORT).show()
-
-                        // Tampilkan pop-up notifikasi untuk pasien
-                        AlertDialog.Builder(requireContext())
-                            .setTitle("Panggilan Antrian")
-                            .setMessage("Pasien $nama (No. $nomor), silakan masuk untuk pemeriksaan!")
-                            .setPositiveButton("OK", null)
-                            .show()
-
-                        // Simpan notifikasi ke Firestore
-                        val notifData = hashMapOf(
-                            "user_id" to userId,
-                            "nomor_antrian" to nomor,
-                            "nama_pasien" to nama,
-                            "jam" to jam,
-                            "timestamp" to FieldValue.serverTimestamp()
-                        )
-                        db.collection("notifikasi").add(notifData)
-                            .addOnSuccessListener {
-                                Log.d("ListAntrianFragment", "Notifikasi disimpan untuk user: $userId")
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("ListAntrianFragment", "Gagal simpan notifikasi: ${e.message}", e)
-                            }
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+                vm.panggilPasien(item)
+                Toast.makeText(context, "Memanggil ${item.nama_pasien}...", Toast.LENGTH_SHORT).show()
             }
 
             holder.btnCancel.setOnClickListener {
                 AlertDialog.Builder(requireContext())
-                    .setTitle("Batalkan Pasien?")
-                    .setMessage("Yakin ingin menghapus pasien ini dari antrian?")
-                    .setPositiveButton("Ya") { _, _ ->
-                        doc.reference.update("dihapus", true)
-                            .addOnSuccessListener {
-                                Toast.makeText(context, "Antrian $nama dibatalkan", Toast.LENGTH_SHORT).show()
-                                loadAntrian() // Refresh setelah pembatalan
-                            }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                            }
-                    }
+                    .setTitle("Hapus Antrian?")
+                    .setMessage("Yakin ingin menghapus ${item.nama_pasien}?")
+                    .setPositiveButton("Ya") { _, _ -> vm.hapusPasien(item) }
                     .setNegativeButton("Tidak", null)
                     .show()
             }
         }
 
-        override fun getItemCount() = antrianList.size
+        override fun getItemCount() = list.size
     }
 }
