@@ -32,7 +32,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="No. 01"
-                    android:textStyle="bold"
+                    android:fontFamily="@font/signika_medium"
                     android:textColor="#04AA78" />
                 <TextView
                     android:id="@+id/tvJamJanji"
@@ -49,8 +49,8 @@
                 android:layout_height="wrap_content"
                 android:text="Nama Pasien"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#000000"
+                android:fontFamily="@font/signika_bold"
+                android:textColor="@color/primary"
                 android:layout_marginTop="4dp"/>
 
             <TextView
@@ -58,7 +58,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Keluhan: Demam tinggi..."
-                android:textColor="#444444"
+                android:textColor="@color/primary"
+                android:fontFamily="@font/signika_light"
                 android:maxLines="1"
                 android:ellipsize="end"/>
 
@@ -83,8 +84,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="PANGGIL"
-                    android:backgroundTint="#51BA31"/>
+                    android:text="Call Patient"
+                    android:backgroundTint="#FFC107"/>
 
                 <Button
                     android:id="@+id/btnFinish"
@@ -92,7 +93,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="FINISH"
-                    android:backgroundTint="#04AA78"/>
+                    android:backgroundTint="@color/primary"/>
 
                 <ImageButton
                     android:id="@+id/btnMore"
@@ -100,7 +101,7 @@
                     android:layout_height="40dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@android:drawable/ic_menu_more"
-                    app:tint="#FF3737" />
+                    app:tint="#FF1717" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

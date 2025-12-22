@@ -123,17 +123,45 @@ class ListAntrianFragment : Fragment() {
             }
 
             holder.btnPanggil.setOnClickListener {
-                vm.panggilPasien(item)
-                Toast.makeText(context, "Memanggil ${item.nama_pasien}...", Toast.LENGTH_SHORT).show()
+                val newCount = dipanggil + 1
+                doc.reference.update("dipanggil", newCount)
+                    .addOnSuccessListener {
+                        // Notifikasi Panggil dari Admin
+                        val notifData = hashMapOf(
+                            "user_id" to userId,
+                            "nomor_antrian" to nomor,
+                            "nama_pasien" to nama,
+                            "message" to "No. Antrian $nomor ($nama), silakan masuk ke ruang periksa sekarang!",
+                            "type" to "Called", // Agar muncul warna hijau di card
+                            "timestamp" to FieldValue.serverTimestamp(),
+                            "isRead" to false
+                        )
+                        db.collection("notifikasi").add(notifData)
+                        Toast.makeText(context, "Panggilan dikirim ke $nama", Toast.LENGTH_SHORT).show()
+                    }
             }
 
             holder.btnCancel.setOnClickListener {
                 AlertDialog.Builder(requireContext())
-                    .setTitle("Hapus Antrian?")
-                    .setMessage("Yakin ingin menghapus ${item.nama_pasien}?")
-                    .setPositiveButton("Ya") { _, _ -> vm.hapusPasien(item) }
-                    .setNegativeButton("Tidak", null)
-                    .show()
+                    .setTitle("Batalkan Pasien?")
+                    .setMessage("Yakin ingin menghapus pasien ini?")
+                    .setPositiveButton("Ya") { _, _ ->
+                        doc.reference.update("dihapus", true)
+                            .addOnSuccessListener {
+                                // Notifikasi Batal dari Admin
+                                val notifData = hashMapOf(
+                                    "user_id" to userId,
+                                    "nomor_antrian" to nomor,
+                                    "nama_pasien" to nama,
+                                    "message" to "Your appointment was canceled by Admin.",
+                                    "type" to "Canceled", // Agar muncul warna merah di card
+                                    "timestamp" to FieldValue.serverTimestamp(),
+                                    "isRead" to false
+                                )
+                                db.collection("notifikasi").add(notifData)
+                                Toast.makeText(context, "Antrian $nama dibatalkan", Toast.LENGTH_SHORT).show()
+                            }
+                    }.setNegativeButton("Tidak", null).show()
             }
         }
 
