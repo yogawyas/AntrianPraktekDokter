@@ -1,16 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="10dp"
-    android:background="?android:attr/selectableItemBackground">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="#F9F9F9">
 
-    <TextView
-        android:id="@+id/tvMessage"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textColor="@android:color/black"
-        android:padding="4dp"/>
-</LinearLayout>
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Called"
+            android:textColor="@color/primary"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:fontFamily="@font/signika_bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvDateTimeDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="02/09/25, 09:00"
+            android:textColor="@color/primary"
+            android:textSize="12sp"
+            android:fontFamily="@font/signika_medium"
+            app:layout_constraintStart_toEndOf="@id/tvStatus"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvTimeAgo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="3h ago"
+            android:textColor="#888888"
+            android:textSize="11sp"
+            app:layout_constraintEnd_toStartOf="@+id/btnMenuNotif"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvNotifMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="You were called by Dr. Alexander"
+            android:textColor="@color/primary"
+            android:textSize="15sp"
+            android:fontFamily="@font/signika_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvStatus" />
+
+        <View
+            android:id="@+id/viewUnreadDot"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:background="@drawable/shape_dot_red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="-10dp"
+            android:layout_marginEnd="-10dp" />
+
+        <ImageButton
+            android:id="@+id/btnMenuNotif"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_more_vert"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#666666" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

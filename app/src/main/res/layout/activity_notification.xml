@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_activity"
-    tools:context=".patient.HistoryMedisActivity">
+    tools:context=".patient.NotificationActivity">
 
     <LinearLayout
         android:id="@+id/headerLayout"
@@ -33,14 +33,25 @@
             app:tint="@null" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="MEDICAL HISTORY"
+            android:layout_weight="1"
+            android:text="NOTIFICATIONS"
             android:textColor="@color/white"
             android:textSize="22sp"
             android:textStyle="bold"
             android:layout_marginStart="16dp"
             android:fontFamily="@font/signika_bold" />
+
+        <TextView
+            android:id="@+id/btnClearAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Read All"
+            android:textColor="#FFEB3B"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:fontFamily="@font/signika_semibold" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -54,7 +65,7 @@
         app:layout_constraintTop_toBottomOf="@id/headerLayout">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerHistory"
+            android:id="@+id/rvNotification"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
@@ -62,28 +73,19 @@
             android:paddingTop="20dp"
             android:paddingBottom="80dp" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <TextView
             android:id="@+id/tvEmpty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/signika_medium"
-            android:text="No medical history yet"
+            android:text="You have no notifications"
             android:textColor="#BDBDBD"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

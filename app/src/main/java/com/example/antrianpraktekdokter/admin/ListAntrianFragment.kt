@@ -142,52 +142,42 @@ class ListAntrianFragment : Fragment() {
                 val newCount = dipanggil + 1
                 doc.reference.update("dipanggil", newCount)
                     .addOnSuccessListener {
-                        Toast.makeText(context, "Hai, $nama! Sekarang waktunya pemeriksaan dengan dokter.", Toast.LENGTH_SHORT).show()
-
-                        // Tampilkan pop-up notifikasi untuk pasien
-                        AlertDialog.Builder(requireContext())
-                            .setTitle("Panggilan Antrian")
-                            .setMessage("Pasien $nama (No. $nomor), silakan masuk untuk pemeriksaan!")
-                            .setPositiveButton("OK", null)
-                            .show()
-
-                        // Simpan notifikasi ke Firestore
+                        // Notifikasi Panggil dari Admin
                         val notifData = hashMapOf(
                             "user_id" to userId,
                             "nomor_antrian" to nomor,
                             "nama_pasien" to nama,
-                            "jam" to jam,
-                            "timestamp" to FieldValue.serverTimestamp()
+                            "message" to "No. Antrian $nomor ($nama), silakan masuk ke ruang periksa sekarang!",
+                            "type" to "Called", // Agar muncul warna hijau di card
+                            "timestamp" to FieldValue.serverTimestamp(),
+                            "isRead" to false
                         )
                         db.collection("notifikasi").add(notifData)
-                            .addOnSuccessListener {
-                                Log.d("ListAntrianFragment", "Notifikasi disimpan untuk user: $userId")
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("ListAntrianFragment", "Gagal simpan notifikasi: ${e.message}", e)
-                            }
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Panggilan dikirim ke $nama", Toast.LENGTH_SHORT).show()
                     }
             }
 
             holder.btnCancel.setOnClickListener {
                 AlertDialog.Builder(requireContext())
                     .setTitle("Batalkan Pasien?")
-                    .setMessage("Yakin ingin menghapus pasien ini dari antrian?")
+                    .setMessage("Yakin ingin menghapus pasien ini?")
                     .setPositiveButton("Ya") { _, _ ->
                         doc.reference.update("dihapus", true)
                             .addOnSuccessListener {
+                                // Notifikasi Batal dari Admin
+                                val notifData = hashMapOf(
+                                    "user_id" to userId,
+                                    "nomor_antrian" to nomor,
+                                    "nama_pasien" to nama,
+                                    "message" to "Your appointment was canceled by Admin.",
+                                    "type" to "Canceled", // Agar muncul warna merah di card
+                                    "timestamp" to FieldValue.serverTimestamp(),
+                                    "isRead" to false
+                                )
+                                db.collection("notifikasi").add(notifData)
                                 Toast.makeText(context, "Antrian $nama dibatalkan", Toast.LENGTH_SHORT).show()
-                                loadAntrian() // Refresh setelah pembatalan
                             }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                            }
-                    }
-                    .setNegativeButton("Tidak", null)
-                    .show()
+                    }.setNegativeButton("Tidak", null).show()
             }
         }
 
