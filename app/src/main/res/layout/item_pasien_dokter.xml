@@ -17,6 +17,36 @@
             android:layout_width="match_parent"
             android:layout_height="5dp"
             android:background="#04AA78" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="15dp"
+            android:paddingStart="15dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AI Prediction: "
+                android:textSize="11sp"
+                android:fontFamily="@font/signika_medium"
+                android:textColor="#666666"/>
+
+            <TextView
+                android:id="@+id/tvRiskStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Attendance: Normal"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:background="@drawable/bg_risk_label"
+                android:textColor="@color/white"
+                android:fontFamily="@font/signika_bold"/>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -84,7 +114,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Call Patient"
+                    android:text="Call"
                     android:backgroundTint="#FFC107"/>
 
                 <Button

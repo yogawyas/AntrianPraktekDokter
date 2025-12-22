@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri // Pastikan ini di-import
 import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
@@ -39,6 +40,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var tvYourQueueNumber: TextView
     private lateinit var btnNotification: MaterialButton
     private lateinit var bottomNav: BottomNavigationView
+
     private var currentQueueListener: ListenerRegistration? = null
     private var myQueueListener: ListenerRegistration? = null
     private var notificationListener: ListenerRegistration? = null
@@ -66,7 +68,7 @@ class HomeActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_home)
 
-        // 3. Inisialisasi Views
+        // Inisialisasi Views
         btnNotification = findViewById(R.id.btn_notification)
         tvCurrentQueueNumber = findViewById(R.id.tvCurrentQueueNumber)
         tvYourQueueNumber = findViewById(R.id.tvYourQueueNumber)
@@ -96,6 +98,24 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
+        // Logika Tombol Google Maps
+        val btnLocation: View = findViewById(R.id.tvLocation)
+        btnLocation.setOnClickListener {
+            // Alamat yang dituju
+            val address = "Teratai I No.1 1, RT.007/RW.006, Larangan Indah, Kec. Larangan, Kota Tangerang, Banten 15154"
+            val gmmIntentUri = Uri.parse("geo:0,0?q=${Uri.encode(address)}")
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+
+            // Cek apakah aplikasi Google Maps tersedia
+            if (mapIntent.resolveActivity(packageManager) != null) {
+                startActivity(mapIntent)
+            } else {
+                // Jika tidak ada aplikasi Maps, buka lewat browser
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encode(address)}"))
+                startActivity(browserIntent)
+            }
+        }
 
         btnJanjiTemu.setOnTouchListener { v, event ->
             when (event.action) {
@@ -134,10 +154,7 @@ class HomeActivity : AppCompatActivity() {
             .whereEqualTo("isRead", false)
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null && !snapshot.isEmpty) {
-
                     btnNotification.setIconResource(R.drawable.ic_notification_dot)
-
-
                     for (change in snapshot.documentChanges) {
                         if (change.type == DocumentChange.Type.ADDED) {
                             val msg = change.document.getString("message") ?: "Ada panggilan baru!"
@@ -146,7 +163,6 @@ class HomeActivity : AppCompatActivity() {
                         }
                     }
                 } else {
-
                     btnNotification.setIconResource(R.drawable.ic_notification)
                 }
             }
@@ -162,7 +178,6 @@ class HomeActivity : AppCompatActivity() {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Notifikasi Antrian"
             val importance = NotificationManager.IMPORTANCE_HIGH
@@ -174,7 +189,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification) // Pastikan icon ini ada
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -197,14 +212,12 @@ class HomeActivity : AppCompatActivity() {
         val user = auth.currentUser ?: return
         val todayString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
 
-
         currentQueueListener = db.collection("config")
             .document("status_antrian_$todayString")
             .addSnapshotListener { snapshot, _ ->
                 val currentNumber = snapshot?.getLong("nomor_sekarang") ?: 0
                 tvCurrentQueueNumber.text = String.format("%03d", currentNumber)
             }
-
 
         myQueueListener = db.collection("antrian")
             .whereEqualTo("user_id", user.uid)
@@ -241,8 +254,6 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         bottomNav.selectedItemId = R.id.nav_home
-
-
         btnJanjiTemu.scaleX = 1f
         btnJanjiTemu.scaleY = 1f
         btnJanjiTemu.alpha = 1f

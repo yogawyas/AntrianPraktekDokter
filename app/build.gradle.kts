@@ -43,18 +43,16 @@ android {
     buildFeatures {
         viewBinding = true
     }
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
-        }
-    }
+
 }
 
 dependencies {
     implementation("com.android.volley:volley:1.2.1")
 
     implementation("com.facebook.android:facebook-login:latest.release")
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
     implementation("com.google.firebase:firebase-analytics")

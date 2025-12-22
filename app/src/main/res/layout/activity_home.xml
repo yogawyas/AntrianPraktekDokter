@@ -102,6 +102,10 @@
         android:background="@drawable/button_gmaps"
         android:layout_marginTop="8dp"
 
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSeeUsOnGMaps" />
 

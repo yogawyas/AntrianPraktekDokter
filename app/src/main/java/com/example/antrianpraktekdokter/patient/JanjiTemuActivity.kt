@@ -7,12 +7,17 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.antrianpraktekdokter.R
+import com.example.antrianpraktekdokter.model.MLClient
+import com.example.antrianpraktekdokter.model.PredictionRequest
+import com.example.antrianpraktekdokter.model.PredictionResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,7 +39,6 @@ class JanjiTemuActivity : AppCompatActivity() {
     private lateinit var btnJanjiTemu: ImageButton
     private lateinit var btnBack: com.google.android.material.button.MaterialButton
 
-    // Variabel untuk menyimpan jam praktek dari firebase
     private var jamBuka: String = "09:00"
     private var jamTutup: String = "21:00"
 
@@ -59,7 +63,6 @@ class JanjiTemuActivity : AppCompatActivity() {
         containerExtraFields = findViewById(R.id.containerExtraFields)
         btnJanjiTemu = findViewById(R.id.btnJanjiTemu)
 
-        // 1. Age view tidak bisa di edit manual
         etUsia.isEnabled = false
 
         btnBack.setOnClickListener { finish() }
@@ -101,12 +104,12 @@ class JanjiTemuActivity : AppCompatActivity() {
 
     private fun setupAppointmentDatePicker() {
         val today = Calendar.getInstance()
-        etTanggal.setText(String.format("%02d/%02d/%d", today.get(Calendar.DAY_OF_MONTH), today.get(Calendar.MONTH) + 1, today.get(Calendar.YEAR)))
+        etTanggal.setText(SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(today.time))
 
         etTanggal.setOnClickListener {
             DatePickerDialog(this, { _, year, month, day ->
                 etTanggal.setText(String.format("%02d/%02d/%d", day, month + 1, year))
-                etJam.setText("") // Reset jam jika tanggal berubah
+                etJam.setText("")
             }, today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH)).apply {
                 datePicker.minDate = today.timeInMillis
                 datePicker.maxDate = today.timeInMillis
@@ -122,19 +125,14 @@ class JanjiTemuActivity : AppCompatActivity() {
 
             TimePickerDialog(this, { _, h, m ->
                 val selectedTime = String.format("%02d:%02d", h, m)
-
-                // Validasi 1: Cek terhadap jam praktek (Admin)
                 if (selectedTime < jamBuka || selectedTime > jamTutup) {
                     Toast.makeText(this, "Dokter hanya praktek pukul $jamBuka - $jamTutup", Toast.LENGTH_SHORT).show()
                     return@TimePickerDialog
                 }
-
-                // Validasi 2: Cek apakah waktu sudah terlewat (Real-time)
                 if (h < nowHour || (h == nowHour && m <= nowMinute)) {
-                    Toast.makeText(this, "Waktu sudah terlewat, pilih jam lain!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Waktu sudah terlewat!", Toast.LENGTH_SHORT).show()
                     return@TimePickerDialog
                 }
-
                 etJam.setText(selectedTime)
             }, nowHour, nowMinute, true).show()
         }
@@ -154,48 +152,60 @@ class JanjiTemuActivity : AppCompatActivity() {
         val nama = etNama.text.toString().trim()
         val birthdate = etBirthdate.text.toString().trim()
         val usia = etUsia.text.toString().trim()
-        val tanggal = etTanggal.text.toString().trim()
         val jam = etJam.text.toString().trim()
         val keluhan = etKeluhan.text.toString().trim()
 
-        // Validasi Field Wajib
-        if (nama.isEmpty()) {
-            Toast.makeText(this, "Nama wajib diisi!", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (birthdate.isEmpty()) {
-            Toast.makeText(this, "Tanggal lahir wajib diisi!", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (jam.isEmpty()) {
-            Toast.makeText(this, "Waktu janji temu wajib dipilih!", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (keluhan.isEmpty()) {
-            Toast.makeText(this, "Symptoms/Keluhan wajib diisi!", Toast.LENGTH_SHORT).show()
+        if (nama.isEmpty() || birthdate.isEmpty() || jam.isEmpty() || keluhan.isEmpty()) {
+            Toast.makeText(this, "Harap lengkapi semua data!", Toast.LENGTH_SHORT).show()
             return
         }
 
-        processSavingToFirebase(nama, usia, tanggal, jam, keluhan)
+        // Tampilkan loading jika perlu
+        btnJanjiTemu.isEnabled = false
+        processMLAndSave(nama, usia, jam, keluhan)
     }
 
-    private fun processSavingToFirebase(nama: String, usia: String, tanggal: String, jam: String, keluhan: String) {
-        // Ambil data alergi/penyakit jika ada
+    private fun processMLAndSave(nama: String, usia: String, jam: String, keluhan: String) {
+        // Buat object dari data class, bukan Map
+        val inputML = PredictionRequest(
+            gender = 0,
+            age = usia.toIntOrNull() ?: 0,
+            neighbourhood = 30,
+            scholarship = 0,
+            hipertension = 0,
+            diabetes = 0,
+            alcoholism = 0,
+            handcap = 0,
+            sms_received = 1,
+            date_diff = 0
+        )
+
+        // Panggil API ML
+        MLClient.instance.getPrediction(inputML).enqueue(object : Callback<PredictionResponse> {
+            override fun onResponse(call: Call<PredictionResponse>, response: Response<PredictionResponse>) {
+                val score = if (response.isSuccessful) response.body()?.probability ?: 0.5 else 0.5
+                saveFinalData(nama, usia, jam, keluhan, score)
+            }
+
+            override fun onFailure(call: Call<PredictionResponse>, t: Throwable) {
+                Log.e("ML_ERROR", "Gagal panggil API: ${t.message}")
+                saveFinalData(nama, usia, jam, keluhan, 0.5)
+            }
+        })
+    }
+
+    private fun saveFinalData(nama: String, usia: String, jam: String, keluhan: String, mlScore: Double) {
+        val todayString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+        val user = auth.currentUser ?: return
+
+        // Alergi & Penyakit
         val alergi = if (cbAlergi.isChecked && containerExtraFields.childCount > 0)
             (containerExtraFields.getChildAt(0) as? EditText)?.text.toString() else ""
         val penyakit = if (cbPenyakitBawaan.isChecked)
             (containerExtraFields.getChildAt(if (cbAlergi.isChecked) 1 else 0) as? EditText)?.text.toString() else ""
 
-        val user = auth.currentUser ?: return
-        val todayString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
-
-        if (tanggal != todayString) {
-            Toast.makeText(this, "Hanya bisa membuat janji untuk hari ini!", Toast.LENGTH_SHORT).show()
-            return
-        }
-
         db.runTransaction { transaction ->
-            val countRef = db.collection("config").document("antrian_count_$tanggal")
+            val countRef = db.collection("config").document("antrian_count_$todayString")
             val snapshot = transaction.get(countRef)
             val newCount = (snapshot.getLong("count") ?: 0) + 1
             transaction.set(countRef, hashMapOf("count" to newCount))
@@ -204,8 +214,9 @@ class JanjiTemuActivity : AppCompatActivity() {
             val newItem = hashMapOf(
                 "nama_pasien" to nama,
                 "usia" to usia,
+                "prediction_score" to mlScore,
                 "tanggal_lahir" to etBirthdate.text.toString(),
-                "tanggal_simpan" to tanggal,
+                "tanggal_simpan" to todayString,
                 "jam" to jam,
                 "keluhan" to keluhan,
                 "alergi" to alergi,
@@ -218,21 +229,19 @@ class JanjiTemuActivity : AppCompatActivity() {
             )
 
             db.collection("antrian").add(newItem).addOnSuccessListener {
-                Toast.makeText(this, "Berhasil! Nomor Antrian: $newNomor", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Nomor Antrian: $newNomor", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }.addOnFailureListener {
-            Toast.makeText(this, "Gagal: ${it.message}", Toast.LENGTH_SHORT).show()
+            btnJanjiTemu.isEnabled = true
+            Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun loadUserData() {
-        val user = auth.currentUser
-        if (user != null) {
-            db.collection("users").document(user.uid).get()
-                .addOnSuccessListener { doc ->
-                    etNama.setText(doc.getString("nama") ?: user.email)
-                }
+        val user = auth.currentUser ?: return
+        db.collection("users").document(user.uid).get().addOnSuccessListener { doc ->
+            etNama.setText(doc.getString("nama") ?: "")
         }
     }
 
