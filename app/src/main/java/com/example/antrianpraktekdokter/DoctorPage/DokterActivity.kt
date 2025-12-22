@@ -2,6 +2,7 @@ package com.example.antrianpraktekdokter.DoctorPage
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -88,15 +89,49 @@ class DokterActivity : AppCompatActivity() {
                         val dipanggil = (data["dipanggil"] as? Long)?.toInt() ?: 0
                         val nomor = (data["nomor_antrian"] as? Long)?.toInt() ?: 0
                         val userId = data["user_id"]?.toString() ?: ""
+                        val finalStatus: String
+                        val statusColor: Int
+                        val mlScore = doc.getDouble("prediction_score") ?: 0.5
+                        val hourInterval = doc.getDouble("hour_interval") ?: 10.0
+                        val usia = doc.getString("usia")?.toIntOrNull() ?: 30
 
                         if (selesai) countSelesai++ else countSisa++
 
                         val itemView = LayoutInflater.from(this).inflate(R.layout.item_pasien_dokter, containerPasien, false)
 
+                        // Bind Basic Data
                         itemView.findViewById<TextView>(R.id.tvNomorAntrian).text = "No. Antrian: $nomor"
-                        itemView.findViewById<TextView>(R.id.tvNamaPasien).text = "Nama: $nama"
-                        itemView.findViewById<TextView>(R.id.tvJamJanji).text = "Jam: $jam"
+                        itemView.findViewById<TextView>(R.id.tvNamaPasien).text = nama
+                        itemView.findViewById<TextView>(R.id.tvJamJanji).text = jam
                         itemView.findViewById<TextView>(R.id.tvKeluhanSingkat).text = "Keluhan: $keluhan"
+
+                        // Logika Label Risiko Machine Learning (AI Badge)
+                        val tvRisk = itemView.findViewById<TextView>(R.id.tvRiskStatus)
+                        when {
+                            // KONDISI 1: SANGAT PASTI HADIR (Likely to Attend - Hijau)
+                            // Logika: Interval jam dekat (< 2 jam) ATAU AI Score sangat tinggi
+                            (hourInterval in 0.0..2.0) || (mlScore > 0.75) -> {
+                                finalStatus = "Likely to Attend"
+                                statusColor = Color.parseColor("#04AA78") // Hijau Sukses
+                            }
+
+                            // KONDISI 2: RISIKO TINGGI BOLOS (High No-Show Risk - Merah)
+                            // Logika: Waktu sudah terlewat (interval minus) ATAU usia produktif dengan keluhan ringan
+                            (hourInterval < -0.5) || (mlScore < 0.3) || (usia in 18..35 && hourInterval > 5.0) -> {
+                                finalStatus = "High No-Show Risk"
+                                statusColor = Color.RED
+                            }
+
+                            // KONDISI 3: NORMAL/MODERATE (Biru)
+                            // Default jika tidak masuk kategori ekstrem
+                            else -> {
+                                finalStatus = "Normal Risk"
+                                statusColor = Color.parseColor("#2196F3") // Biru
+                            }
+                        }
+
+                        tvRisk.text = finalStatus
+                        tvRisk.backgroundTintList = ColorStateList.valueOf(statusColor)
 
                         val btnFinish = itemView.findViewById<Button>(R.id.btnFinish)
                         val btnPanggil = itemView.findViewById<Button>(R.id.btnPanggil)
@@ -181,10 +216,17 @@ class DokterActivity : AppCompatActivity() {
     }
 
     private fun panggilLogika(id: String, nama: String, nomor: Int, dipanggil: Int, userId: String) {
+        val todayString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+
+        // 1. Update data pasien tersebut (seperti yang sudah ada)
         db.collection("antrian").document(id).update("dipanggil", dipanggil + 1)
             .addOnSuccessListener {
-                kirimNotifikasi(userId, "Called", "You were called by Dr. Alexander. Please enter the room.", "Called", nomor, nama)
-                Toast.makeText(this, "Panggilan dikirim ke $nama", Toast.LENGTH_SHORT).show()
+                // 2. UPDATE NOMOR ANTREAN SEKARANG DI DOKUMEN PUSAT
+                val configRef = db.collection("config").document("status_antrian_$todayString")
+                configRef.set(hashMapOf("nomor_sekarang" to nomor), com.google.firebase.firestore.SetOptions.merge())
+
+                kirimNotifikasi(userId, "Called", "No. $nomor, silakan masuk!", "Called", nomor, nama)
+                Toast.makeText(this, "Memanggil No. $nomor", Toast.LENGTH_SHORT).show()
             }
     }
 

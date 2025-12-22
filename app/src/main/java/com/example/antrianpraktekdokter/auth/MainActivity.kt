@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity() {
                     val role = document.getString("role") ?: "patient"
 
                     val intent = when (role) {
-                        "doctor" -> Intent(this, com.example.antrianpraktekdokter.doctor.DoctorHomeActivity::class.java)
+                        "doctor" -> Intent(this, com.example.antrianpraktekdokter.DoctorPage.DokterActivity::class.java)
                         "admin" -> Intent(this, com.example.antrianpraktekdokter.admin.AdminHomeActivity::class.java)
                         else -> Intent(this, com.example.antrianpraktekdokter.patient.HomeActivity::class.java)
                     }

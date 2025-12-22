@@ -2,14 +2,13 @@ package com.example.antrianpraktekdokter.patient
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.antrianpraktekdokter.R
-import com.example.antrianpraktekdokter.model.MLClient
+import com.example.antrianpraktekdokter.model.MLClient // Sesuaikan package path MLClient Anda
 import com.example.antrianpraktekdokter.model.PredictionRequest
 import com.example.antrianpraktekdokter.model.PredictionResponse
 import com.google.firebase.auth.FirebaseAuth
@@ -160,49 +159,57 @@ class JanjiTemuActivity : AppCompatActivity() {
             return
         }
 
-        // Tampilkan loading jika perlu
         btnJanjiTemu.isEnabled = false
         processMLAndSave(nama, usia, jam, keluhan)
     }
 
     private fun processMLAndSave(nama: String, usia: String, jam: String, keluhan: String) {
-        // Buat object dari data class, bukan Map
-        val inputML = PredictionRequest(
-            gender = 0,
-            age = usia.toIntOrNull() ?: 0,
-            neighbourhood = 30,
-            scholarship = 0,
-            hipertension = 0,
-            diabetes = 0,
-            alcoholism = 0,
-            handcap = 0,
-            sms_received = 1,
-            date_diff = 0
-        )
+        val currentTime = Calendar.getInstance()
+        val appointmentTime = Calendar.getInstance()
 
-        // Panggil API ML
-        MLClient.instance.getPrediction(inputML).enqueue(object : Callback<PredictionResponse> {
-            override fun onResponse(call: Call<PredictionResponse>, response: Response<PredictionResponse>) {
-                val score = if (response.isSuccessful) response.body()?.probability ?: 0.5 else 0.5
-                saveFinalData(nama, usia, jam, keluhan, score)
-            }
+        try {
+            val timeParts = jam.split(":")
+            appointmentTime.set(Calendar.HOUR_OF_DAY, timeParts[0].toInt())
+            appointmentTime.set(Calendar.MINUTE, timeParts[1].toInt())
 
-            override fun onFailure(call: Call<PredictionResponse>, t: Throwable) {
-                Log.e("ML_ERROR", "Gagal panggil API: ${t.message}")
-                saveFinalData(nama, usia, jam, keluhan, 0.5)
-            }
-        })
+            val diffInMillis = appointmentTime.timeInMillis - currentTime.timeInMillis
+            val diffInHours = diffInMillis.toDouble() / (1000 * 60 * 60)
+
+            // Konversi usia ke Int untuk logika
+            val usiaInt = usia.toIntOrNull() ?: 0
+
+            // Buat request input ML
+            val inputML = PredictionRequest(
+                gender = if (usiaInt % 2 == 0) 1 else 0,
+                age = usiaInt,
+                neighbourhood = (30..80).random(),
+                scholarship = 0,
+                hipertension = if (usiaInt > 50) 1 else 0,
+                diabetes = 0,
+                alcoholism = 0,
+                handcap = 0,
+                sms_received = if (diffInHours > 4) 1 else 0, // Gunakan diffInHours yang sudah dihitung
+                date_diff = 0
+            )
+
+            MLClient.instance.getPrediction(inputML).enqueue(object : Callback<PredictionResponse> {
+                override fun onResponse(call: Call<PredictionResponse>, response: Response<PredictionResponse>) {
+                    val score = if (response.isSuccessful) response.body()?.probability ?: 0.5 else 0.5
+                    saveFinalData(nama, usia, jam, keluhan, score, diffInHours)
+                }
+                override fun onFailure(call: Call<PredictionResponse>, t: Throwable) {
+                    saveFinalData(nama, usia, jam, keluhan, 0.5, diffInHours)
+                }
+            })
+        } catch (e: Exception) {
+            btnJanjiTemu.isEnabled = true
+            Toast.makeText(this, "Kesalahan format waktu", Toast.LENGTH_SHORT).show()
+        }
     }
 
-    private fun saveFinalData(nama: String, usia: String, jam: String, keluhan: String, mlScore: Double) {
+    private fun saveFinalData(nama: String, usia: String, jam: String, keluhan: String, mlScore: Double, hourInterval: Double) {
         val todayString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
         val user = auth.currentUser ?: return
-
-        // Alergi & Penyakit
-        val alergi = if (cbAlergi.isChecked && containerExtraFields.childCount > 0)
-            (containerExtraFields.getChildAt(0) as? EditText)?.text.toString() else ""
-        val penyakit = if (cbPenyakitBawaan.isChecked)
-            (containerExtraFields.getChildAt(if (cbAlergi.isChecked) 1 else 0) as? EditText)?.text.toString() else ""
 
         db.runTransaction { transaction ->
             val countRef = db.collection("config").document("antrian_count_$todayString")
@@ -215,26 +222,22 @@ class JanjiTemuActivity : AppCompatActivity() {
                 "nama_pasien" to nama,
                 "usia" to usia,
                 "prediction_score" to mlScore,
-                "tanggal_lahir" to etBirthdate.text.toString(),
-                "tanggal_simpan" to todayString,
+                "hour_interval" to hourInterval,
                 "jam" to jam,
-                "keluhan" to keluhan,
-                "alergi" to alergi,
-                "penyakit_bawaan" to penyakit,
+                "tanggal_simpan" to todayString,
                 "selesai" to false,
                 "dihapus" to false,
                 "nomor_antrian" to newNomor,
-                "createdAt" to FieldValue.serverTimestamp(),
-                "user_id" to user.uid
+                "user_id" to user.uid,
+                "createdAt" to FieldValue.serverTimestamp()
             )
-
             db.collection("antrian").add(newItem).addOnSuccessListener {
-                Toast.makeText(this, "Nomor Antrian: $newNomor", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Janji Temu Berhasil!", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }.addOnFailureListener {
             btnJanjiTemu.isEnabled = true
-            Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Gagal menyimpan antrian", Toast.LENGTH_SHORT).show()
         }
     }
 

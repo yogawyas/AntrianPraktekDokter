@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.net.Uri // Pastikan ini di-import
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageButton
@@ -121,7 +122,7 @@ class HomeActivity : AppCompatActivity() {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.animate().scaleX(0.95f).scaleY(0.95f).alpha(0.8f).setDuration(100).start()
                 MotionEvent.ACTION_UP -> {
-                    v.animate().scaleX(1f).scaleY(1f).alpha(1f).setDuration(100).start()
+                    v.animate().scaleX(1f).scaleY(1f).alpha(1f).setDuration(500).start()
                     startActivity(Intent(this, JanjiTemuActivity::class.java))
                 }
                 MotionEvent.ACTION_CANCEL -> v.animate().scaleX(1f).scaleY(1f).alpha(1f).setDuration(100).start()
@@ -212,22 +213,37 @@ class HomeActivity : AppCompatActivity() {
         val user = auth.currentUser ?: return
         val todayString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
 
+        // Mendengarkan Nomor Antrean yang sedang dipanggil (Current Line Number)
         currentQueueListener = db.collection("config")
             .document("status_antrian_$todayString")
-            .addSnapshotListener { snapshot, _ ->
-                val currentNumber = snapshot?.getLong("nomor_sekarang") ?: 0
-                tvCurrentQueueNumber.text = String.format("%03d", currentNumber)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.w("HomeActivity", "Listen failed.", e)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    val currentNumber = snapshot.getLong("nomor_sekarang") ?: 0
+                    // Update TextView dengan format 3 digit (contoh: 011)
+                    tvCurrentQueueNumber.text = String.format("%03d", currentNumber)
+                } else {
+                    tvCurrentQueueNumber.text = "000"
+                }
             }
 
+        // Mendengarkan Nomor Antrean milik user sendiri (Your Line Number)
         myQueueListener = db.collection("antrian")
             .whereEqualTo("user_id", user.uid)
             .whereEqualTo("tanggal_simpan", todayString)
             .whereEqualTo("dihapus", false)
-            .whereEqualTo("selesai", false)
             .addSnapshotListener { snapshots, _ ->
                 if (snapshots != null && !snapshots.isEmpty) {
-                    val myNumber = snapshots.documents[0].getLong("nomor_antrian") ?: 0
-                    tvYourQueueNumber.text = String.format("%03d", myNumber)
+                    // Ambil nomor dari antrean terbaru yang belum selesai
+                    val myNumber = snapshots.documents.firstOrNull {
+                        !(it.getBoolean("selesai") ?: false)
+                    }?.getLong("nomor_antrian") ?: 0
+
+                    tvYourQueueNumber.text = if (myNumber > 0) String.format("%03d", myNumber) else "-"
                 } else {
                     tvYourQueueNumber.text = "-"
                 }

@@ -116,7 +116,11 @@ class ListAntrianFragment : Fragment() {
             val userId = doc.getString("user_id") ?: ""
 
             // Prediksi Machine Learning
-            val mlScore = doc.getDouble("prediction_score") ?: 0.0
+            val mlScore = doc.getDouble("prediction_score") ?: 0.5
+            val hourInterval = doc.getDouble("hour_interval") ?: 10.0
+            val usia = doc.getString("usia")?.toIntOrNull() ?: 30
+            val finalStatus: String
+            val statusColor: Int
 
             holder.tvNomor.text = "No. $nomor"
             holder.tvNama.text = "Nama: $nama"
@@ -130,19 +134,30 @@ class ListAntrianFragment : Fragment() {
 
             // Tampilan Risiko ML
             when {
-                mlScore > 0.8 -> {
-                    holder.tvRisk.text = "Likely to Attend"
-                    holder.tvRisk.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#04AA78"))
+                // KONDISI 1: SANGAT PASTI HADIR (Likely to Attend - Hijau)
+                // Logika: Interval jam dekat (< 2 jam) ATAU AI Score sangat tinggi
+                (hourInterval in 0.0..2.0) || (mlScore > 0.75) -> {
+                    finalStatus = "Likely to Attend"
+                    statusColor = Color.parseColor("#04AA78") // Hijau Sukses
                 }
-                mlScore > 0.4 -> {
-                    holder.tvRisk.text = "Normal Risk"
-                    holder.tvRisk.backgroundTintList = ColorStateList.valueOf(Color.BLUE)
+
+                // KONDISI 2: RISIKO TINGGI BOLOS (High No-Show Risk - Merah)
+                // Logika: Waktu sudah terlewat (interval minus) ATAU usia produktif dengan keluhan ringan
+                (hourInterval < -0.5) || (mlScore < 0.3) || (usia in 18..35 && hourInterval > 5.0) -> {
+                    finalStatus = "High No-Show Risk"
+                    statusColor = Color.RED
                 }
+
+                // KONDISI 3: NORMAL/MODERATE (Biru)
+                // Default jika tidak masuk kategori ekstrem
                 else -> {
-                    holder.tvRisk.text = "High No-Show Risk"
-                    holder.tvRisk.backgroundTintList = ColorStateList.valueOf(Color.RED)
+                    finalStatus = "Normal Risk"
+                    statusColor = Color.parseColor("#2196F3") // Biru
                 }
             }
+
+            holder.tvRisk.text = finalStatus
+            holder.tvRisk.backgroundTintList = ColorStateList.valueOf(statusColor)
 
             // Warna Card
             holder.cardView.setCardBackgroundColor(if (selesai) Color.parseColor("#C8E6C9") else Color.WHITE)
