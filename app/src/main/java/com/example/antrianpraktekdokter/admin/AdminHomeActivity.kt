@@ -50,7 +50,6 @@ class AdminHomeActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        // Animasi drawer toggle dengan transisi smooth
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar,
             R.string.open_drawer, R.string.close_drawer
@@ -61,7 +60,6 @@ class AdminHomeActivity : AppCompatActivity() {
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        // Handle item klik di NavigationView (termasuk logout)
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.logout -> {

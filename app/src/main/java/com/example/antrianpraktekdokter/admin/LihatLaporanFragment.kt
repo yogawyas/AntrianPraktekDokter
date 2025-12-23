@@ -146,7 +146,6 @@ class LihatLaporanFragment : Fragment() {
     }
 }
 
-// Data class untuk item laporan
 data class LaporanItem(
     val nomor: Int,
     val namaPasien: String,
@@ -156,7 +155,6 @@ data class LaporanItem(
     val tanggal: String
 )
 
-// Adapter untuk RecyclerView
 class LaporanAdapter(private val laporanList: List<LaporanItem>) : RecyclerView.Adapter<LaporanAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

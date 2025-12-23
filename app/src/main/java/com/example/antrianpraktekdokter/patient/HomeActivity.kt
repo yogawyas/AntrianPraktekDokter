@@ -99,20 +99,16 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        // Logika Tombol Google Maps
         val btnLocation: View = findViewById(R.id.tvLocation)
         btnLocation.setOnClickListener {
-            // Alamat yang dituju
             val address = "Teratai I No.1 1, RT.007/RW.006, Larangan Indah, Kec. Larangan, Kota Tangerang, Banten 15154"
             val gmmIntentUri = Uri.parse("geo:0,0?q=${Uri.encode(address)}")
             val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
             mapIntent.setPackage("com.google.android.apps.maps")
 
-            // Cek apakah aplikasi Google Maps tersedia
             if (mapIntent.resolveActivity(packageManager) != null) {
                 startActivity(mapIntent)
             } else {
-                // Jika tidak ada aplikasi Maps, buka lewat browser
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encode(address)}"))
                 startActivity(browserIntent)
             }
@@ -231,14 +227,12 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
 
-        // Mendengarkan Nomor Antrean milik user sendiri (Your Line Number)
         myQueueListener = db.collection("antrian")
             .whereEqualTo("user_id", user.uid)
             .whereEqualTo("tanggal_simpan", todayString)
             .whereEqualTo("dihapus", false)
             .addSnapshotListener { snapshots, _ ->
                 if (snapshots != null && !snapshots.isEmpty) {
-                    // Ambil nomor dari antrean terbaru yang belum selesai
                     val myNumber = snapshots.documents.firstOrNull {
                         !(it.getBoolean("selesai") ?: false)
                     }?.getLong("nomor_antrian") ?: 0

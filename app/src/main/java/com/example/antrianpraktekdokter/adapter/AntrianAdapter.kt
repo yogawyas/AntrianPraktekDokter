@@ -52,14 +52,13 @@ class AntrianAdapter(private val antrianList: List<DocumentSnapshot>) :
         val nomor = doc.getLong("nomor_antrian")?.toInt() ?: 0
         val mlScore = doc.getDouble("prediction_score") ?: 0.0
         val hourInterval = doc.getDouble("hour_interval") ?: 10.0
-        val userId = doc.getString("user_id") ?: "" // 2. Pastikan userId diambil di sini
+        val userId = doc.getString("user_id") ?: ""
 
         holder.tvNomor.text = "No. Antrian: $nomor"
         holder.tvNama.text = "Nama Pasien: $nama"
         holder.tvJam.text = "Jam Janji: $jam"
         holder.tvKeluhan.text = "Keluhan: $keluhan"
 
-        // Logika warna label risiko Machine Learning
         when {
             (mlScore >= 0.5 && hourInterval <= 2.0) || mlScore > 0.8 -> {
                 holder.tvRisk.text = "Likely to Attend"
@@ -86,10 +85,8 @@ class AntrianAdapter(private val antrianList: List<DocumentSnapshot>) :
             val nextCallCount = dipanggil + 1
             val todayString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
 
-            // Update status panggil di data antrian
             doc.reference.update("dipanggil", nextCallCount)
                 .addOnSuccessListener {
-                    // Update nomor sekarang di config agar HP Pasien terupdate otomatis
                     val configRef = db.collection("config").document("status_antrian_$todayString")
 
                     val updateData = hashMapOf(

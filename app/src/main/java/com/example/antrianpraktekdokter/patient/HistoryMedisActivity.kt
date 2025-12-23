@@ -37,7 +37,6 @@ class HistoryMedisActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_history_medis)
 
-        // FIX: id harus sesuai dengan XML (id/main)
         val mainView = findViewById<View>(R.id.main)
         ViewCompat.setOnApplyWindowInsetsListener(mainView) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -128,7 +127,6 @@ class HistoryMedisActivity : AppCompatActivity() {
     }
 }
 
-// FIX: Data Class dengan atribut yang lengkap
 data class HistoryItem(
     val nama: String,
     val tanggal: String,
@@ -140,7 +138,6 @@ data class HistoryItem(
     val isDibatalkan: Boolean
 )
 
-// FIX: Adapter dengan listener untuk handle click card
 class HistoryAdapter(
     private val historyList: List<HistoryItem>,
     private val onItemClick: (HistoryItem) -> Unit

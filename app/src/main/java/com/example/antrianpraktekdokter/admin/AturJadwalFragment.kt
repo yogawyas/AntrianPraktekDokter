@@ -18,8 +18,6 @@ import java.util.Calendar
 class AturJadwalFragment : Fragment() {
 
     private lateinit var viewModel: JadwalViewModel
-
-    // View components
     private lateinit var switchStatusPraktik: Switch
     private lateinit var etJamBuka: EditText
     private lateinit var etJamTutup: EditText
@@ -67,7 +65,6 @@ class AturJadwalFragment : Fragment() {
         etJamBuka.setOnClickListener { showTimePicker(etJamBuka) }
         etJamTutup.setOnClickListener { showTimePicker(etJamTutup) }
 
-        // Load data awal dari database
         viewModel.loadJadwal()
 
         return view

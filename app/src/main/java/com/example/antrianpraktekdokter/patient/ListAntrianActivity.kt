@@ -31,11 +31,8 @@ class ListAntrianActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_list_antrian)
 
-        // 1. DEKLARASI mainLayout agar tidak 'Unresolved reference'
-        // Sesuai dengan android:id="@+id/main" di XML ConstraintLayout Anda
         val mainLayout = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.main)
 
-        // 2. Set Padding untuk System Bars (Edge-to-Edge)
         ViewCompat.setOnApplyWindowInsetsListener(mainLayout) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -45,13 +42,11 @@ class ListAntrianActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        // 3. Inisialisasi ProgressBar secara programmatik (atau lewat XML)
         progressBar = ProgressBar(this).apply {
             layoutParams = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                // Menempatkan ProgressBar di tengah ConstraintLayout
                 bottomToBottom = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
                 topToTop = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
                 startToStart = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
@@ -61,7 +56,6 @@ class ListAntrianActivity : AppCompatActivity() {
         }
         mainLayout.addView(progressBar)
 
-        // 4. Tombol Back (Gunakan finish agar kembali ke Home tanpa tumpukan activity)
         findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBack).setOnClickListener {
             finish()
         }
@@ -89,7 +83,6 @@ class ListAntrianActivity : AppCompatActivity() {
 
                 container.removeAllViews()
 
-                // Tampilkan teks jika kosong (ID dari XML sebelumnya)
                 val tvEmpty = findViewById<TextView>(R.id.tvEmptyQueue)
                 if (snapshot?.isEmpty == true) {
                     tvEmpty?.visibility = View.VISIBLE
@@ -103,10 +96,7 @@ class ListAntrianActivity : AppCompatActivity() {
                 var position = 1
 
                 for (doc in snapshot!!.documents) {
-                    // Inflate layout dari XML item_antrian_patient
                     val itemView = layoutInflater.inflate(R.layout.item_antrian_patient, container, false)
-
-                    // Binding View dari XML
                     val tvNumberLabel = itemView.findViewById<TextView>(R.id.tvNumberLabel)
                     val tvNameValue = itemView.findViewById<TextView>(R.id.tvNameValue)
                     val tvTimeValue = itemView.findViewById<TextView>(R.id.tvTimeValue)
@@ -119,13 +109,11 @@ class ListAntrianActivity : AppCompatActivity() {
                     val dipanggil = doc.getLong("dipanggil")?.toInt() ?: 0
                     val docUserId = doc.getString("user_id")
 
-                    // Isi Data
                     tvNumberLabel.text = "Number ${position}"
                     tvNameValue.text = doc.getString("nama_pasien")
                     tvTimeValue.text = doc.getString("jam")
                     tvProblemsValue.text = doc.getString("keluhan")
 
-                    // Logika Status
                     when {
                         selesai -> {
                             tvStatusText.text = "Finished"
@@ -144,7 +132,6 @@ class ListAntrianActivity : AppCompatActivity() {
                             tvStatusText.setTextColor(Color.parseColor("#FFEB3B")) // Kuning sesuai gambar
                             viewStatusIndicator.setBackgroundColor(Color.parseColor("#FFEB3B"))
 
-                            // Hanya tampilkan tombol cancel jika ini milik user yang login
                             if (docUserId == userId) {
                                 btnCancel.visibility = View.VISIBLE
                                 btnCancel.setOnClickListener {

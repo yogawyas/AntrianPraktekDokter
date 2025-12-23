@@ -175,10 +175,8 @@ class JanjiTemuActivity : AppCompatActivity() {
             val diffInMillis = appointmentTime.timeInMillis - currentTime.timeInMillis
             val diffInHours = diffInMillis.toDouble() / (1000 * 60 * 60)
 
-            // Konversi usia ke Int untuk logika
             val usiaInt = usia.toIntOrNull() ?: 0
 
-            // Buat request input ML
             val inputML = PredictionRequest(
                 gender = if (usiaInt % 2 == 0) 1 else 0,
                 age = usiaInt,
@@ -188,7 +186,7 @@ class JanjiTemuActivity : AppCompatActivity() {
                 diabetes = 0,
                 alcoholism = 0,
                 handcap = 0,
-                sms_received = if (diffInHours > 4) 1 else 0, // Gunakan diffInHours yang sudah dihitung
+                sms_received = if (diffInHours > 4) 1 else 0,
                 date_diff = 0
             )
 

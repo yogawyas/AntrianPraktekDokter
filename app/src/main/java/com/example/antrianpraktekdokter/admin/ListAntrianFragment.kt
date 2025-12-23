@@ -115,7 +115,7 @@ class ListAntrianFragment : Fragment() {
             val nomor = doc.getLong("nomor_antrian")?.toInt() ?: 0
             val userId = doc.getString("user_id") ?: ""
 
-            // Prediksi Machine Learning
+
             val mlScore = doc.getDouble("prediction_score") ?: 0.5
             val hourInterval = doc.getDouble("hour_interval") ?: 10.0
             val usia = doc.getString("usia")?.toIntOrNull() ?: 30
@@ -128,46 +128,37 @@ class ListAntrianFragment : Fragment() {
             holder.tvKeluhan.text = "Keluhan: $keluhan"
 
             // Logika Checkbox Selesai
-            holder.cbSelesai.setOnCheckedChangeListener(null) // Reset listener agar tidak bug saat scroll
+            holder.cbSelesai.setOnCheckedChangeListener(null)
             holder.cbSelesai.isChecked = selesai
             holder.cbSelesai.text = if (selesai) "Selesai ✅" else "Tandai Selesai"
 
-            // Tampilan Risiko ML
             when {
-                // KONDISI 1: SANGAT PASTI HADIR (Likely to Attend - Hijau)
-                // Logika: Interval jam dekat (< 2 jam) ATAU AI Score sangat tinggi
+
                 (hourInterval in 0.0..2.0) || (mlScore > 0.75) -> {
                     finalStatus = "Likely to Attend"
                     statusColor = Color.parseColor("#04AA78") // Hijau Sukses
                 }
 
-                // KONDISI 2: RISIKO TINGGI BOLOS (High No-Show Risk - Merah)
-                // Logika: Waktu sudah terlewat (interval minus) ATAU usia produktif dengan keluhan ringan
                 (hourInterval < -0.5) || (mlScore < 0.3) || (usia in 18..35 && hourInterval > 5.0) -> {
                     finalStatus = "High No-Show Risk"
                     statusColor = Color.RED
                 }
 
-                // KONDISI 3: NORMAL/MODERATE (Biru)
-                // Default jika tidak masuk kategori ekstrem
                 else -> {
                     finalStatus = "Normal Risk"
-                    statusColor = Color.parseColor("#2196F3") // Biru
+                    statusColor = Color.parseColor("#2196F3")
                 }
             }
 
             holder.tvRisk.text = finalStatus
             holder.tvRisk.backgroundTintList = ColorStateList.valueOf(statusColor)
 
-            // Warna Card
             holder.cardView.setCardBackgroundColor(if (selesai) Color.parseColor("#C8E6C9") else Color.WHITE)
 
-            // Update Selesai
             holder.cbSelesai.setOnCheckedChangeListener { _, isChecked ->
                 doc.reference.update("selesai", isChecked)
             }
 
-            // Panggil Pasien & Kirim Notif
             holder.btnPanggil.setOnClickListener {
                 doc.reference.update("dipanggil", dipanggil + 1).addOnSuccessListener {
                     val notifData = hashMapOf(
@@ -184,7 +175,6 @@ class ListAntrianFragment : Fragment() {
                 }
             }
 
-            // Batalkan Antrian & Kirim Notif
             holder.btnCancel.setOnClickListener {
                 AlertDialog.Builder(holder.itemView.context)
                     .setTitle("Batalkan Antrian?")

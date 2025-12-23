@@ -47,20 +47,12 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var btnChangePhoto: ImageButton
     private lateinit var btnSaveProfile: MaterialButton
     private lateinit var btnBack: MaterialButton
-    private lateinit var btnLogout: MaterialButton // Variabel Logout
-
-    // Navigasi
+    private lateinit var btnLogout: MaterialButton
     private lateinit var bottomNav: BottomNavigationView
-
-    // Firebase
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
-
-    // Variables for Camera/Gallery
     private var currentPhotoPath: String? = null
     private var encodedImage: String? = null
-
-    // Permission & Activity Launchers
     private val requestCameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -97,11 +89,9 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        // Init Firebase
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        // --- INISIALISASI VIEW (FIXED) ---
         imgProfile = findViewById(R.id.imgProfile)
 
         try { tilName = findViewById(R.id.tilName) } catch (e: Exception) { }
@@ -113,16 +103,12 @@ class ProfileActivity : AppCompatActivity() {
         btnBack = findViewById(R.id.btnBack)
         bottomNav = findViewById(R.id.bottomNavigation)
 
-        // PENTING: Inisialisasi tombol Logout
         btnLogout = findViewById(R.id.btnLogout)
 
-        // 1. Load Data
         loadProfile()
 
-        // 2. Logic Tombol Back
         btnBack.setOnClickListener { kembaliKeHome() }
 
-        // 3. Logic Edit Nama
         if (::tilName.isInitialized) {
             tilName.setEndIconOnClickListener {
                 edtName.isEnabled = true
@@ -133,10 +119,8 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
-        // 4. Logic Ganti Foto
         btnChangePhoto.setOnClickListener { showImagePickerOptions() }
 
-        // 5. Logic Simpan Profil
         btnSaveProfile.setOnClickListener {
             val name = edtName.text.toString().trim()
             if (name.isEmpty()) {
@@ -146,12 +130,10 @@ class ProfileActivity : AppCompatActivity() {
             saveProfile(name, encodedImage)
         }
 
-        // 6. Logic LOGOUT
         btnLogout.setOnClickListener {
             showLogoutConfirmation()
         }
 
-        // 7. Setup Bottom Navigation
         bottomNav.selectedItemId = R.id.nav_profile
         bottomNav.setOnItemSelectedListener { item ->
             when(item.itemId) {
@@ -192,9 +174,6 @@ class ProfileActivity : AppCompatActivity() {
         super.onBackPressed()
         kembaliKeHome()
     }
-
-    // ... (Fungsi showImagePicker, startCamera, encodeImage, loadProfile, saveProfile SAMA SEPERTI SEBELUMNYA) ...
-    // Pastikan fungsi-fungsi helper tersebut tetap ada di bawah sini
 
     private fun showImagePickerOptions() {
         val options = arrayOf("Camera", "Gallery")

@@ -31,7 +31,6 @@ class NotificationActivity : AppCompatActivity() {
         tvEmpty = findViewById(R.id.tvEmpty)
         val btnBack = findViewById<MaterialButton>(R.id.btnBack)
 
-        // Mengubah Clear All menjadi Read All
         val btnReadAll = findViewById<TextView>(R.id.btnClearAll)
         btnReadAll.text = "Read All"
 

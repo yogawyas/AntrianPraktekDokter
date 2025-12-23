@@ -37,8 +37,7 @@ class BeritaActivity : AppCompatActivity() {
     private lateinit var adapter: BeritaAdapter
 
     private val TAG = "BeritaActivity"
-    // Tips: Jangan hardcode API Key di aplikasi produksi.
-    // GNews API terbatas (100 request/hari), pastikan key aktif.
+
     private val API_KEY = "b29df8fc2ca3f2bccb2e02b83b11983b"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,18 +51,15 @@ class BeritaActivity : AppCompatActivity() {
             insets
         }
 
-        // Inisialisasi View
         btnBack = findViewById(R.id.btnBack)
         rvHealthNews = findViewById(R.id.rvHealthNews)
         progressBar = findViewById(R.id.progressBar)
         tvEmpty = findViewById(R.id.tvEmpty)
 
-        // Setup RecyclerView
         rvHealthNews.layoutManager = LinearLayoutManager(this)
         adapter = BeritaAdapter(newsList)
         rvHealthNews.adapter = adapter
 
-        // Event Klik
         btnBack.setOnClickListener { finish() }
         tvEmpty.setOnClickListener { fetchHealthNews() }
 
@@ -74,7 +70,6 @@ class BeritaActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
         tvEmpty.visibility = View.GONE
 
-        // URL GNews untuk topik kesehatan
         val url = "https://gnews.io/api/v4/top-headlines?category=health&lang=en&apikey=$API_KEY"
 
         val request = JsonObjectRequest(
